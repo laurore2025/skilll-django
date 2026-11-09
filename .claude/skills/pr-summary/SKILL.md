@@ -21,7 +21,8 @@ Générez un résumé de pull request pour la branche courante.
    - Les changements incompatibles (le cas échéant)
    - Des notes sur les tests
 
-3. **Mettez-le en forme comme corps de PR** :
+3. **Mettez-le en forme comme corps de PR**, en français et sans aucune mention de Claude
+   (pas de « Generated with Claude Code ») :
    ```markdown
    ## Résumé
    [1 à 3 puces décrivant les modifications]
@@ -29,6 +30,8 @@ Générez un résumé de pull request pour la branche courante.
    ## Modifications
    - [Liste des modifications significatives]
 
-   ## Plan de test
-   - [ ] [Éléments de la liste de vérification des tests]
+   ## Vérifications
+   - [ ] manage.py check sans erreur
+   - [ ] Requêtes REST Client (.http) concernées passées
+   - [ ] [Autres éléments de vérification]
    ```

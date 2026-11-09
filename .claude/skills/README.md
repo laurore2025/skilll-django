@@ -4,6 +4,11 @@ Ce répertoire contient des skills propres au projet, qui apportent à Claude la
 
 ## Skills par catégorie
 
+### Conventions maison (à appliquer en premier)
+| Skill | Description |
+|-------|-------------|
+| [conventions-django](./conventions-django/SKILL.md) | Style de développement et structure des projets Django de Laurore : structure du dépôt, settings piloté par `.env`, PostgreSQL/PostGIS sans GeoDjango, français, intégrations, tests REST Client, git sans attribution, déploiement Docker. **Prime sur les autres skills en cas de conflit.** |
+
 ### Méta et outils de développement
 | Skill | Description |
 |-------|-------------|
@@ -47,14 +52,16 @@ Ce répertoire contient des skills propres au projet, qui apportent à Claude la
 ## Combinaisons de skills pour les tâches courantes
 
 ### Développer une nouvelle fonctionnalité
+0. **conventions-django** - Structure, langue, sécurité et git (toujours en premier)
 1. **django-models** - Concevez les modèles
 2. **django-forms** - Créez les formulaires de saisie utilisateur
-3. **htmx-patterns** - Interface dynamique
+3. **htmx-patterns** - Interface dynamique (si le projet utilise HTMX ; sinon `fetch` + `JsonResponse`)
 4. **django-templates** - Gabarits de page
-5. **pytest-django-patterns** - Écrivez les tests (TDD)
+5. **pytest-django-patterns** - Écrivez les tests (si le projet utilise pytest ; sinon requêtes REST Client `.http`)
 
 ### Développer une tâche d'arrière-plan
-1. **celery-patterns** - Définition de la tâche
+0. **conventions-django** - Par défaut, commande de gestion (`--loop`) plutôt que Celery
+1. **celery-patterns** - Définition de la tâche (si une vraie file de tâches est nécessaire)
 2. **django-models** - Opérations sur la base de données
 3. **pytest-django-patterns** - Tests de la tâche
 

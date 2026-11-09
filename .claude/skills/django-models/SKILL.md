@@ -5,6 +5,11 @@ description: "Patrons de conception des modèles Django privilégiant les modèl
 
 # Patrons de modèles Django
 
+> **Dans les projets maison** (skill `conventions-django`) : noms métier et `verbose_name` en français ;
+> tables héritées en `managed = False` (jamais recréées par une migration) ; tables PostGIS créées par
+> `migrations.RunSQL` avec SQL inverse, sans GeoDjango ; configuration éditable par un modèle à
+> enregistrement unique (`charger()`). Exemples : `conventions-django/references/modeles-de-code.md`.
+
 ## Philosophie de base : modèles riches, vues légères
 
 **La logique métier a sa place dans les modèles et les managers, pas dans les vues.** Les vues orchestrent les flux de travail ; les modèles implémentent le comportement du domaine. Ce principe produit un code testable et réutilisable, qui reste maintenable à mesure que la complexité augmente.

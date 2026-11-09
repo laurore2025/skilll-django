@@ -5,6 +5,10 @@ description: "Patrons HTMX pour Django : gabarits partiels, attributs hx-* et in
 
 # Patrons HTMX pour Django
 
+> **Dans les projets maison** : HTMX n'est pas utilisé par défaut. L'interface utilise JavaScript natif (`fetch` + `JsonResponse`, en-tête `X-Requested-With: fetch`) avec amélioration progressive.
+> Appliquez d'abord le skill `conventions-django` ; ce skill ne sert que si le projet a adopté cet outil.
+
+
 ## Philosophie de base
 
 - Le serveur produit du HTML, pas du JSON - les requêtes HTMX renvoient des fragments HTML, pas des données

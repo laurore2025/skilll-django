@@ -44,7 +44,7 @@
       "args": [
         "run",
         "postgres-mcp",
-        "--access-mode=unrestricted"
+        "--access-mode=restricted"
       ],
       "env": {
         "DATABASE_URI": "${DATABASE_URL}"

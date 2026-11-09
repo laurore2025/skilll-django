@@ -1,5 +1,14 @@
 # Documentation des settings de Claude Code
 
+Configuration adaptée aux projets Django maison (venv + pip, PostgreSQL/PostGIS, français).
+Les hooks Node.js fonctionnent sous Windows (Git Bash) comme sous Linux : **Node.js doit être installé**.
+
+## Attribution
+
+- `includeCoAuthoredBy` : `false` et `attribution` : `{"commit": "", "pr": ""}` — aucune mention de Claude
+  dans les commits ni dans les pull requests (`includeCoAuthoredBy` est conservé pour les anciennes
+  versions de Claude Code).
+
 ## Variables d'environnement
 
 - `INSIDE_CLAUDE_CODE` : "1" — indique que le code s'exécute dans Claude Code
@@ -8,65 +17,52 @@
 
 ## Hooks
 
+Tous les garde-fous sont dans `.claude/hooks/garde-fous.js` (un mode par usage). L'événement arrive en
+JSON sur l'entrée standard ; une erreur interne du script laisse toujours passer l'action.
+
 ### UserPromptSubmit
 
-- **Évaluation des skills** : analyse les prompts et suggère les skills pertinents
-  - **Script** : `.claude/hooks/skill-eval.sh`
-  - **Comportement** : rapproche mots-clés, chemins de fichiers et motifs pour suggérer des skills
+- **Évaluation des skills** : analyse le prompt (mots-clés français et anglais, chemins, intentions) et
+  suggère les skills pertinents
+  - **Script** : `.claude/hooks/skill-eval.sh` → `skill-eval.js`, règles dans `skill-rules.json`
   - **Délai** : 5 s
 
 ### PreToolUse
 
-- **Protection de la branche main** : empêche les modifications sur la branche main (délai de 5 s)
-  - **Déclencheurs** : avant la modification de fichiers avec les outils Edit, MultiEdit ou Write
-  - **Comportement** : bloque la modification sur la branche main et suggère de créer une branche de travail
+1. **Protection du fichier `.env`** (`garde-fous.js env`) — outils Read, Edit, MultiEdit, Write,
+   NotebookEdit, Bash, PowerShell
+   - Bloque la lecture, la modification et l'affichage de `.env` (`cat`, `type`, `Get-Content`…)
+   - `.env.example` reste modifiable ; lister les seuls noms de variables reste possible
+2. **Protection de la branche main** (`garde-fous.js main`) — outils Edit, MultiEdit, Write
+   - Bloque toute modification sur `main` ou `master` : travailler sur `dev`
 
 ### PostToolUse
 
-1. **Formatage Ruff** : formate automatiquement les fichiers Python (délai de 30 s)
-   - **Déclencheurs** : après la modification de fichiers `.py`
-   - **Commande** : `uv run ruff format`
-   - **Comportement** : formate le code, masque la sortie en cas de succès, affiche un retour en cas d'échec
+1. **Syntaxe Python** (`garde-fous.js python`) — après modification d'un fichier `.py`
+   - Analyse le fichier avec le Python du venv du projet (`venv/Scripts/python.exe` ou `venv/bin/python`),
+     sans l'importer ni écrire de `.pyc` ; signale l'erreur à Claude
+2. **Gabarit modifié** (`garde-fous.js gabarit`) — après modification d'un `templates/**/*.html`
+   - Rappelle de redémarrer le serveur de vérification lancé avec `--noreload` et de contrôler les
+     traductions (`data-i18n`)
+3. **Dépendances** (`garde-fous.js dependances`) — après modification d'un `requirements*.txt`
+   - Rappelle de figer les versions et de proposer la mise à jour du venv (aucune installation automatique)
 
-2. **Installation des dépendances** : installation automatique après un changement de dépendances (délai de 60 s)
-   - **Déclencheurs** : après la modification de `pyproject.toml` ou de fichiers `requirements*.txt`
-   - **Commande** : `uv sync`
-   - **Comportement** : installe les dépendances, masque la sortie en cas de succès, affiche un retour en cas d'échec
+## Format de sortie des hooks
 
-3. **Exécution des tests** : lance les tests après la modification d'un fichier de test (délai de 90 s)
-   - **Déclencheurs** : après la modification de fichiers `test_*.py`, `*_test.py` ou `*/tests/*.py`
-   - **Commande** : `uv run pytest <fichier> -x -q`
-   - **Comportement** : lance les tests du fichier modifié, affiche les 30 dernières lignes de sortie, non bloquant
-
-4. **Vérification des types Pyright** : vérifie les types des fichiers Python (délai de 30 s)
-   - **Déclencheurs** : après la modification de fichiers `.py`
-   - **Commande** : `uv run pyright`
-   - **Comportement** : n'affiche que les 20 premières lignes d'erreurs, non bloquant, code de sortie 0
-
-5. **Lint Ruff** : analyse les fichiers Python (délai de 30 s)
-   - **Déclencheurs** : après la modification de fichiers `.py`
-   - **Commande** : `uv run ruff check`
-   - **Comportement** : n'affiche que les 20 premières lignes de problèmes, non bloquant, code de sortie 0
-
-## Format de réponse des hooks
-
-```json
-{
-  "feedback": "Message à afficher",
-  "suppressOutput": true,
-  "block": true,
-  "continue": false
-}
-```
+- Code `2` + message sur stderr : action bloquée (PreToolUse) ou erreur signalée à Claude (PostToolUse)
+- Code `0` + JSON `{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "…"}}` :
+  information ajoutée au contexte de Claude
+- Code `0` sans sortie : rien à signaler
 
 ## Variables d'environnement dans les hooks
 
-- `$CLAUDE_TOOL_INPUT_FILE_PATH` : fichier en cours de modification
-- `$CLAUDE_TOOL_NAME` : outil utilisé
 - `$CLAUDE_PROJECT_DIR` : répertoire racine du projet
+- Le détail de l'outil appelé (`tool_name`, `tool_input.file_path`, `tool_input.command`) est lu dans le
+  JSON reçu sur l'entrée standard
 
-## Codes de sortie
+## Tester un hook à la main
 
-- `0` : succès
-- `1` : erreur non bloquante (affiche un retour)
-- `2` : erreur bloquante (PreToolUse uniquement — bloque l'action)
+```bash
+node -e "process.stdout.write(JSON.stringify({tool_name:'Read',tool_input:{file_path:'C:\\\\projet\\\\.env'}}))" \
+  | node .claude/hooks/garde-fous.js env; echo "code=$?"     # attendu : message de refus, code=2
+```

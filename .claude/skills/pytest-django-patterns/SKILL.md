@@ -5,6 +5,10 @@ description: Patrons de test pytest-django, Factory Boy, fixtures et workflow TD
 
 # Patrons de test pytest-django
 
+> **Dans les projets maison** : pytest n'est pas utilisé par défaut. Les vérifications reposent sur les requêtes REST Client (`<projet>/http/NN_sujet.http`) et, pour la logique métier, sur les tests Django (`manage.py test`).
+> Appliquez d'abord le skill `conventions-django` ; ce skill ne sert que si le projet a adopté cet outil.
+
+
 ## Workflow TDD (ROUGE-VERT-REFACTORISATION)
 
 **Suivez toujours ce cycle :**
@@ -134,13 +138,14 @@ Utilisez `mocker.patch()` pour éviter les vrais appels HTTP, envois d'e-mails e
 ## Lancer les tests
 
 ```bash
-uv run pytest                    # Tous les tests
-uv run pytest -x                 # S'arrêter au premier échec
-uv run pytest --lf               # Relancer les derniers tests en échec
-uv run pytest -x --lf            # Derniers échecs uniquement, arrêt au premier
-uv run pytest -k "test_name"     # Tests correspondant au motif
-uv run pytest tests/apps/posts/  # Répertoire précis
-uv run pytest --cov=apps         # Avec rapport de couverture
+# Depuis <projet>/ avec le venv du dépôt (Linux : ../venv/bin/python)
+..\venv\Scripts\python.exe -m pytest                    # Tous les tests
+..\venv\Scripts\python.exe -m pytest -x                 # S'arrêter au premier échec
+..\venv\Scripts\python.exe -m pytest --lf               # Relancer les derniers tests en échec
+..\venv\Scripts\python.exe -m pytest -x --lf            # Derniers échecs uniquement, arrêt au premier
+..\venv\Scripts\python.exe -m pytest -k "test_name"     # Tests correspondant au motif
+..\venv\Scripts\python.exe -m pytest apps/posts/        # Répertoire précis
+..\venv\Scripts\python.exe -m pytest --cov=apps         # Avec rapport de couverture
 ```
 
 ## Pièges courants

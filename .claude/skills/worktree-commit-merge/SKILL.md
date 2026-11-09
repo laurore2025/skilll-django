@@ -35,13 +35,16 @@ Indexez des fichiers précis plutôt que d'utiliser `git add -A`, qui peut inclu
 git add <specific relevant files>
 ```
 
-Rédigez un message de commit qui suit le style du journal récent. Passez-le toujours via un heredoc pour préserver la mise en forme :
+Rédigez un message de commit en français qui suit le style du journal récent — dans les projets maison,
+« Sujet : précisions, précisions » (voir le skill `conventions-django`). Passez-le toujours via un heredoc
+pour préserver la mise en forme. **N'ajoutez aucune ligne d'attribution** (pas de `Co-Authored-By`,
+pas de « Generated with Claude Code ») :
 
 ```bash
 git commit -m "$(cat <<'EOF'
-<type>(<scope>): <description>
+<Sujet> : <précisions>
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+<détails éventuels, une ligne par changement>
 EOF
 )"
 ```
@@ -80,4 +83,6 @@ Cette commande s'exécute dans le répertoire du worktree (le répertoire couran
 git -C <MAIN_PATH> log --oneline -5
 ```
 
-Indiquez ce qui a été committé (fichiers + message), comment la fusion a été effectuée, et que la branche du worktree est désormais synchronisée avec master/main.
+Indiquez ce qui a été commité (fichiers + message), comment la fusion a été effectuée, et que la branche du worktree est désormais synchronisée avec master/main.
+
+**Ne poussez pas** (`git push`) sauf demande explicite de l'utilisateur : donnez-lui plutôt la commande à lancer.

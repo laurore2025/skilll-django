@@ -6,9 +6,9 @@ Une fois Claude Code configuré, vous pouvez le diriger vers votre base de code,
 
 ### Ce que cela donne en pratique
 
-**Des skills de connaissances métier ?** Nous avons [15 skills spécialisés](.claude/skills/) qui couvrent tout, des [modèles Django](.claude/skills/django-models/SKILL.md) et des [formulaires](.claude/skills/django-forms/SKILL.md) aux [patterns HTMX](.claude/skills/htmx-patterns/SKILL.md) et aux [tâches Celery](.claude/skills/celery-patterns/SKILL.md). Lors du débogage, notre [skill de débogage systématique](.claude/skills/systematic-debugging/SKILL.md) garantit une analyse de la cause racine avant toute correction. Besoin d'explorer votre projet Django ? Utilisez [django-extensions](.claude/skills/django-extensions/SKILL.md). Vous voulez créer de nouveaux skills ? Suivez le [guide skill-creator](.claude/skills/skill-creator/SKILL.md).
+**Des skills de connaissances métier ?** Nous avons [17 skills spécialisés](.claude/skills/), dont [`conventions-django`](.claude/skills/conventions-django/SKILL.md) qui décrit le style maison et prime sur les autres, qui couvrent tout, des [modèles Django](.claude/skills/django-models/SKILL.md) et des [formulaires](.claude/skills/django-forms/SKILL.md) aux [patterns HTMX](.claude/skills/htmx-patterns/SKILL.md) et aux [tâches Celery](.claude/skills/celery-patterns/SKILL.md). Lors du débogage, notre [skill de débogage systématique](.claude/skills/systematic-debugging/SKILL.md) garantit une analyse de la cause racine avant toute correction. Besoin d'explorer votre projet Django ? Utilisez [django-extensions](.claude/skills/django-extensions/SKILL.md). Vous voulez créer de nouveaux skills ? Suivez le [guide skill-creator](.claude/skills/skill-creator/SKILL.md).
 
-**Des contrôles qualité automatisés ?** Nous utilisons des [hooks](.claude/settings.json) pour formater automatiquement le code avec Ruff, lancer les tests quand des fichiers de test changent, effectuer la vérification des types avec pyright, et même [bloquer les modifications sur la branche main](.claude/settings.md). Les hooks détectent des problèmes comme des annotations de type manquantes, des requêtes N+1 et des violations de lint avant qu'ils n'arrivent en revue.
+**Des contrôles qualité automatisés ?** Des [hooks](.claude/settings.json) (script [garde-fous.js](.claude/hooks/garde-fous.js), documenté dans [settings.md](.claude/settings.md)) protègent le fichier `.env`, [bloquent les modifications sur la branche main](.claude/settings.md), vérifient la syntaxe de chaque fichier Python modifié avec le Python du venv, et rappellent de redémarrer le serveur de vérification après un gabarit modifié. Aucune attribution Claude n'est ajoutée aux commits ni aux PR.
 
 **Une revue de code approfondie ?** Nous avons un [agent de revue de code](.claude/agents/code-reviewer.md) que Claude exécute une fois les modifications effectuées. Il suit une liste de vérification détaillée qui couvre les annotations de type Python, l'optimisation des QuerySet, la gestion des erreurs, la validation des formulaires, et plus encore. Quand une PR est ouverte, une [GitHub Action](.github/workflows/pr-claude-code-review.yml) en fait automatiquement une revue complète.
 
@@ -29,8 +29,37 @@ Nous utilisons même Claude Code pour le tri des tickets. Il lit le ticket, expl
 
 ---
 
+## Adaptation maison
+
+Ce dépôt est traduit en français et adapté au style de développement de Laurore :
+
+- **Skill [`conventions-django`](.claude/skills/conventions-django/SKILL.md)** : structure des projets (venv et `.env` à la racine, projet Django dans un sous-dossier, applications sous `<projet>/apps`), `settings.py` unique piloté par `.env`, PostgreSQL/PostGIS en SQL brut, français partout, intégrations externes avec copie locale, tests REST Client, git sans attribution, déploiement Docker. Ses références contiennent des [fichiers modèles](.claude/skills/conventions-django/references/structure-projet.md), des [modèles de code](.claude/skills/conventions-django/references/modeles-de-code.md) et la [procédure de déploiement](.claude/skills/conventions-django/references/deploiement.md).
+- **Outillage** : `pip` + `requirements.txt` figé et venv à la racine (pas d'uv) ; pytest, HTMX et Celery restent disponibles mais ne servent que si le projet les adopte.
+- **Hooks** : garde-fous Node.js valables sous Windows et Linux (voir [settings.md](.claude/settings.md)) ; mots-clés français dans [skill-rules.json](.claude/hooks/skill-rules.json).
+
+### Installation
+
+Les skills et agents s'installent **pour l'utilisateur** (disponibles dans tous les projets) ; les hooks, `settings.json` et `CLAUDE.md` s'installent **dans un projet choisi**. Tout élément remplacé est sauvegardé dans `~/.claude/backups/`.
+
+```powershell
+# Windows (PowerShell), depuis la racine de ce dépôt
+.\installer.ps1                                     # skills + agents pour tous les projets
+.\installer.ps1 -Projet C:\xampp\htdocs\MonProjet   # + CLAUDE.md, settings.json et hooks du projet
+```
+
+```bash
+# Linux, macOS, Git Bash
+./installer.sh
+./installer.sh --projet /chemin/vers/mon-projet
+```
+
+Mise à jour : `git pull` dans ce dépôt, puis relancer le script. Redémarrer Claude Code pour charger les skills. Les hooks exigent Node.js.
+
+---
+
 ## Table des matières
 
+- [Adaptation maison](#adaptation-maison)
 - [Structure des répertoires](#structure-des-répertoires)
 - [Démarrage rapide](#démarrage-rapide)
 - [Travailler avec les worktrees](#travailler-avec-les-worktrees)
@@ -64,12 +93,15 @@ your-project/
 │   │   └── code-reviewer.md       # Agent de revue de code proactif
 │   │
 │   ├── hooks/                     # Scripts de hooks
+│   │   ├── garde-fous.js          # Protection de .env et de main, syntaxe Python, rappels
 │   │   ├── skill-eval.sh          # Correspondance des skills à la soumission d'un prompt
 │   │   ├── skill-eval.js          # Moteur Node.js de correspondance des skills
 │   │   └── skill-rules.json       # Configuration de la correspondance de motifs
 │   │
 │   ├── skills/                    # Skills de connaissances métier + skills de workflow
 │   │   ├── README.md              # Vue d'ensemble des skills
+│   │   ├── conventions-django/    # Style maison (prioritaire) + references/
+│   │   │   └── SKILL.md
 │   │   ├── skill-creator/
 │   │   │   └── SKILL.md
 │   │   ├── ticket/                # Skills de workflow invocables par l'utilisateur
@@ -112,12 +144,11 @@ Créez `CLAUDE.md` à la racine de votre projet avec les informations clés de v
 # Nom du projet
 
 ## Informations clés
-- **Stack** : Django, PostgreSQL, HTMX
-- **Gestionnaire de paquets** : uv
-- **Commande de test** : `uv run pytest`
-- **Commande de lint** : `uv run ruff check .`
-- **Commande de formatage** : `uv run ruff format .`
-- **Vérification des types** : `uv run pyright`
+- **Stack** : Django 5.2 LTS, PostgreSQL/PostGIS, JavaScript natif
+- **Environnement** : venv à la racine du dépôt, `pip` + `requirements.txt` figé
+- **Vérification** : `..\venv\Scripts\python.exe manage.py check` (depuis le sous-dossier du projet)
+- **Migrations manquantes** : `..\venv\Scripts\python.exe manage.py makemigrations --check --dry-run`
+- **Tests manuels** : requêtes REST Client `<projet>/http/*.http`
 
 ## Répertoires clés
 - `apps/` - Applications Django

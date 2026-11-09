@@ -87,8 +87,8 @@ def problematic_view(request):
 ```
 
 ```bash
-# Ouvrir le débogueur lorsqu'un test échoue
-uv run pytest --pdb -x
+# Ouvrir le débogueur lorsqu'un test échoue (projet sous pytest ; sinon manage.py test --pdb)
+..\venv\Scripts\python.exe -m pytest --pdb -x
 ```
 
 ### Débogage des requêtes
@@ -151,8 +151,11 @@ def debug_form(request):
 ### Problèmes de migration
 
 ```bash
-uv run python manage.py showmigrations
-uv run python manage.py migrate app_name 0001 --fake
+..\venv\Scripts\python.exe manage.py showmigrations
+..\venv\Scripts\python.exe manage.py migrate --plan
+# --fake seulement en local, après sauvegarde et accord explicite de l'utilisateur ;
+# jamais sur une base partagée ou de production (les tables managed = False ne sont pas concernées)
+..\venv\Scripts\python.exe manage.py migrate app_name 0001 --fake
 ```
 
 ## Déboguer Celery
@@ -182,9 +185,9 @@ Avant d'affirmer que c'est corrigé :
 
 - [ ] Cause racine identifiée
 - [ ] Le test de reproduction passe
-- [ ] La suite de tests complète passe (`uv run pytest`)
-- [ ] Aucune erreur de type (`uv run pyright`)
-- [ ] Aucune erreur de lint (`uv run ruff check .`)
+- [ ] `manage.py check` sans erreur
+- [ ] Les requêtes REST Client (`.http`) concernées passent
+- [ ] Les tests du projet passent (`manage.py test`, ou pytest si le projet l'utilise)
 
 ## Signaux d'alerte
 

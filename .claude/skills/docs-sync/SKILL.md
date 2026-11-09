@@ -11,12 +11,14 @@ Vérifiez que la documentation correspond à l'état actuel du code.
 
 1. **Trouvez les modifications récentes du code** :
    ```bash
-   git log --since="30 days ago" --name-only --pretty=format: -- "*.py" "*.ts" "*.tsx" | sort -u
+   git log --since="30 days ago" --name-only --pretty=format: -- "*.py" "*.html" "*.js" | sort -u
    ```
 
 2. **Trouvez la documentation associée** :
-   - Cherchez dans `/docs/` les fichiers qui mentionnent le code modifié
-   - Vérifiez les fichiers README proches du code modifié
+   - Cherchez dans `<projet>/docs/` les fichiers qui mentionnent le code modifié
+   - Vérifiez les fichiers README proches du code modifié, `CLAUDE.md` et `<projet>/http/README.md`
+     (tableau des fichiers de requêtes)
+   - Vérifiez que `.env.example` liste toutes les variables lues par `settings.py`
    - Repérez les docstrings dans les fichiers modifiés
 
 3. **Vérifiez l'exactitude de la documentation** :

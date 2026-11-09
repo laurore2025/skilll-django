@@ -1,5 +1,9 @@
 {
-  "includeCoAuthoredBy": true,
+  "includeCoAuthoredBy": false,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "env": {
     "INSIDE_CLAUDE_CODE": "1",
     "BASH_DEFAULT_TIMEOUT_MS": "420000",
@@ -19,11 +23,21 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Read|Edit|MultiEdit|Write|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-fous.js\" env",
+            "timeout": 5
+          }
+        ]
+      },
+      {
         "matcher": "Edit|MultiEdit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c '[ \"$(git branch --show-current)\" != \"main\" ] || { echo \"{\\\"block\\\": true, \\\"message\\\": \\\"Modification interdite sur la branche main. Créez d’abord une branche de travail.\\\"}\" >&2; exit 2; }'",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-fous.js\" main",
             "timeout": 5
           }
         ]
@@ -35,48 +49,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in *.py) uv run ruff format \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>&1 && echo \"{\\\"feedback\\\": \\\"Formaté avec Ruff.\\\", \\\"suppressOutput\\\": true}\" || echo \"{\\\"feedback\\\": \\\"Échec du formatage Ruff.\\\"}\" >&2 ;; esac'",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-fous.js\" python",
             "timeout": 30
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
+          },
           {
             "type": "command",
-            "command": "bash -c 'case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in pyproject.toml|requirements*.txt) echo \"{\\\"feedback\\\": \\\"Installation des dépendances…\\\"}\" >&2; uv sync >/dev/null 2>&1 && echo \"{\\\"feedback\\\": \\\"Dépendances installées.\\\", \\\"suppressOutput\\\": true}\" || echo \"{\\\"feedback\\\": \\\"Échec de l’installation des dépendances.\\\"}\" >&2 ;; esac'",
-            "timeout": 60
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-fous.js\" gabarit",
+            "timeout": 5
+          },
           {
             "type": "command",
-            "command": "bash -c 'case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in */test_*.py|*_test.py|*/tests/*.py) echo \"{\\\"feedback\\\": \\\"Exécution des tests…\\\"}\" >&2; uv run pytest \"$CLAUDE_TOOL_INPUT_FILE_PATH\" -x -q 2>&1 | tail -30; if [ ${PIPESTATUS[0]} -eq 0 ]; then echo \"{\\\"feedback\\\": \\\"Tests réussis.\\\"}\"; else echo \"{\\\"feedback\\\": \\\"Tests en échec. Voir la sortie ci-dessus.\\\"}\" >&2; fi ;; esac'",
-            "timeout": 90
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in *.py) echo \"{\\\"feedback\\\": \\\"Vérification des types avec pyright…\\\"}\" >&2; output=$(uv run pyright \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>&1); if [ $? -eq 0 ]; then echo \"{\\\"feedback\\\": \\\"Aucune erreur de type.\\\", \\\"suppressOutput\\\": true}\"; else echo \"$output\" | head -20 >&2; echo \"{\\\"feedback\\\": \\\"Pyright a trouvé des erreurs de type.\\\"}\" >&2; fi; exit 0 ;; esac'",
-            "timeout": 30
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in *.py) output=$(uv run ruff check \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>&1); if [ $? -eq 0 ]; then echo \"{\\\"feedback\\\": \\\"Vérification Ruff réussie.\\\", \\\"suppressOutput\\\": true}\"; else echo \"$output\" | head -20 >&2; echo \"{\\\"feedback\\\": \\\"Ruff a trouvé des problèmes de lint.\\\"}\" >&2; fi; exit 0 ;; esac'",
-            "timeout": 30
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-fous.js\" dependances",
+            "timeout": 5
           }
         ]
       }

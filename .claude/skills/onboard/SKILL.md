@@ -13,7 +13,8 @@ L'utilisateur a fourni le contexte de la tâche en argument. Servez-vous-en pour
 
 Préparez-vous à la tâche en cours :
 
-- En explorant la base de code en profondeur
+- En lisant d'abord `CLAUDE.md`, le skill `conventions-django`, puis `<projet>/docs/` et `<projet>/http/README.md`
+- En explorant la base de code en profondeur (sans jamais afficher le contenu de `.env`)
 - En posant des questions de clarification à l'utilisateur si nécessaire
 
 L'objectif est d'être entièrement prêt à commencer à travailler sur la tâche.

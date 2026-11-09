@@ -48,24 +48,27 @@ function loadRules() {
 function extractFilePaths(prompt) {
   const paths = new Set();
 
-  // Chemins explicites avec extension (.tsx, .ts, .jsx, .js, .json, .gql, .yaml, .yml, .md, .sh)
+  // Chemins Windows (barres obliques inverses) ramenés au format « / »
+  const texte = prompt.replace(/\\/g, '/');
+
+  // Chemins explicites avec extension : Python/Django, web, configuration, scripts, documentation
   const extensionPattern =
-    /(?:^|\s|["'`])([\w\-./]+\.(?:[tj]sx?|json|gql|ya?ml|md|sh))\b/gi;
+    /(?:^|\s|["'`(\[])([\w\-./:]+\.(?:py|html|css|[tj]sx?|json|ya?ml|toml|txt|http|sql|ps1|sh|md|env|example|cfg|ini|gql))\b/gi;
   let match;
-  while ((match = extensionPattern.exec(prompt)) !== null) {
+  while ((match = extensionPattern.exec(texte)) !== null) {
     paths.add(match[1]);
   }
 
-  // Chemins commençant par un répertoire courant
+  // Chemins commençant par un répertoire courant (projets Django et configuration Claude)
   const dirPattern =
-    /(?:^|\s|["'`])((?:src|app|components|screens|hooks|utils|services|navigation|graphql|localization|\.claude|\.github|\.maestro)\/[\w\-./]+)/gi;
-  while ((match = dirPattern.exec(prompt)) !== null) {
+    /(?:^|\s|["'`(\[])((?:apps|templates|static|docs|http|scripts|data|config|migrations|management|src|app|services|\.claude|\.github)\/[\w\-./]+)/gi;
+  while ((match = dirPattern.exec(texte)) !== null) {
     paths.add(match[1]);
   }
 
   // Chemins entre guillemets
-  const quotedPattern = /["'`]([\w\-./]+\/[\w\-./]+)["'`]/g;
-  while ((match = quotedPattern.exec(prompt)) !== null) {
+  const quotedPattern = /["'`]([\w\-./:]+\/[\w\-./]+)["'`]/g;
+  while ((match = quotedPattern.exec(texte)) !== null) {
     paths.add(match[1]);
   }
 
@@ -107,7 +110,7 @@ function matchesGlob(filePath, globPattern) {
 
   try {
     const regex = new RegExp(`^${regexPattern}$`, 'i');
-    return regex.test(filePath);
+    return regex.test(filePath.replace(/\\/g, '/'));
   } catch {
     return false;
   }
@@ -120,8 +123,10 @@ function matchesGlob(filePath, globPattern) {
  * @returns {string|null} Nom du skill associé, ou null
  */
 function matchDirectoryMapping(filePath, mappings) {
+  const chemin = filePath.replace(/\\/g, '/');
   for (const [dir, skillName] of Object.entries(mappings)) {
-    if (filePath === dir || filePath.startsWith(dir + '/')) {
+    const d = dir.replace(/\/+$/, '');
+    if (chemin === d || chemin.startsWith(d + '/') || chemin.includes('/' + d + '/')) {
       return skillName;
     }
   }

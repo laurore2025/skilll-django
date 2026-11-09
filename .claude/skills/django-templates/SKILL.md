@@ -5,6 +5,11 @@ description: "Patrons de gabarits (templates) Django : héritage, gabarits parti
 
 # Patrons de gabarits Django
 
+> **Dans les projets maison** (skill `conventions-django`) : `templates/base.html`, gabarits partiels
+> préfixés `_`, surcharges d'admin dans `templates/admin/<app>/<modèle>/`, textes en français et
+> traductions créoles par attributs `data-i18n` + `static/js/traductions/<page>.ht.js`. Après une
+> modification, redémarrer le serveur de vérification lancé avec `--noreload`.
+
 ## Organisation des gabarits
 
 ```

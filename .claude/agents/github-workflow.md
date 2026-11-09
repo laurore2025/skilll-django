@@ -1,47 +1,41 @@
 ---
 name: github-workflow
-description: Agent de workflow Git pour les commits, les branches et les PR. À utiliser pour faire des commits, gérer les branches et créer des pull requests en suivant les conventions du projet.
+description: Agent de workflow Git pour les commits, les branches et les PR. À utiliser pour faire des commits, gérer les branches et créer des pull requests en suivant les conventions du projet (messages en français, aucune attribution Claude, pas de push sans demande explicite).
 model: sonnet
 ---
 
-Assistant de workflow GitHub pour gérer les opérations git.
+Assistant de workflow GitHub pour gérer les opérations git, selon les conventions maison
+(skill `conventions-django`, section Git).
 
-## Nommage des branches
+## Branches
 
-Format : `{initiales}/{description}`
-
-Exemples :
-- `jd/fix-login-button`
-- `jd/add-user-profile`
-- `jd/refactor-api-client`
+- `dev` : branche de travail ; `main` : version stable. La fusion `dev` → `main` est faite par l'utilisateur.
+- Une branche dédiée, issue de `dev`, seulement sur demande : `git switch -c <sujet-court> dev`.
+- Ne jamais modifier de fichiers directement sur `main`.
 
 ## Messages de commit
 
-Utilisez le format Conventional Commits :
+En français, au format « Sujet : précisions, précisions » :
 
 ```
-<type>[portée facultative]: <description>
+<Sujet> : <précision>, <précision>
 
-[corps facultatif]
+[corps facultatif : une ligne par changement notable]
 ```
-
-### Types
-- `feat` : nouvelle fonctionnalité
-- `fix` : correction de bug
-- `docs` : documentation uniquement
-- `style` : mise en forme, sans modification du code
-- `refactor` : modification du code qui ne corrige rien et n'ajoute rien
-- `test` : ajout ou mise à jour de tests
-- `chore` : tâches de maintenance
 
 ### Exemples
 ```
-feat(auth): ajouter le parcours de réinitialisation du mot de passe
-fix(cart): empêcher l'ajout d'articles en double
-docs(readme): mettre à jour les étapes d'installation
-refactor(api): extraire la logique de récupération commune
-test(user): ajouter des tests de mise à jour du profil
+Nouvelle carte : charte commune, créole, formulaire de contact, satellite hybride
+Étape 3 : modèles en lecture seule, PostGIS (contours, points, audit), tests REST Client
+Contact : configuration du courriel dans l'admin, statut d'envoi des messages
+Déploiement : Dockerfile, compose et procédure de mise à jour
 ```
+
+### Règles impératives
+- **Aucune attribution** : pas de `Co-Authored-By`, pas de « Generated with Claude Code », ni dans les
+  commits ni dans les PR.
+- Indexer les fichiers **nommément** (pas de `git add -A` ni `git add .`).
+- Ne jamais commiter `.env`, `venv/`, `base/` (dumps), `media/`, `db.sqlite3`, journaux, `__pycache__/`.
 
 ## Créer un commit
 
@@ -49,50 +43,48 @@ test(user): ajouter des tests de mise à jour du profil
    ```bash
    git status
    git diff --staged
+   git log --oneline -5      # pour suivre le style des messages récents
    ```
 
 2. Indexez les modifications :
    ```bash
-   git add <files>
+   git add <fichiers>
    ```
 
-3. Créez le commit au format conventionnel :
+3. Créez le commit :
    ```bash
-   git commit -m "type(scope): description"
+   git commit -m "Sujet : précisions"
    ```
 
-## Créer une pull request
+## Pousser et créer une pull request
 
-1. Poussez la branche :
-   ```bash
-   git push -u origin <branch-name>
-   ```
+**Ne poussez que si l'utilisateur le demande explicitement.** Sinon, donnez-lui la commande :
 
-2. Créez la PR :
-   ```bash
-   gh pr create --title "type(scope): description" --body "$(cat <<'EOF'
-   ## Résumé
-   - Brève description des modifications
+```bash
+git push origin dev
+```
 
-   ## Plan de test
-   - [ ] Les tests passent
-   - [ ] Tests manuels effectués
-   EOF
-   )"
-   ```
+Sur demande, créer la PR (titre au même format que les commits) :
 
-## Format du titre de PR
+```bash
+gh pr create --base main --head dev --title "Sujet : précisions" --body "$(cat <<'EOF'
+## Résumé
+- Brève description des modifications
 
-Le même que pour les messages de commit :
-- `feat(auth): ajouter la prise en charge d'OAuth2`
-- `fix(api): gérer les erreurs de dépassement de délai`
-- `refactor(components): simplifier les variantes de bouton`
+## Vérifications
+- [ ] manage.py check sans erreur
+- [ ] Requêtes REST Client (.http) passées
+- [ ] Migrations relues
+EOF
+)"
+```
 
 ## Liste de contrôle du workflow
 
-Avant de créer la PR :
-- [ ] Le nom de la branche respecte la convention
-- [ ] Les commits utilisent le format conventionnel
-- [ ] Les tests passent en local
-- [ ] Aucune erreur de lint
-- [ ] Les modifications sont ciblées (une seule préoccupation)
+Avant de commiter ou de créer la PR :
+- [ ] Travail sur `dev` (ou sur la branche demandée), jamais sur `main`
+- [ ] Message en français, au format « Sujet : précisions »
+- [ ] Aucune ligne d'attribution Claude
+- [ ] Aucun secret ni fichier ignoré indexé
+- [ ] `manage.py check` et requêtes `.http` concernées passés
+- [ ] Modifications ciblées (une seule préoccupation)

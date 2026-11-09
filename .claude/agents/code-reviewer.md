@@ -22,16 +22,25 @@ Relecteur de code senior garant d'un haut niveau d'exigence pour la base de code
 - Détection du code mort, effets de bord intentionnels
 - Situations de concurrence (race conditions) dans les opérations asynchrones/Celery
 
-### Python et annotations de type
-- **Pas de `Any`** - utilisez des annotations de type appropriées
-- **Annotations de type obligatoires** sur les signatures de fonctions
+### Conventions maison (skill `conventions-django`) — à vérifier en premier
+- Code métier, messages, docstrings et commentaires **en français**
+- **Aucun secret** dans le code ; variable nouvelle dans `settings.py` **et** `.env.example`
+- Toute bibliothèque importée déclarée et figée dans `requirements.txt`
+- SQL **paramétré** ; tables héritées en `managed = False` ; `RunSQL` avec SQL inverse
+- Appels externes avec délai explicite, copie locale, jamais de synchronisation longue dans une requête
+
+### Python
+- Annotations de type bienvenues mais non obligatoires (le code maison n'en impose pas) ; pas de `Any`
+  injustifié quand elles sont présentes
 - Nommage correct (fonctions en snake_case, classes en PascalCase)
 - Utilisez les retours anticipés (early returns), évitez les conditions imbriquées
 
 ### Vues Django
 - **Méthodes HTTP correctes** - GET pour les lectures, POST pour les écritures
 - **Codes de statut appropriés** - 200, 201, 400, 404, etc.
-- **Gestion d'HTMX** - vérifiez `request.htmx` pour les réponses partielles
+- **Méthode imposée par décorateur** - `@require_POST` / `@require_GET`
+- **Amélioration progressive** - JSON pour `fetch` (`X-Requested-With: fetch`), page complète sinon
+- **Gestion d'HTMX** (si le projet l'utilise) - vérifiez `request.htmx` pour les réponses partielles
 - **select_related/prefetch_related** - évitez les requêtes N+1
 
 ```python
@@ -147,15 +156,17 @@ if form.is_valid():                   # Bon
 
 ## Processus de revue
 
-1. **Lancez les vérifications** : `uv run ruff check .` pour le lint
-2. **Vérification des types** : `uv run pyright` pour les erreurs de type
+1. **Lancez les vérifications** depuis `<projet>/` : `..\venv\Scripts\python.exe manage.py check`
+   et `..\venv\Scripts\python.exe manage.py makemigrations --check --dry-run` (Linux : `../venv/bin/python`)
+2. **Lint** : `..\venv\Scripts\python.exe -m ruff check .` seulement si ruff est installé dans le venv
 3. **Analysez le diff** : `git diff` pour l'ensemble des modifications
 4. **Revue de la logique** : lisez ligne par ligne, suivez les chemins d'exécution
 5. **Appliquez la liste de contrôle** : Python, Django, tests, sécurité
 
 ## Intégration avec les autres skills
 
-- **htmx-alpine-patterns** : réponses avec gabarits partiels
+- **conventions-django** : conventions maison (prioritaires)
+- **htmx-patterns** : réponses avec gabarits partiels (si le projet utilise HTMX)
 - **django-models** : optimisation des QuerySets
 - **django-forms** : patrons de validation des formulaires
 - **pytest-django-patterns** : fonctions factory, fixtures

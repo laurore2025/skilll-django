@@ -1,120 +1,93 @@
-# Projet Django
+# Projet Django — <nom du projet>
 
-> Configuration Claude Code pour projets Django avec HTMX et un outillage Python moderne.
+> Configuration Claude Code des projets Django de Laurore. Les conventions détaillées sont dans le
+> skill `conventions-django` : l'appliquer avant toute modification. Adapter les `<…>` à chaque projet.
 
 ## L'essentiel
 
-- **Pile** : Django, PostgreSQL, HTMX
-- **Gestionnaire de paquets** : uv
-- **Commande de test** : `uv run pytest`
-- **Commande de lint** : `uv run ruff check .`
-- **Commande de formatage** : `uv run ruff format .`
-- **Vérification des types** : `uv run pyright`
+- **Pile** : Django 5.2 LTS, Python 3.14, PostgreSQL 14+ avec PostGIS 3 (en SQL brut, sans GeoDjango),
+  WhiteNoise ; interface en gabarits Django + JavaScript natif (`fetch`), Leaflet pour les cartes
+- **Environnement** : un seul venv à la racine du dépôt ; `pip` + `<projet>/requirements.txt` aux versions figées
+- **Projet Django** : sous-dossier `<projet>/` (contient `manage.py`) ; applications sous `<projet>/apps/`
+- **Configuration** : `.env` à la racine du dépôt (jamais affiché ni commité), modèle `.env.example`
+- **Langue** : français partout (code métier, interface, documentation, commits) ; créole haïtien pour l'interface
+- **Vérifications** : `manage.py check`, requêtes REST Client `<projet>/http/*.http`
+- **Branches** : travail sur `dev`, version stable sur `main` (fusion faite par l'utilisateur)
 
 ## Répertoires clés
 
-- `apps/` — applications Django
-- `config/` — settings Django et URLconf racine
-- `templates/` — gabarits Django/Jinja2
-- `static/` — CSS, JavaScript, images
-- `tests/` — fichiers de test
-- `tasks/` — tâches Celery
-
-## Style de code
-
-- Python 3.12+ avec annotations de type obligatoires
-- Ruff pour le lint et le formatage (remplace black, isort, flake8)
-- Mode strict de pyright activé
-- Pas de type `Any` : utilisez des annotations précises ou `object`
-- Utilisez les retours anticipés, évitez les conditions imbriquées
-- Préférez la composition à l'héritage
-
-## Conventions Git
-
-- **Nom des branches** : `{initiales}/{description}` (ex. `jd/fix-login`)
-- **Format des commits** : Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
-- **Titres de PR** : même format que les commits
+- `<projet>/<projet>/` — `settings.py` unique piloté par `.env`, `urls.py`, `wsgi.py`
+- `<projet>/apps/<app>/` — applications (`name = "apps.<app>"`), services à côté des vues
+- `<projet>/templates/` — `base.html`, gabarits par application, surcharges `admin/`
+- `<projet>/static/` — `css/charte.css`, `js/`, `js/traductions/*.ht.js`, `legacy/`
+- `<projet>/data/` — données lues par le serveur (KML, référentiels)
+- `<projet>/docs/` — documentation technique en français
+- `<projet>/http/` — requêtes de test REST Client numérotées
+- `scripts/` — scripts d'exploitation (PowerShell en ASCII)
 
 ## Règles essentielles
 
-### Gestion des erreurs
-- Ne JAMAIS avaler une erreur en silence
-- Toujours informer l'utilisateur en cas d'erreur (messages Django, en-têtes de réponse HTMX)
-- Journaliser les erreurs avec le contexte utile au débogage
+### Secrets et sécurité
+- Ne JAMAIS afficher, lire ni recopier `.env` : pour un diagnostic, lister seulement les noms de variables
+- Toute nouvelle variable : dans `settings.py` (défaut sûr) **et** dans `.env.example` (sans valeur)
+- `DEBUG` faux par défaut ; CSRF actif ; SQL toujours paramétré ; limites anti-abus sur les formulaires publics
 
-### Vues
-- Préférez les vues fonctionnelles (Function-Based Views)
-- Validez toujours explicitement `request.method`
-- Renvoyez les bons codes de statut HTTP
-- Utilisez `select_related()` / `prefetch_related()` pour éviter les requêtes N+1
+### Code
+- Vues fonctionnelles minces ; logique dans `services.py`, `api.py`, `sync.py`… ; docstrings en français
+- Formulaires `ModelForm` validés dans `clean_<champ>()` ; réponse JSON pour `fetch`, page complète sinon
+- `log = logging.getLogger(__name__)` ; aucune erreur avalée sans être journalisée
+- Toute bibliothèque importée figure dans `requirements.txt` (version figée)
 
-### Gabarits et HTMX
-- Utilisez l'héritage de gabarits (`{% extends %}`, `{% block %}`)
-- Créez des gabarits partiels pour les réponses HTMX (nommage `_partial.html`)
-- Incluez toujours `hx-indicator` pour les états de chargement
-- Tenez compte de l'en-tête `HX-Request` pour renvoyer un partiel ou la page complète
+### Base de données
+- Tables héritées : `managed = False` (jamais recréées par une migration : elles viennent d'un dump)
+- Tables PostGIS : `migrations.RunSQL` avec SQL inverse, SRID 4326, index GIST
+- Sauvegarde avant tout `migrate` sur une base partagée ; relire `migrate --plan`
 
-### Formulaires
-- Utilisez ModelForm pour les formulaires liés à un modèle
-- Validez dans les méthodes `clean()` et `clean_<champ>()`
-- Gérez toujours les erreurs de formulaire dans les gabarits
-- Désactivez les boutons de soumission pendant les requêtes HTMX
+### Intégrations externes
+- Le serveur appelle l'API (jamais le navigateur avec des identifiants), garde une copie locale en base
+- Synchronisation par commande de gestion (`sync_<source>`, `--loop`), jamais dans une requête HTTP
 
-### Tâches Celery
-- Les tâches doivent être idempotentes
-- Utilisez des stratégies de nouvelle tentative avec temporisation exponentielle
-- Journalisez toujours le début, la fin et l'échec d'une tâche
-- Ne passez que des arguments sérialisables (pas d'instances de modèle)
+### Gabarits
+- Après modification d'un gabarit, redémarrer le serveur de vérification lancé avec `--noreload`
+- Textes en français, clés `data-i18n` pour les traductions créoles
 
-## Tests
-
-- Écrivez d'abord le test qui échoue (TDD)
-- Utilisez Factory Boy : `UserFactory.create(is_admin=True)`
-- Utilisez des fixtures pytest dans `conftest.py`
-- Testez le comportement, pas l'implémentation
-- Lancez les tests avant de commiter
+### Git
+- Messages en français, format « Sujet : précisions, précisions »
+- **Aucune trace de Claude** : pas de `Co-Authored-By`, pas de « Generated with Claude Code »
+- **Pas de `git push` sans demande explicite** : préparer le commit et donner la commande
+- Indexer les fichiers nommément ; ne jamais commiter `.env`, `venv/`, `base/`, `media/`, `db.sqlite3`
 
 ## Activation des skills
 
 Avant d'implémenter QUOI QUE CE SOIT, vérifiez si des skills s'appliquent :
 
-- Débogage d'un problème → skill `systematic-debugging`
-- Exploration d'un projet Django (modèles, URL, settings) → skill `django-extensions`
-- Création de nouveaux skills → skill `skill-creator`
-- Démarrage d'une nouvelle tâche → skill `onboard`
-- Traitement d'un ticket → skill `ticket`
-- Revue d'une PR → skill `pr-review`
-- Résumé des changements d'une branche → skill `pr-summary`
-- Contrôles de qualité → skill `code-quality`
-- Vérification de l'exactitude de la documentation → skill `docs-sync`
-- Commit des changements d'un worktree et fusion dans master/main → skill `worktree-commit-merge`
+- Toute tâche dans ce projet → `conventions-django` (en premier ; il prime sur les autres skills)
+- Modèles, migrations, requêtes → `django-models`
+- Formulaires → `django-forms` ; gabarits → `django-templates`
+- Débogage d'un problème → `systematic-debugging`
+- Exploration du projet (modèles, URL, settings) → `django-extensions`
+- Démarrage d'une nouvelle tâche → `onboard` ; ticket → `ticket`
+- Revue d'une PR → `pr-review` ; résumé de branche → `pr-summary`
+- Contrôles de qualité → `code-quality` ; exactitude de la documentation → `docs-sync`
+- Création d'un skill → `skill-creator`
+- Seulement si le projet les a adoptés : `pytest-django-patterns`, `htmx-patterns`, `celery-patterns`
 
 ## Commandes courantes
 
-```bash
-# Développement
-uv run python manage.py runserver     # Démarrer le serveur de développement
-uv run pytest                         # Lancer les tests
-uv run pytest -x --lf                 # Relancer les derniers échecs, arrêt au premier échec
-uv run ruff check .                   # Lint du code
-uv run ruff format .                  # Formatage du code
-uv run pyright                        # Vérification des types
+Depuis `<projet>/` (Windows ; sous Linux, remplacer `..\venv\Scripts\python.exe` par `../venv/bin/python`) :
 
-# Django
-uv run python manage.py makemigrations
-uv run python manage.py migrate
-uv run python manage.py shell_plus    # Shell amélioré (django-extensions)
-uv run python manage.py createsuperuser
-
-# Celery
-uv run celery -A config worker -l info
-uv run celery -A config beat -l info
-
-# Dépendances
-uv sync                               # Installer depuis pyproject.toml
-uv add <paquet>                       # Ajouter une dépendance
-uv add --dev <paquet>                 # Ajouter une dépendance de développement
-
-# Git
-gh pr create                          # Créer une PR
+```powershell
+..\venv\Scripts\python.exe manage.py runserver                    # serveur de l'utilisateur (port 8000)
+..\venv\Scripts\python.exe manage.py runserver 8010 --noreload    # vérifications de Claude
+..\venv\Scripts\python.exe manage.py check
+..\venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+..\venv\Scripts\python.exe manage.py makemigrations <app>
+..\venv\Scripts\python.exe manage.py migrate --plan
+..\venv\Scripts\python.exe manage.py migrate
+..\venv\Scripts\python.exe manage.py createsuperuser
+..\venv\Scripts\python.exe manage.py test                         # si des tests Django existent
+..\venv\Scripts\python.exe -m pip install -r requirements.txt
+..\venv\Scripts\python.exe -m pip freeze                          # relever la version à figer
 ```
+
+Déploiement Docker : voir `conventions-django` → `references/deploiement.md`.

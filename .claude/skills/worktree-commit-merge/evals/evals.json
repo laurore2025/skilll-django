@@ -4,10 +4,10 @@
     {
       "id": 0,
       "prompt": "Mets en place un environnement git de test dans /tmp/wct-eval-0-main : initialise un dépôt, fais un commit initial avec un README.md, puis crée une branche de fonctionnalité 'feature/add-utils', puis crée un worktree git pour cette branche dans /tmp/wct-eval-0-wt. Dans ce worktree, crée un fichier utils.py contenant quelques fonctions utilitaires simples (par ex. format_date, slugify). Tu es maintenant « dans » ce worktree, à /tmp/wct-eval-0-wt, avec des modifications non commitées. Fais le commit de ces modifications sur feature/add-utils et fusionne la branche dans master.",
-      "expected_output": "utils.py committé sur feature/add-utils, puis fusionné dans master en fast-forward",
+      "expected_output": "utils.py commité sur feature/add-utils, puis fusionné dans master en fast-forward",
       "files": [],
       "assertions": [
-        {"text": "utils.py a été committé sur la branche feature/add-utils"},
+        {"text": "utils.py a été commité sur la branche feature/add-utils"},
         {"text": "La fusion dans master s'est faite en fast-forward (et non par un commit de fusion)"},
         {"text": "Le message de commit suit un format conventionnel (type: description ou type(scope): description)"},
         {"text": "utils.py est présent sur master après la fusion"}
@@ -16,10 +16,10 @@
     {
       "id": 1,
       "prompt": "Mets en place un environnement git de test : initialise un dépôt dans /tmp/wct-eval-1-main, fais un commit initial avec README.md sur master. Crée la branche 'feature/fix-null-check' et un worktree dans /tmp/wct-eval-1-wt. ENSUITE, fais un commit supplémentaire directement sur master (par ex. ajoute une nouvelle ligne à README.md) — cela empêchera un fast-forward par la suite. Dans le worktree, crée un fichier validator.py contenant un correctif de vérification de null. Tu es maintenant « dans » le worktree, à /tmp/wct-eval-1-wt, avec les modifications non commitées de validator.py. Fais le commit des modifications et fusionne dans master.",
-      "expected_output": "validator.py committé sur feature/fix-null-check, fusionné dans master par un commit de fusion classique",
+      "expected_output": "validator.py commité sur feature/fix-null-check, fusionné dans master par un commit de fusion classique",
       "files": [],
       "assertions": [
-        {"text": "validator.py a été committé sur la branche feature/fix-null-check"},
+        {"text": "validator.py a été commité sur la branche feature/fix-null-check"},
         {"text": "Un commit de fusion classique a été créé sur master (et non un fast-forward)"},
         {"text": "Le skill a tenté --ff-only avant de se rabattre sur une fusion classique"},
         {"text": "validator.py est présent sur master après la fusion"}

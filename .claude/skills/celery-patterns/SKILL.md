@@ -5,6 +5,10 @@ description: "Patrons de tâches Celery : définition des tâches, stratégies d
 
 # Patrons Celery pour Django
 
+> **Dans les projets maison** : Celery n'est pas utilisé par défaut. Les traitements hors requête passent par des commandes de gestion (`sync_<source> --loop`) lancées par un service Docker, cron ou une tâche planifiée Windows.
+> Appliquez d'abord le skill `conventions-django` ; ce skill ne sert que si le projet a adopté cet outil.
+
+
 ## Philosophie de base
 
 - **Tâches idempotentes** : exécuter une tâche deux fois doit produire le même résultat
@@ -68,6 +72,8 @@ Utilisez des contraintes de base de données pour éviter les traitements en dou
 
 ## Commandes
 
-- Worker : `uv run celery -A config worker -l info`
-- Beat : `uv run celery -A config beat -l info`
-- Supervision : `uv run celery -A config flower`
+Depuis `<projet>/`, avec le venv du dépôt (`<projet>` = paquet de configuration Django) :
+
+- Worker : `..\venv\Scripts\python.exe -m celery -A <projet> worker -l info`
+- Beat : `..\venv\Scripts\python.exe -m celery -A <projet> beat -l info`
+- Supervision : `..\venv\Scripts\python.exe -m celery -A <projet> flower`

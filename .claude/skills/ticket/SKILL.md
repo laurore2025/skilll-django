@@ -20,31 +20,39 @@ Résumez : ce qui doit être fait, les critères d'acceptation, les blocages ou 
 
 ### 2. Explorez la base de code
 
-Avant de coder :
+Avant de coder, appliquez le skill `conventions-django` (structure, langue, sécurité, git), puis :
 - Recherchez le code associé
 - Comprenez l'implémentation actuelle
 - Identifiez les fichiers à modifier
 
-### 3. Créez une branche
+### 3. Placez-vous sur la bonne branche
+
+Dans les projets maison, le travail se fait sur `dev` ; une branche dédiée, issue de `dev`, seulement si
+l'utilisateur la demande :
 
 ```bash
-git checkout -b {initials}/{ticket-id}-{brief-description}
+git switch dev
+# ou, sur demande : git switch -c {ticket-id}-{brief-description} dev
 ```
 
 ### 4. Implémentez les modifications
 
-- Suivez les patrons du projet (consultez les skills pertinents)
-- Écrivez d'abord les tests (TDD)
-- Faites des commits incrémentaux
+- Suivez les patrons du projet (consultez les skills pertinents, `conventions-django` en premier)
+- Ajoutez ou complétez les requêtes REST Client (`<projet>/http/NN_sujet.http`) ; si le projet a des
+  tests automatisés, écrivez d'abord le test (TDD)
+- Faites des commits incrémentaux, en français, sans attribution Claude
 
 ### 5. Lancez les contrôles qualité
 
+Depuis `<projet>/` (sous Linux : `../venv/bin/python`) :
+
 ```bash
-uv run ruff check .
-uv run ruff format .
-uv run pyright
-uv run pytest
+..\venv\Scripts\python.exe manage.py check
+..\venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+..\venv\Scripts\python.exe manage.py test          # si le projet a des tests
 ```
+
+Puis passez les requêtes `.http` concernées (voir le skill `code-quality`).
 
 ### 6. Mettez à jour le ticket
 
@@ -58,7 +66,8 @@ Au fil du travail :
 Quand c'est prêt :
 - Créez la PR avec `gh pr create`
 - Liez la PR au ticket
-- Ajoutez l'identifiant du ticket au titre de la PR : `feat(PROJ-123): description`
+- Ajoutez l'identifiant du ticket au titre de la PR, en français : `PROJ-123 — Sujet : précisions`
+- Aucune attribution Claude dans la PR ; ne poussez la branche que si l'utilisateur le demande
 
 ### 8. Si vous trouvez un bug
 
