@@ -1,120 +1,120 @@
-# Django Project
+# Projet Django
 
-> Claude Code configuration for Django projects with HTMX and modern Python tooling.
+> Configuration Claude Code pour projets Django avec HTMX et un outillage Python moderne.
 
-## Quick Facts
+## L'essentiel
 
-- **Stack**: Django, PostgreSQL, HTMX
-- **Package Manager**: uv
-- **Test Command**: `uv run pytest`
-- **Lint Command**: `uv run ruff check .`
-- **Format Command**: `uv run ruff format .`
-- **Type Check**: `uv run pyright`
+- **Pile** : Django, PostgreSQL, HTMX
+- **Gestionnaire de paquets** : uv
+- **Commande de test** : `uv run pytest`
+- **Commande de lint** : `uv run ruff check .`
+- **Commande de formatage** : `uv run ruff format .`
+- **Vérification des types** : `uv run pyright`
 
-## Key Directories
+## Répertoires clés
 
-- `apps/` - Django applications
-- `config/` - Django settings and root URLconf
-- `templates/` - Django/Jinja2 templates
-- `static/` - CSS, JavaScript, images
-- `tests/` - Test files
-- `tasks/` - Celery tasks
+- `apps/` — applications Django
+- `config/` — settings Django et URLconf racine
+- `templates/` — gabarits Django/Jinja2
+- `static/` — CSS, JavaScript, images
+- `tests/` — fichiers de test
+- `tasks/` — tâches Celery
 
-## Code Style
+## Style de code
 
-- Python 3.12+ with type hints required
-- Ruff for linting and formatting (replaces black, isort, flake8)
-- pyright strict mode enabled
-- No `Any` types - use proper type hints or `object`
-- Use early returns, avoid nested conditionals
-- Prefer composition over inheritance
+- Python 3.12+ avec annotations de type obligatoires
+- Ruff pour le lint et le formatage (remplace black, isort, flake8)
+- Mode strict de pyright activé
+- Pas de type `Any` : utilisez des annotations précises ou `object`
+- Utilisez les retours anticipés, évitez les conditions imbriquées
+- Préférez la composition à l'héritage
 
-## Git Conventions
+## Conventions Git
 
-- **Branch naming**: `{initials}/{description}` (e.g., `jd/fix-login`)
-- **Commit format**: Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
-- **PR titles**: Same as commit format
+- **Nom des branches** : `{initiales}/{description}` (ex. `jd/fix-login`)
+- **Format des commits** : Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
+- **Titres de PR** : même format que les commits
 
-## Critical Rules
+## Règles essentielles
 
-### Error Handling
-- NEVER swallow errors silently
-- Always show user feedback for errors (Django messages, HTMX response headers)
-- Log errors with proper context for debugging
+### Gestion des erreurs
+- Ne JAMAIS avaler une erreur en silence
+- Toujours informer l'utilisateur en cas d'erreur (messages Django, en-têtes de réponse HTMX)
+- Journaliser les erreurs avec le contexte utile au débogage
 
-### Views
-- Prefer Function-Based Views
-- Always validate request.method explicitly
-- Return proper HTTP status codes
-- Use `select_related()` / `prefetch_related()` to avoid N+1 queries
+### Vues
+- Préférez les vues fonctionnelles (Function-Based Views)
+- Validez toujours explicitement `request.method`
+- Renvoyez les bons codes de statut HTTP
+- Utilisez `select_related()` / `prefetch_related()` pour éviter les requêtes N+1
 
-### Templates & HTMX
-- Use template inheritance (`{% extends %}`, `{% block %}`)
-- Create partial templates for HTMX responses (`_partial.html` naming)
-- Always include `hx-indicator` for loading states
-- Handle `HX-Request` header for partial vs full page responses
+### Gabarits et HTMX
+- Utilisez l'héritage de gabarits (`{% extends %}`, `{% block %}`)
+- Créez des gabarits partiels pour les réponses HTMX (nommage `_partial.html`)
+- Incluez toujours `hx-indicator` pour les états de chargement
+- Tenez compte de l'en-tête `HX-Request` pour renvoyer un partiel ou la page complète
 
-### Forms
-- Use ModelForm for model-backed forms
-- Validate in `clean()` and `clean_<field>()` methods
-- Always handle form errors in templates
-- Disable submit buttons during HTMX requests
+### Formulaires
+- Utilisez ModelForm pour les formulaires liés à un modèle
+- Validez dans les méthodes `clean()` et `clean_<champ>()`
+- Gérez toujours les erreurs de formulaire dans les gabarits
+- Désactivez les boutons de soumission pendant les requêtes HTMX
 
-### Celery Tasks
-- Tasks must be idempotent
-- Use proper retry strategies with exponential backoff
-- Always log task start/completion/failure
-- Pass serializable arguments only (no model instances)
+### Tâches Celery
+- Les tâches doivent être idempotentes
+- Utilisez des stratégies de nouvelle tentative avec temporisation exponentielle
+- Journalisez toujours le début, la fin et l'échec d'une tâche
+- Ne passez que des arguments sérialisables (pas d'instances de modèle)
 
-## Testing
+## Tests
 
-- Write failing test first (TDD)
-- Use Factory Boy: `UserFactory.create(is_admin=True)`
-- Use pytest fixtures in `conftest.py`
-- Test behavior, not implementation
-- Run tests before committing
+- Écrivez d'abord le test qui échoue (TDD)
+- Utilisez Factory Boy : `UserFactory.create(is_admin=True)`
+- Utilisez des fixtures pytest dans `conftest.py`
+- Testez le comportement, pas l'implémentation
+- Lancez les tests avant de commiter
 
-## Skill Activation
+## Activation des skills
 
-Before implementing ANY task, check if relevant skills apply:
+Avant d'implémenter QUOI QUE CE SOIT, vérifiez si des skills s'appliquent :
 
-- Debugging issues → `systematic-debugging` skill
-- Exploring Django project (models, URLs, settings) → `django-extensions` skill
-- Creating new skills → `skill-creator` skill
-- Starting a new task → `onboard` skill
-- Working a ticket → `ticket` skill
-- Reviewing a PR → `pr-review` skill
-- Summarizing branch changes → `pr-summary` skill
-- Running quality checks → `code-quality` skill
-- Checking docs accuracy → `docs-sync` skill
-- Committing worktree changes and merging to master/main → `worktree-commit-merge` skill
+- Débogage d'un problème → skill `systematic-debugging`
+- Exploration d'un projet Django (modèles, URL, settings) → skill `django-extensions`
+- Création de nouveaux skills → skill `skill-creator`
+- Démarrage d'une nouvelle tâche → skill `onboard`
+- Traitement d'un ticket → skill `ticket`
+- Revue d'une PR → skill `pr-review`
+- Résumé des changements d'une branche → skill `pr-summary`
+- Contrôles de qualité → skill `code-quality`
+- Vérification de l'exactitude de la documentation → skill `docs-sync`
+- Commit des changements d'un worktree et fusion dans master/main → skill `worktree-commit-merge`
 
-## Common Commands
+## Commandes courantes
 
 ```bash
-# Development
-uv run python manage.py runserver     # Start dev server
-uv run pytest                         # Run tests
-uv run pytest -x --lf                 # Run last failed, stop on first failure
-uv run ruff check .                   # Lint code
-uv run ruff format .                  # Format code
-uv run pyright                        # Type check
+# Développement
+uv run python manage.py runserver     # Démarrer le serveur de développement
+uv run pytest                         # Lancer les tests
+uv run pytest -x --lf                 # Relancer les derniers échecs, arrêt au premier échec
+uv run ruff check .                   # Lint du code
+uv run ruff format .                  # Formatage du code
+uv run pyright                        # Vérification des types
 
 # Django
 uv run python manage.py makemigrations
 uv run python manage.py migrate
-uv run python manage.py shell_plus    # Enhanced shell (django-extensions)
+uv run python manage.py shell_plus    # Shell amélioré (django-extensions)
 uv run python manage.py createsuperuser
 
 # Celery
 uv run celery -A config worker -l info
 uv run celery -A config beat -l info
 
-# Dependencies
-uv sync                               # Install from pyproject.toml
-uv add <package>                      # Add new dependency
-uv add --dev <package>                # Add dev dependency
+# Dépendances
+uv sync                               # Installer depuis pyproject.toml
+uv add <paquet>                       # Ajouter une dépendance
+uv add --dev <paquet>                 # Ajouter une dépendance de développement
 
 # Git
-gh pr create                          # Create PR
+gh pr create                          # Créer une PR
 ```

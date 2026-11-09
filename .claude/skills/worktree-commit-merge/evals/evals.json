@@ -3,37 +3,37 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "Set up a test git environment in /tmp/wct-eval-0-main: init a repo, make an initial commit with a README.md, then create a feature branch 'feature/add-utils', then create a git worktree for it at /tmp/wct-eval-0-wt. In that worktree, create a file utils.py with some simple helper functions (e.g. format_date, slugify). Now you are 'in' that worktree at /tmp/wct-eval-0-wt with uncommitted changes. Commit those changes to feature/add-utils and merge the branch into master.",
-      "expected_output": "utils.py committed to feature/add-utils, then fast-forward merged into master",
+      "prompt": "Mets en place un environnement git de test dans /tmp/wct-eval-0-main : initialise un dépôt, fais un commit initial avec un README.md, puis crée une branche de fonctionnalité 'feature/add-utils', puis crée un worktree git pour cette branche dans /tmp/wct-eval-0-wt. Dans ce worktree, crée un fichier utils.py contenant quelques fonctions utilitaires simples (par ex. format_date, slugify). Tu es maintenant « dans » ce worktree, à /tmp/wct-eval-0-wt, avec des modifications non commitées. Fais le commit de ces modifications sur feature/add-utils et fusionne la branche dans master.",
+      "expected_output": "utils.py committé sur feature/add-utils, puis fusionné dans master en fast-forward",
       "files": [],
       "assertions": [
-        {"text": "utils.py was committed on the feature/add-utils branch"},
-        {"text": "The merge into master was a fast-forward (not a merge commit)"},
-        {"text": "The commit message follows a conventional format (type: description or type(scope): description)"},
-        {"text": "utils.py is present on master after the merge"}
+        {"text": "utils.py a été committé sur la branche feature/add-utils"},
+        {"text": "La fusion dans master s'est faite en fast-forward (et non par un commit de fusion)"},
+        {"text": "Le message de commit suit un format conventionnel (type: description ou type(scope): description)"},
+        {"text": "utils.py est présent sur master après la fusion"}
       ]
     },
     {
       "id": 1,
-      "prompt": "Set up a test git environment: init repo at /tmp/wct-eval-1-main, make initial commit with README.md on master. Create branch 'feature/fix-null-check', worktree at /tmp/wct-eval-1-wt. THEN make an additional commit directly on master (e.g. update README.md with a new line) — this prevents a fast-forward later. In the worktree, create a file validator.py with a null-check fix. Now you're 'in' the worktree at /tmp/wct-eval-1-wt with the uncommitted validator.py changes. Commit the changes and merge into master.",
-      "expected_output": "validator.py committed to feature/fix-null-check, merged into master with a regular merge commit",
+      "prompt": "Mets en place un environnement git de test : initialise un dépôt dans /tmp/wct-eval-1-main, fais un commit initial avec README.md sur master. Crée la branche 'feature/fix-null-check' et un worktree dans /tmp/wct-eval-1-wt. ENSUITE, fais un commit supplémentaire directement sur master (par ex. ajoute une nouvelle ligne à README.md) — cela empêchera un fast-forward par la suite. Dans le worktree, crée un fichier validator.py contenant un correctif de vérification de null. Tu es maintenant « dans » le worktree, à /tmp/wct-eval-1-wt, avec les modifications non commitées de validator.py. Fais le commit des modifications et fusionne dans master.",
+      "expected_output": "validator.py committé sur feature/fix-null-check, fusionné dans master par un commit de fusion classique",
       "files": [],
       "assertions": [
-        {"text": "validator.py was committed on the feature/fix-null-check branch"},
-        {"text": "A regular merge commit was created on master (not a fast-forward)"},
-        {"text": "The skill attempted --ff-only before falling back to a regular merge"},
-        {"text": "validator.py is present on master after the merge"}
+        {"text": "validator.py a été committé sur la branche feature/fix-null-check"},
+        {"text": "Un commit de fusion classique a été créé sur master (et non un fast-forward)"},
+        {"text": "Le skill a tenté --ff-only avant de se rabattre sur une fusion classique"},
+        {"text": "validator.py est présent sur master après la fusion"}
       ]
     },
     {
       "id": 2,
-      "prompt": "Set up: init repo at /tmp/wct-eval-2-main, initial commit with README.md, create branch 'feature/update-config', worktree at /tmp/wct-eval-2-wt. In the worktree modify two files: create config.py with some settings constants and update the README.md to add a 'Configuration' section. You are now in the worktree at /tmp/wct-eval-2-wt with both files uncommitted. Commit all relevant changes and merge into master.",
-      "expected_output": "Both config.py and README.md committed in a single commit, merged into master",
+      "prompt": "Mise en place : initialise un dépôt dans /tmp/wct-eval-2-main, fais un commit initial avec README.md, crée la branche 'feature/update-config' et un worktree dans /tmp/wct-eval-2-wt. Dans le worktree, modifie deux fichiers : crée config.py avec quelques constantes de réglages et mets à jour README.md pour y ajouter une section 'Configuration'. Tu es maintenant dans le worktree, à /tmp/wct-eval-2-wt, avec les deux fichiers non commités. Fais le commit de toutes les modifications pertinentes et fusionne dans master.",
+      "expected_output": "config.py et README.md commités ensemble dans un seul commit, puis fusionnés dans master",
       "files": [],
       "assertions": [
-        {"text": "Both config.py and README.md are staged and committed in a single commit (not two separate commits)"},
-        {"text": "The feature branch is merged into master"},
-        {"text": "Both config.py and README.md are present on master after the merge"}
+        {"text": "config.py et README.md sont tous deux indexés et commités dans un seul commit (et non dans deux commits distincts)"},
+        {"text": "La branche de fonctionnalité est fusionnée dans master"},
+        {"text": "config.py et README.md sont tous deux présents sur master après la fusion"}
       ]
     }
   ]

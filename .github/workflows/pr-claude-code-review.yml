@@ -1,4 +1,4 @@
-name: PR - Claude Code Review
+name: PR - Revue de code par Claude Code
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   review:
-    # Run on PR events, or on issue comments that mention @claude
+    # S'exécute sur les événements de PR, ou sur les commentaires d'issue qui mentionnent @claude
     if: |
       github.event_name == 'pull_request' ||
       (github.event_name == 'issue_comment' &&
@@ -25,26 +25,26 @@ jobs:
        contains(github.event.comment.body, '@claude'))
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository (PR event)
+      - name: Récupération du dépôt (événement PR)
         if: github.event_name == 'pull_request'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Checkout repository (issue_comment event)
+      - name: Récupération du dépôt (événement issue_comment)
         if: github.event_name == 'issue_comment'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Checkout PR branch (issue_comment event)
+      - name: Récupération de la branche de la PR (événement issue_comment)
         if: github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr checkout ${{ github.event.issue.number }}
 
-      - name: Get PR base branch
+      - name: Obtention de la branche de base de la PR
         id: pr-info
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,7 +56,7 @@ jobs:
             echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
           fi
 
-      - name: Claude Code Review
+      - name: Revue de code par Claude Code
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -64,12 +64,12 @@ jobs:
           timeout_minutes: 30
           track_progress: true
           prompt: |
-            Review this Pull Request using the standards in .claude/agents/code-reviewer.md
+            Effectuez la revue de cette pull request en appliquant les standards définis dans .claude/agents/code-reviewer.md
 
-            1. Read .claude/agents/code-reviewer.md for the full checklist
-            2. Run `git diff origin/${{ steps.pr-info.outputs.base_ref }}...HEAD` to see changes
-            3. Apply the review checklist to modified files
-            4. Provide feedback organized by severity (Critical, Warning, Suggestion)
+            1. Lisez .claude/agents/code-reviewer.md pour obtenir la liste de contrôle complète
+            2. Lancez `git diff origin/${{ steps.pr-info.outputs.base_ref }}...HEAD` pour voir les modifications
+            3. Appliquez la liste de contrôle de la revue aux fichiers modifiés
+            4. Fournissez des retours classés par gravité (Critique, Avertissement, Suggestion)
           claude_args: |
             --max-turns 10
             --allowedTools "Read,Glob,Grep,Bash(git:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

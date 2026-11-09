@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * Skill Evaluation Engine v2.0
+ * Moteur d'évaluation des skills v2.0
  *
- * Intelligent skill activation based on:
- * - Keywords and patterns in prompts
- * - File paths mentioned or being edited
- * - Directory mappings
- * - Intent detection
- * - Content pattern matching
+ * Activation intelligente des skills selon :
+ * - les mots-clés et motifs présents dans le prompt ;
+ * - les chemins de fichiers mentionnés ou en cours de modification ;
+ * - les correspondances de répertoires ;
+ * - la détection d'intention ;
+ * - les motifs de contenu (extraits de code).
  *
- * Outputs a structured reminder with matched skills and reasons.
+ * Produit un rappel structuré listant les skills retenus et les raisons.
  */
 
 const fs = require('fs');
@@ -20,35 +20,35 @@ const RULES_PATH = path.join(__dirname, 'skill-rules.json');
 
 /**
  * @typedef {Object} SkillMatch
- * @property {string} name - Skill name
- * @property {number} score - Confidence score
- * @property {string[]} reasons - Why this skill was matched
- * @property {number} priority - Skill priority
+ * @property {string} name - Nom du skill
+ * @property {number} score - Score de confiance
+ * @property {string[]} reasons - Raisons de la correspondance
+ * @property {number} priority - Priorité du skill
  */
 
 /**
- * Load skill rules from JSON file
- * @returns {Object} Parsed skill rules
+ * Charge les règles des skills depuis le fichier JSON
+ * @returns {Object} Règles analysées
  */
 function loadRules() {
   try {
     const content = fs.readFileSync(RULES_PATH, 'utf-8');
     return JSON.parse(content);
   } catch (error) {
-    console.error(`Failed to load skill rules: ${error.message}`);
-    process.exit(0); // Exit gracefully to not block the prompt
+    console.error(`Impossible de charger les règles des skills : ${error.message}`);
+    process.exit(0); // Sortie silencieuse pour ne pas bloquer le prompt
   }
 }
 
 /**
- * Extract file paths mentioned in the prompt
- * @param {string} prompt - User's prompt text
- * @returns {string[]} Array of detected file paths
+ * Extrait les chemins de fichiers mentionnés dans le prompt
+ * @param {string} prompt - Texte du prompt de l'utilisateur
+ * @returns {string[]} Chemins de fichiers détectés
  */
 function extractFilePaths(prompt) {
   const paths = new Set();
 
-  // Match explicit paths with extensions (.tsx, .ts, .jsx, .js, .json, .gql, .yaml, .yml, .md, .sh)
+  // Chemins explicites avec extension (.tsx, .ts, .jsx, .js, .json, .gql, .yaml, .yml, .md, .sh)
   const extensionPattern =
     /(?:^|\s|["'`])([\w\-./]+\.(?:[tj]sx?|json|gql|ya?ml|md|sh))\b/gi;
   let match;
@@ -56,14 +56,14 @@ function extractFilePaths(prompt) {
     paths.add(match[1]);
   }
 
-  // Match paths starting with common directories
+  // Chemins commençant par un répertoire courant
   const dirPattern =
     /(?:^|\s|["'`])((?:src|app|components|screens|hooks|utils|services|navigation|graphql|localization|\.claude|\.github|\.maestro)\/[\w\-./]+)/gi;
   while ((match = dirPattern.exec(prompt)) !== null) {
     paths.add(match[1]);
   }
 
-  // Match quoted paths
+  // Chemins entre guillemets
   const quotedPattern = /["'`]([\w\-./]+\/[\w\-./]+)["'`]/g;
   while ((match = quotedPattern.exec(prompt)) !== null) {
     paths.add(match[1]);
@@ -73,10 +73,10 @@ function extractFilePaths(prompt) {
 }
 
 /**
- * Check if a pattern matches the text
- * @param {string} text - Text to search in
- * @param {string} pattern - Regex pattern
- * @param {string} flags - Regex flags
+ * Indique si un motif correspond au texte
+ * @param {string} text - Texte à analyser
+ * @param {string} pattern - Expression régulière
+ * @param {string} flags - Options de l'expression régulière
  * @returns {boolean}
  */
 function matchesPattern(text, pattern, flags = 'i') {
@@ -89,13 +89,13 @@ function matchesPattern(text, pattern, flags = 'i') {
 }
 
 /**
- * Check if a glob pattern matches a file path
- * @param {string} filePath - File path to check
- * @param {string} globPattern - Glob pattern (simplified)
+ * Indique si un motif glob correspond à un chemin de fichier
+ * @param {string} filePath - Chemin à vérifier
+ * @param {string} globPattern - Motif glob (simplifié)
  * @returns {boolean}
  */
 function matchesGlob(filePath, globPattern) {
-  // Convert glob to regex (simplified)
+  // Conversion du glob en expression régulière (simplifiée)
   const regexPattern = globPattern
     .replace(/\./g, '\\.')
     .replace(/\*\*\//g, '<<<DOUBLESTARSLASH>>>')
@@ -114,10 +114,10 @@ function matchesGlob(filePath, globPattern) {
 }
 
 /**
- * Check if file path matches any directory mapping
- * @param {string} filePath - File path to check
- * @param {Object} mappings - Directory to skill mappings
- * @returns {string|null} Matched skill name or null
+ * Indique si un chemin correspond à une association répertoire → skill
+ * @param {string} filePath - Chemin à vérifier
+ * @param {Object} mappings - Associations répertoire → skill
+ * @returns {string|null} Nom du skill associé, ou null
  */
 function matchDirectoryMapping(filePath, mappings) {
   for (const [dir, skillName] of Object.entries(mappings)) {
@@ -129,13 +129,13 @@ function matchDirectoryMapping(filePath, mappings) {
 }
 
 /**
- * Evaluate a single skill against the prompt and context
- * @param {string} skillName - Name of the skill
- * @param {Object} skill - Skill configuration
- * @param {string} prompt - User's prompt
- * @param {string} promptLower - Lowercase prompt
- * @param {string[]} filePaths - Extracted file paths
- * @param {Object} rules - Full rules object
+ * Évalue un skill par rapport au prompt et au contexte
+ * @param {string} skillName - Nom du skill
+ * @param {Object} skill - Configuration du skill
+ * @param {string} prompt - Prompt de l'utilisateur
+ * @param {string} promptLower - Prompt en minuscules
+ * @param {string[]} filePaths - Chemins extraits
+ * @param {Object} rules - Ensemble des règles
  * @returns {SkillMatch|null}
  */
 function evaluateSkill(
@@ -152,68 +152,68 @@ function evaluateSkill(
   let score = 0;
   const reasons = [];
 
-  // Check exclude patterns first
+  // Motifs d'exclusion en premier
   for (const excludePattern of excludePatterns) {
     if (matchesPattern(promptLower, excludePattern)) {
       return null;
     }
   }
 
-  // 1. Check keywords
+  // 1. Mots-clés
   if (triggers.keywords) {
     for (const keyword of triggers.keywords) {
       if (promptLower.includes(keyword.toLowerCase())) {
         score += scoring.keyword;
-        reasons.push(`keyword "${keyword}"`);
+        reasons.push(`mot-clé "${keyword}"`);
       }
     }
   }
 
-  // 2. Check keyword patterns (regex)
+  // 2. Motifs de mots-clés (expressions régulières)
   if (triggers.keywordPatterns) {
     for (const pattern of triggers.keywordPatterns) {
       if (matchesPattern(promptLower, pattern)) {
         score += scoring.keywordPattern;
-        reasons.push(`pattern /${pattern}/`);
+        reasons.push(`motif /${pattern}/`);
       }
     }
   }
 
-  // 3. Check intent patterns
+  // 3. Motifs d'intention
   if (triggers.intentPatterns) {
     for (const pattern of triggers.intentPatterns) {
       if (matchesPattern(promptLower, pattern)) {
         score += scoring.intentPattern;
-        reasons.push(`intent detected`);
+        reasons.push(`intention détectée`);
         break;
       }
     }
   }
 
-  // 4. Check context patterns
+  // 4. Motifs de contexte
   if (triggers.contextPatterns) {
     for (const pattern of triggers.contextPatterns) {
       if (promptLower.includes(pattern.toLowerCase())) {
         score += scoring.contextPattern;
-        reasons.push(`context "${pattern}"`);
+        reasons.push(`contexte "${pattern}"`);
       }
     }
   }
 
-  // 5. Check file paths against path patterns
+  // 5. Chemins de fichiers comparés aux motifs de chemin
   if (triggers.pathPatterns && filePaths.length > 0) {
     for (const filePath of filePaths) {
       for (const pattern of triggers.pathPatterns) {
         if (matchesGlob(filePath, pattern)) {
           score += scoring.pathPattern;
-          reasons.push(`path "${filePath}"`);
+          reasons.push(`chemin "${filePath}"`);
           break;
         }
       }
     }
   }
 
-  // 6. Check directory mappings
+  // 6. Associations de répertoires
   if (rules.directoryMappings && filePaths.length > 0) {
     for (const filePath of filePaths) {
       const mappedSkill = matchDirectoryMapping(
@@ -222,18 +222,18 @@ function evaluateSkill(
       );
       if (mappedSkill === skillName) {
         score += scoring.directoryMatch;
-        reasons.push(`directory mapping`);
+        reasons.push(`association de répertoire`);
         break;
       }
     }
   }
 
-  // 7. Check content patterns in prompt (for code snippets)
+  // 7. Motifs de contenu dans le prompt (extraits de code)
   if (triggers.contentPatterns) {
     for (const pattern of triggers.contentPatterns) {
       if (matchesPattern(prompt, pattern)) {
         score += scoring.contentPattern;
-        reasons.push(`code pattern detected`);
+        reasons.push(`motif de code détecté`);
         break;
       }
     }
@@ -252,10 +252,10 @@ function evaluateSkill(
 }
 
 /**
- * Get related skills that should also be suggested
- * @param {SkillMatch[]} matches - Current matches
- * @param {Object} skills - All skill definitions
- * @returns {string[]} Additional skill names to suggest
+ * Renvoie les skills liés à suggérer en complément
+ * @param {SkillMatch[]} matches - Correspondances actuelles
+ * @param {Object} skills - Définitions de tous les skills
+ * @returns {string[]} Noms des skills supplémentaires à suggérer
  */
 function getRelatedSkills(matches, skills) {
   const matchedNames = new Set(matches.map((m) => m.name));
@@ -276,21 +276,21 @@ function getRelatedSkills(matches, skills) {
 }
 
 /**
- * Format confidence level based on score
- * @param {number} score - Confidence score
- * @param {number} minScore - Minimum threshold
- * @returns {string} Confidence label
+ * Libellé du niveau de confiance selon le score
+ * @param {number} score - Score de confiance
+ * @param {number} minScore - Seuil minimal
+ * @returns {string} Libellé de confiance
  */
 function formatConfidence(score, minScore) {
-  if (score >= minScore * 3) return 'HIGH';
-  if (score >= minScore * 2) return 'MEDIUM';
-  return 'LOW';
+  if (score >= minScore * 3) return 'ÉLEVÉE';
+  if (score >= minScore * 2) return 'MOYENNE';
+  return 'FAIBLE';
 }
 
 /**
- * Main evaluation function
- * @param {string} prompt - User's prompt
- * @returns {string} Formatted output
+ * Fonction principale d'évaluation
+ * @param {string} prompt - Prompt de l'utilisateur
+ * @returns {string} Sortie mise en forme
  */
 function evaluate(prompt) {
   const rules = loadRules();
@@ -299,7 +299,7 @@ function evaluate(prompt) {
   const promptLower = prompt.toLowerCase();
   const filePaths = extractFilePaths(prompt);
 
-  // Evaluate all skills
+  // Évaluation de tous les skills
   const matches = [];
   for (const [name, skill] of Object.entries(skills)) {
     const match = evaluateSkill(
@@ -319,59 +319,59 @@ function evaluate(prompt) {
     return '';
   }
 
-  // Sort by score (descending), then by priority (descending)
+  // Tri par score (décroissant), puis par priorité (décroissante)
   matches.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return b.priority - a.priority;
   });
 
-  // Limit to max skills
+  // Limite au nombre maximal de skills
   const topMatches = matches.slice(0, config.maxSkillsToShow);
 
-  // Check for related skills
+  // Skills liés
   const relatedSkills = getRelatedSkills(topMatches, skills);
 
-  // Format output
+  // Mise en forme de la sortie
   let output = '<user-prompt-submit-hook>\n';
-  output += 'SKILL ACTIVATION REQUIRED\n\n';
+  output += 'ACTIVATION DE SKILLS REQUISE\n\n';
 
   if (filePaths.length > 0) {
-    output += `Detected file paths: ${filePaths.join(', ')}\n\n`;
+    output += `Chemins de fichiers détectés : ${filePaths.join(', ')}\n\n`;
   }
 
-  output += 'Matched skills (ranked by relevance):\n';
+  output += 'Skills correspondants (classés par pertinence) :\n';
 
   for (let i = 0; i < topMatches.length; i++) {
     const match = topMatches[i];
     const confidence = formatConfidence(match.score, config.minConfidenceScore);
 
-    output += `${i + 1}. ${match.name} (${confidence} confidence)\n`;
+    output += `${i + 1}. ${match.name} (confiance ${confidence})\n`;
 
     if (config.showMatchReasons && match.reasons.length > 0) {
-      output += `   Matched: ${match.reasons.slice(0, 3).join(', ')}\n`;
+      output += `   Correspondance : ${match.reasons.slice(0, 3).join(', ')}\n`;
     }
   }
 
   if (relatedSkills.length > 0) {
-    output += `\nRelated skills to consider: ${relatedSkills.join(', ')}\n`;
+    output += `\nSkills liés à envisager : ${relatedSkills.join(', ')}\n`;
   }
 
-  output += '\nBefore implementing, you MUST:\n';
-  output += '1. EVALUATE: State YES/NO for each skill with brief reasoning\n';
-  output += '2. ACTIVATE: Invoke the Skill tool for each YES skill\n';
-  output += '3. IMPLEMENT: Only proceed after skill activation\n';
-  output += '\nExample evaluation:\n';
-  output += `- ${topMatches[0].name}: YES - [your reasoning]\n`;
+  output += '\nAvant toute implémentation, vous DEVEZ :\n';
+  output += '1. ÉVALUER : indiquer OUI/NON pour chaque skill, avec une brève justification\n';
+  output += "2. ACTIVER : invoquer l'outil Skill pour chaque skill marqué OUI\n";
+  output += "3. IMPLÉMENTER : ne commencer qu'après l'activation des skills\n";
+  output += "\nExemple d'évaluation :\n";
+  output += `- ${topMatches[0].name} : OUI - [votre justification]\n`;
   if (topMatches.length > 1) {
-    output += `- ${topMatches[1].name}: NO - [your reasoning]\n`;
+    output += `- ${topMatches[1].name} : NON - [votre justification]\n`;
   }
-  output += '\nDO NOT skip this step. Invoke relevant skills NOW.\n';
+  output += '\nNE SAUTEZ PAS cette étape. Invoquez les skills pertinents MAINTENANT.\n';
   output += '</user-prompt-submit-hook>';
 
   return output;
 }
 
-// Main execution
+// Exécution principale
 function main() {
   let input = '';
 
@@ -401,7 +401,7 @@ function main() {
         console.log(output);
       }
     } catch (error) {
-      console.error(`Skill evaluation failed: ${error.message}`);
+      console.error(`Échec de l'évaluation des skills : ${error.message}`);
     }
 
     process.exit(0);

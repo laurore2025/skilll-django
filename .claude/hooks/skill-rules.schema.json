@@ -1,154 +1,154 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Skill Rules Configuration",
-  "description": "Configuration for automatic skill activation based on prompt analysis",
+  "description": "Configuration de l'activation automatique des skills par analyse du prompt",
   "type": "object",
   "required": ["version", "config", "scoring", "skills"],
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "JSON Schema reference"
+      "description": "Référence du schéma JSON"
     },
     "version": {
       "type": "string",
-      "description": "Schema version",
+      "description": "Version du schéma",
       "pattern": "^\\d+\\.\\d+$"
     },
     "config": {
       "type": "object",
-      "description": "Global configuration options",
+      "description": "Options de configuration globales",
       "required": ["minConfidenceScore", "showMatchReasons", "maxSkillsToShow"],
       "properties": {
         "minConfidenceScore": {
           "type": "integer",
           "minimum": 1,
-          "description": "Minimum score required to suggest a skill"
+          "description": "Score minimal requis pour suggérer un skill"
         },
         "showMatchReasons": {
           "type": "boolean",
-          "description": "Whether to show why each skill was matched"
+          "description": "Afficher ou non la raison de chaque correspondance"
         },
         "maxSkillsToShow": {
           "type": "integer",
           "minimum": 1,
           "maximum": 10,
-          "description": "Maximum number of skills to show in output"
+          "description": "Nombre maximal de skills affichés"
         }
       }
     },
     "scoring": {
       "type": "object",
-      "description": "Points assigned to each match type",
+      "description": "Points attribués à chaque type de correspondance",
       "required": ["keyword", "keywordPattern", "pathPattern", "directoryMatch", "intentPattern", "contentPattern", "contextPattern"],
       "properties": {
         "keyword": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for simple keyword match"
+          "description": "Points pour une correspondance de mot-clé simple"
         },
         "keywordPattern": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for regex pattern match"
+          "description": "Points pour une correspondance de motif (expression régulière)"
         },
         "pathPattern": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for file path glob match"
+          "description": "Points pour une correspondance de chemin (glob)"
         },
         "directoryMatch": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for directory mapping match"
+          "description": "Points pour une correspondance de répertoire"
         },
         "intentPattern": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for user intent detection"
+          "description": "Points pour la détection d'une intention de l'utilisateur"
         },
         "contentPattern": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for code content pattern match"
+          "description": "Points pour une correspondance de motif de code"
         },
         "contextPattern": {
           "type": "integer",
           "minimum": 1,
-          "description": "Points for conversation context match"
+          "description": "Points pour une correspondance de contexte de conversation"
         }
       }
     },
     "directoryMappings": {
       "type": "object",
-      "description": "Map directory paths to skill names",
+      "description": "Associe des chemins de répertoires à des noms de skills",
       "additionalProperties": {
         "type": "string",
-        "description": "Skill name to suggest for this directory"
+        "description": "Nom du skill à suggérer pour ce répertoire"
       }
     },
     "skills": {
       "type": "object",
-      "description": "Skill definitions and their triggers",
+      "description": "Définitions des skills et de leurs déclencheurs",
       "additionalProperties": {
         "type": "object",
         "required": ["description", "triggers"],
         "properties": {
           "description": {
             "type": "string",
-            "description": "Human-readable description of what triggers this skill"
+            "description": "Description lisible de ce qui déclenche ce skill"
           },
           "priority": {
             "type": "integer",
             "minimum": 1,
             "maximum": 10,
             "default": 5,
-            "description": "Skill priority (higher = suggested first when scores are equal)"
+            "description": "Priorité du skill (plus élevée = suggéré en premier à score égal)"
           },
           "triggers": {
             "type": "object",
-            "description": "Conditions that trigger this skill",
+            "description": "Conditions qui déclenchent ce skill",
             "properties": {
               "keywords": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Simple keywords to match (case-insensitive)"
+                "description": "Mots-clés simples à rechercher (insensible à la casse)"
               },
               "keywordPatterns": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Regex patterns to match in prompt"
+                "description": "Expressions régulières à rechercher dans le prompt"
               },
               "pathPatterns": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Glob patterns for file paths mentioned in prompt"
+                "description": "Motifs glob pour les chemins de fichiers cités dans le prompt"
               },
               "intentPatterns": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Regex patterns to detect user intent (e.g., 'create.*test')"
+                "description": "Expressions régulières détectant l'intention de l'utilisateur (ex. 'create.*test')"
               },
               "contentPatterns": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Patterns to match in code snippets"
+                "description": "Motifs à rechercher dans les extraits de code"
               },
               "contextPatterns": {
                 "type": "array",
                 "items": { "type": "string" },
-                "description": "Phrases indicating conversation context"
+                "description": "Expressions indiquant le contexte de la conversation"
               }
             }
           },
           "excludePatterns": {
             "type": "array",
             "items": { "type": "string" },
-            "description": "Patterns that exclude this skill from matching"
+            "description": "Motifs qui excluent ce skill"
           },
           "relatedSkills": {
             "type": "array",
             "items": { "type": "string" },
-            "description": "Skills to suggest alongside this one"
+            "description": "Skills à suggérer en complément de celui-ci"
           }
         }
       }

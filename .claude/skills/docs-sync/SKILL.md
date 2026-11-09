@@ -1,31 +1,31 @@
 ---
 name: docs-sync
-description: Check if documentation is in sync with code. Use when the user wants to verify that documentation matches current code, find outdated docs, or audit documentation accuracy. Triggers on requests like "check docs", "sync documentation", "are the docs up to date", "/docs-sync".
+description: "Vérifie que la documentation est synchronisée avec le code. À utiliser lorsque l'utilisateur veut s'assurer que la documentation correspond au code actuel, repérer la documentation obsolète ou auditer l'exactitude de la documentation. Se déclenche sur des demandes comme « vérifie la doc », « synchronise la documentation », « la doc est-elle à jour ? », « /docs-sync »."
 ---
 
-# Documentation Sync
+# Synchronisation de la documentation
 
-Check if documentation matches the current code state.
+Vérifiez que la documentation correspond à l'état actuel du code.
 
 ## Instructions
 
-1. **Find recent code changes**:
+1. **Trouvez les modifications récentes du code** :
    ```bash
    git log --since="30 days ago" --name-only --pretty=format: -- "*.py" "*.ts" "*.tsx" | sort -u
    ```
 
-2. **Find related documentation**:
-   - Search `/docs/` for files mentioning changed code
-   - Check README files near changed code
-   - Look for docstrings in changed files
+2. **Trouvez la documentation associée** :
+   - Cherchez dans `/docs/` les fichiers qui mentionnent le code modifié
+   - Vérifiez les fichiers README proches du code modifié
+   - Repérez les docstrings dans les fichiers modifiés
 
-3. **Verify documentation accuracy**:
-   - Do code examples still work?
-   - Are API signatures correct?
-   - Are field types up to date?
+3. **Vérifiez l'exactitude de la documentation** :
+   - Les exemples de code fonctionnent-ils toujours ?
+   - Les signatures d'API sont-elles correctes ?
+   - Les types de champs sont-ils à jour ?
 
-4. **Report only actual problems**:
-   - Only flag things that are WRONG, not missing
-   - Don't suggest documentation for documentation's sake
+4. **Ne signalez que les problèmes réels** :
+   - Signalez uniquement ce qui est FAUX, pas ce qui manque
+   - Ne suggérez pas de documentation pour le simple plaisir de documenter
 
-5. **Output a checklist** of documentation that needs updating
+5. **Produisez une liste de vérification** de la documentation à mettre à jour

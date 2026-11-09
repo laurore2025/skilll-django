@@ -1,72 +1,72 @@
-# Claude Code Settings Documentation
+# Documentation des settings de Claude Code
 
-## Environment Variables
+## Variables d'environnement
 
-- `INSIDE_CLAUDE_CODE`: "1" - Indicates code is running inside Claude Code
-- `BASH_DEFAULT_TIMEOUT_MS`: "420000" - Default timeout for bash commands (7 minutes)
-- `BASH_MAX_TIMEOUT_MS`: "420000" - Maximum timeout for bash commands (7 minutes)
+- `INSIDE_CLAUDE_CODE` : "1" — indique que le code s'exécute dans Claude Code
+- `BASH_DEFAULT_TIMEOUT_MS` : "420000" — délai par défaut des commandes bash (7 minutes)
+- `BASH_MAX_TIMEOUT_MS` : "420000" — délai maximal des commandes bash (7 minutes)
 
 ## Hooks
 
 ### UserPromptSubmit
 
-- **Skill Evaluation**: Analyzes prompts and suggests relevant skills
-  - **Script**: `.claude/hooks/skill-eval.sh`
-  - **Behavior**: Matches keywords, file paths, and patterns to suggest skills
-  - **Timeout**: 5s
+- **Évaluation des skills** : analyse les prompts et suggère les skills pertinents
+  - **Script** : `.claude/hooks/skill-eval.sh`
+  - **Comportement** : rapproche mots-clés, chemins de fichiers et motifs pour suggérer des skills
+  - **Délai** : 5 s
 
 ### PreToolUse
 
-- **Main Branch Protection**: Prevents edits on main branch (5s timeout)
-  - **Triggers**: Before editing files with Edit, MultiEdit, or Write tools
-  - **Behavior**: Blocks file edits when on main branch, suggests creating feature branch
+- **Protection de la branche main** : empêche les modifications sur la branche main (délai de 5 s)
+  - **Déclencheurs** : avant la modification de fichiers avec les outils Edit, MultiEdit ou Write
+  - **Comportement** : bloque la modification sur la branche main et suggère de créer une branche de travail
 
 ### PostToolUse
 
-1. **Ruff Formatting**: Auto-format Python files (30s timeout)
-   - **Triggers**: After editing `.py` files
-   - **Command**: `uv run ruff format`
-   - **Behavior**: Formats code, suppresses output on success, shows feedback on failure
+1. **Formatage Ruff** : formate automatiquement les fichiers Python (délai de 30 s)
+   - **Déclencheurs** : après la modification de fichiers `.py`
+   - **Commande** : `uv run ruff format`
+   - **Comportement** : formate le code, masque la sortie en cas de succès, affiche un retour en cas d'échec
 
-2. **Dependency Installation**: Auto-install after dependency changes (60s timeout)
-   - **Triggers**: After editing `pyproject.toml` or `requirements*.txt` files
-   - **Command**: `uv sync`
-   - **Behavior**: Installs dependencies, suppresses output on success, shows feedback on failure
+2. **Installation des dépendances** : installation automatique après un changement de dépendances (délai de 60 s)
+   - **Déclencheurs** : après la modification de `pyproject.toml` ou de fichiers `requirements*.txt`
+   - **Commande** : `uv sync`
+   - **Comportement** : installe les dépendances, masque la sortie en cas de succès, affiche un retour en cas d'échec
 
-3. **Test Runner**: Run tests after test file changes (90s timeout)
-   - **Triggers**: After editing `test_*.py`, `*_test.py`, or `*/tests/*.py` files
-   - **Command**: `uv run pytest <file> -x -q`
-   - **Behavior**: Runs tests in modified file, shows last 30 lines of output, non-blocking
+3. **Exécution des tests** : lance les tests après la modification d'un fichier de test (délai de 90 s)
+   - **Déclencheurs** : après la modification de fichiers `test_*.py`, `*_test.py` ou `*/tests/*.py`
+   - **Commande** : `uv run pytest <fichier> -x -q`
+   - **Comportement** : lance les tests du fichier modifié, affiche les 30 dernières lignes de sortie, non bloquant
 
-4. **Pyright Type Check**: Type-check Python files (30s timeout)
-   - **Triggers**: After editing `.py` files
-   - **Command**: `uv run pyright`
-   - **Behavior**: Shows first 20 lines of errors only, non-blocking, exit 0
+4. **Vérification des types Pyright** : vérifie les types des fichiers Python (délai de 30 s)
+   - **Déclencheurs** : après la modification de fichiers `.py`
+   - **Commande** : `uv run pyright`
+   - **Comportement** : n'affiche que les 20 premières lignes d'erreurs, non bloquant, code de sortie 0
 
-5. **Ruff Linting**: Lint Python files (30s timeout)
-   - **Triggers**: After editing `.py` files
-   - **Command**: `uv run ruff check`
-   - **Behavior**: Shows first 20 lines of issues only, non-blocking, exit 0
+5. **Lint Ruff** : analyse les fichiers Python (délai de 30 s)
+   - **Déclencheurs** : après la modification de fichiers `.py`
+   - **Commande** : `uv run ruff check`
+   - **Comportement** : n'affiche que les 20 premières lignes de problèmes, non bloquant, code de sortie 0
 
-## Hook Response Format
+## Format de réponse des hooks
 
 ```json
 {
-  "feedback": "Message to show",
+  "feedback": "Message à afficher",
   "suppressOutput": true,
   "block": true,
   "continue": false
 }
 ```
 
-## Environment Variables in Hooks
+## Variables d'environnement dans les hooks
 
-- `$CLAUDE_TOOL_INPUT_FILE_PATH`: File being edited
-- `$CLAUDE_TOOL_NAME`: Tool being used
-- `$CLAUDE_PROJECT_DIR`: Project root directory
+- `$CLAUDE_TOOL_INPUT_FILE_PATH` : fichier en cours de modification
+- `$CLAUDE_TOOL_NAME` : outil utilisé
+- `$CLAUDE_PROJECT_DIR` : répertoire racine du projet
 
-## Exit Codes
+## Codes de sortie
 
-- `0`: Success
-- `1`: Non-blocking error (shows feedback)
-- `2`: Blocking error (PreToolUse only - blocks the action)
+- `0` : succès
+- `1` : erreur non bloquante (affiche un retour)
+- `2` : erreur bloquante (PreToolUse uniquement — bloque l'action)

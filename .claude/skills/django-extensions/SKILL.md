@@ -1,98 +1,98 @@
 ---
 name: django-extensions
-description: Django-extensions management commands for project introspection, debugging, and development. Use when exploring URLs, models, settings, database schema, running scripts, or profiling performance. Triggers on questions about Django project structure, model fields, URL routes, or requests to run development servers.
+description: "Commandes de gestion de django-extensions pour l'introspection du projet, le débogage et le développement. À utiliser pour explorer les URL, les modèles, les réglages (settings), le schéma de la base de données, exécuter des scripts ou profiler les performances. Se déclenche sur des questions portant sur la structure du projet Django, les champs des modèles, les routes d'URL, ou sur des demandes de lancement des serveurs de développement."
 ---
 
 # Django Extensions
 
-This project has django-extensions installed. Use these commands to understand and interact with the Django project.
+Ce projet dispose de django-extensions. Utilisez ces commandes pour comprendre le projet Django et interagir avec lui.
 
 ## Introspection
 
-### Show URL Routes
+### Afficher les routes d'URL
 ```bash
 python manage.py show_urls
 ```
 
-### List Model Information
+### Lister les informations des modèles
 ```bash
-# All models
+# Tous les modèles
 python manage.py list_model_info
 
-# Specific model with signatures and field classes
+# Modèle spécifique avec signatures et classes de champs
 python manage.py list_model_info --model <app.Model> --signature --field-class
 
-# All methods including private
+# Toutes les méthodes, y compris privées
 python manage.py list_model_info --model <app.Model> --all-methods --signature
 ```
 
-### Print Settings
+### Afficher les réglages
 ```bash
-# All settings
+# Tous les réglages
 python manage.py print_settings --format=pprint
 
-# Wildcards supported
+# Caractères génériques pris en charge
 python manage.py print_settings AUTH*
 python manage.py print_settings DATABASE*
 python manage.py print_settings *_DIRS
 ```
 
-### Show Permissions
+### Afficher les permissions
 ```bash
 python manage.py show_permissions
 python manage.py show_permissions <app_label>
 ```
 
-### Show Template Tags
+### Afficher les balises de gabarit
 ```bash
 python manage.py show_template_tags
 ```
 
-## Development
+## Développement
 
-### Enhanced Shell (shell_plus)
+### Shell amélioré (shell_plus)
 ```bash
 python manage.py shell_plus
 python manage.py shell_plus --print-sql
 ```
-Auto-imports all models. Use `--dont-load app1` to skip apps.
+Importe automatiquement tous les modèles. Utilisez `--dont-load app1` pour ignorer des applications.
 
-### Enhanced Dev Server (runserver_plus)
+### Serveur de développement amélioré (runserver_plus)
 ```bash
 python manage.py runserver_plus
 python manage.py runserver_plus --print-sql
 ```
-Includes Werkzeug debugger for interactive debugging.
+Inclut le débogueur Werkzeug pour le débogage interactif.
 
-## Database
+## Base de données
 
-### SQL Diff (Compare Models to Schema)
+### SQL Diff (comparer les modèles au schéma)
 ```bash
-python manage.py sqldiff -a        # SQL differences
-python manage.py sqldiff -a -t     # Text differences (readable)
+python manage.py sqldiff -a        # Différences SQL
+python manage.py sqldiff -a -t     # Différences en texte (lisibles)
 ```
 
-## Script Execution
+## Exécution de scripts
 
-### Run Scripts with Django Context
+### Exécuter des scripts dans le contexte Django
 ```bash
 python manage.py runscript <script_name>
 python manage.py runscript <script_name> --script-args arg1 arg2
 python manage.py runscript <script_name> --traceback
 ```
-Scripts in `scripts/` directory must define a `run()` function.
+Les scripts du répertoire `scripts/` doivent définir une fonction `run()`.
 
-## Profiling
+## Profilage
 
-### Profile Server Requests
+### Profiler les requêtes du serveur
 ```bash
 python manage.py runprofileserver --prof-path=/tmp/profiles
 python manage.py runprofileserver --use-cprofile --prof-path=/tmp/profiles
 python manage.py runprofileserver --kcachegrind --prof-path=/tmp/profiles
 ```
 
-## Notes
+## Remarques
 
-- Model notation: `app.ModelName` (e.g., `core.EmailAccount`, `metabox.Thread`)
-- Settings wildcards: `AUTH*`, `*_DIRS`, `DATABASE*`
-- Commands run from project root
+- Notation des modèles : `app.ModelName` (par ex. `core.EmailAccount`, `metabox.Thread`)
+- Caractères génériques dans les réglages : `AUTH*`, `*_DIRS`, `DATABASE*`
+- Les commandes s'exécutent depuis la racine du projet

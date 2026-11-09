@@ -1,8 +1,8 @@
-# User-specific configuration
+# Configuration propre à l’utilisateur
 user-team-info.json
 
-# Local settings (personal overrides)
+# Settings locaux (surcharges personnelles)
 settings.local.json
 
-# Task-specific context
+# Contexte propre à une tâche
 tasks/

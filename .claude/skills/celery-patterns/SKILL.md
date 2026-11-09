@@ -1,73 +1,73 @@
 ---
 name: celery-patterns
-description: Celery task patterns including task definition, retry strategies, periodic tasks, and best practices. Use when implementing background tasks, scheduled jobs, or async processing.
+description: "Patrons de tâches Celery : définition des tâches, stratégies de nouvelle tentative (retry), tâches périodiques et bonnes pratiques. À utiliser pour implémenter des tâches d'arrière-plan, des tâches planifiées ou des traitements asynchrones."
 ---
 
-# Celery Patterns for Django
+# Patrons Celery pour Django
 
-## Core Philosophy
+## Philosophie de base
 
-- **Idempotent tasks**: Running a task twice must produce the same result
-- **Pass IDs, not objects**: Arguments must be JSON-serializable
-- **Always handle failures**: Log errors, never swallow exceptions silently
-- **Proper retry strategies**: Use exponential backoff for external services
+- **Tâches idempotentes** : exécuter une tâche deux fois doit produire le même résultat
+- **Passez des identifiants, pas des objets** : les arguments doivent être sérialisables en JSON
+- **Gérez toujours les échecs** : journalisez les erreurs, n'avalez jamais les exceptions silencieusement
+- **Stratégies de nouvelle tentative adaptées** : utilisez un backoff exponentiel pour les services externes
 
-## Task Design
+## Conception des tâches
 
 ### Structure
-- Place tasks in `apps/<app>/tasks.py`
-- Use `@shared_task` for reusable tasks across projects
-- Use `bind=True` when needing access to task instance (retries, task ID, state updates)
-- Add type hints to task signatures
-- Log task start, completion, and failures
+- Placez les tâches dans `apps/<app>/tasks.py`
+- Utilisez `@shared_task` pour les tâches réutilisables d'un projet à l'autre
+- Utilisez `bind=True` lorsque vous avez besoin d'accéder à l'instance de la tâche (nouvelles tentatives, ID de tâche, mises à jour d'état)
+- Ajoutez des annotations de type aux signatures des tâches
+- Journalisez le démarrage, la fin et les échecs des tâches
 
 ### Arguments
-- Pass model primary keys, not model instances
-- Keep arguments simple and serializable (str, int, dict, list)
-- Validate that referenced objects exist at task start
+- Passez les clés primaires des modèles, pas les instances de modèles
+- Gardez des arguments simples et sérialisables (str, int, dict, list)
+- Vérifiez que les objets référencés existent au démarrage de la tâche
 
-## Retry Strategies
+## Stratégies de nouvelle tentative
 
-### When to Use Each Approach
-- **Fixed delay**: Internal operations with predictable recovery (database locks)
-- **Exponential backoff**: External APIs that may rate-limit or have variable recovery
-- **No retry**: Validation errors, business logic failures, permanent errors
+### Quand utiliser chaque approche
+- **Délai fixe** : opérations internes dont la reprise est prévisible (verrous de base de données)
+- **Backoff exponentiel** : API externes susceptibles d'appliquer une limitation de débit ou dont la reprise est variable
+- **Aucune nouvelle tentative** : erreurs de validation, échecs de logique métier, erreurs permanentes
 
 ### Configuration
-- Set `max_retries` based on acceptable total wait time
-- Use `retry_jitter=True` to prevent thundering herd
-- Set `retry_backoff_max` to cap maximum wait time
-- Use `autoretry_for` tuple for automatic retry on specific exceptions
+- Définissez `max_retries` en fonction du temps d'attente total acceptable
+- Utilisez `retry_jitter=True` pour éviter l'effet de ruée (thundering herd)
+- Définissez `retry_backoff_max` pour plafonner le temps d'attente maximal
+- Utilisez le tuple `autoretry_for` pour une nouvelle tentative automatique sur des exceptions spécifiques
 
-## Idempotency Patterns
+## Patrons d'idempotence
 
-### Check-Before-Process
-Query current state before processing; skip if already complete
+### Vérifier avant de traiter
+Interrogez l'état courant avant le traitement ; ignorez l'opération si elle est déjà terminée
 
-### Status Field Tracking
-Use status transitions (pending → processing → complete/failed) with `select_for_update()` for race condition safety
+### Suivi par champ de statut
+Utilisez des transitions de statut (pending → processing → complete/failed) avec `select_for_update()` pour vous prémunir contre les situations de concurrence
 
-### Unique Constraints
-Use database constraints to prevent duplicate processing
+### Contraintes d'unicité
+Utilisez des contraintes de base de données pour éviter les traitements en double
 
-## Periodic Tasks (Beat)
+## Tâches périodiques (Beat)
 
-- Configure schedules in `config/celery.py` using `beat_schedule`
-- Use `crontab()` for time-based schedules
-- Use float values for interval-based schedules (seconds)
-- Keep periodic tasks lightweight; spawn subtasks for heavy work
+- Configurez les planifications dans `config/celery.py` via `beat_schedule`
+- Utilisez `crontab()` pour les planifications basées sur l'heure
+- Utilisez des valeurs flottantes pour les planifications par intervalle (en secondes)
+- Gardez les tâches périodiques légères ; lancez des sous-tâches pour les traitements lourds
 
-## Anti-Patterns to Avoid
+## Anti-patrons à éviter
 
-- Passing model instances instead of IDs
-- Non-idempotent operations (incrementing without checks)
-- Silent exception handling (bare `except: pass`)
-- Missing logging for task lifecycle
-- Long-running tasks without progress updates
-- Retry on permanent failures (validation, business logic errors)
+- Passer des instances de modèles au lieu d'identifiants
+- Opérations non idempotentes (incrémenter sans vérification)
+- Gestion silencieuse des exceptions (`except: pass` nu)
+- Absence de journalisation du cycle de vie des tâches
+- Tâches longues sans mises à jour de progression
+- Nouvelle tentative sur des échecs permanents (validation, erreurs de logique métier)
 
-## Commands
+## Commandes
 
-- Worker: `uv run celery -A config worker -l info`
-- Beat: `uv run celery -A config beat -l info`
-- Monitoring: `uv run celery -A config flower`
+- Worker : `uv run celery -A config worker -l info`
+- Beat : `uv run celery -A config beat -l info`
+- Supervision : `uv run celery -A config flower`

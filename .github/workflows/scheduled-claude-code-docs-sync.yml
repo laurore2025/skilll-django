@@ -1,13 +1,13 @@
-name: Scheduled - Documentation Sync
+name: Planifié - Synchronisation de la documentation
 
 on:
   schedule:
-    # Run on the 1st of every month at 9 AM UTC
+    # S'exécute le 1er de chaque mois à 9 h UTC
     - cron: '0 9 1 * *'
   workflow_dispatch:
     inputs:
       days_back:
-        description: 'Number of days to look back for changes'
+        description: 'Nombre de jours à remonter pour rechercher des modifications'
         required: false
         default: '30'
 
@@ -23,20 +23,20 @@ jobs:
   docs-sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Récupération du dépôt
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check for code changes in period
+      - name: Recherche des modifications de code sur la période
         id: check-changes
         run: |
           DAYS_BACK="${{ github.event.inputs.days_back || '30' }}"
           SINCE_DATE=$(date -d "-${DAYS_BACK} days" +%Y-%m-%d)
 
-          echo "Checking for changes since: $SINCE_DATE"
+          echo "Recherche des modifications depuis le $SINCE_DATE"
 
-          # Get changed code files (excluding docs themselves)
+          # Récupérer les fichiers de code modifiés (hors documentation elle-même)
           CHANGED_FILES=$(git log --since="$SINCE_DATE" --name-only --pretty=format: -- \
             '*.ts' '*.tsx' '*.js' '*.jsx' \
             ':!*.test.*' ':!*.spec.*' ':!*.stories.*' \
@@ -44,18 +44,18 @@ jobs:
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No code changes found in the last $DAYS_BACK days"
+            echo "Aucune modification de code trouvée au cours des $DAYS_BACK derniers jours"
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "changed_files<<EOF" >> $GITHUB_OUTPUT
             echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
-            echo "Found $(echo "$CHANGED_FILES" | wc -l) changed files"
+            echo "$(echo "$CHANGED_FILES" | wc -l) fichier(s) modifié(s) trouvé(s)"
           fi
 
           echo "since_date=$SINCE_DATE" >> $GITHUB_OUTPUT
 
-      - name: Claude Documentation Sync
+      - name: Synchronisation de la documentation par Claude
         if: steps.check-changes.outputs.has_changes == 'true'
         uses: anthropics/claude-code-action@beta
         with:
@@ -66,51 +66,51 @@ jobs:
           branch_prefix: claude/docs-sync-
           track_progress: true
           prompt: |
-            # Monthly Documentation Sync
+            # Synchronisation mensuelle de la documentation
 
-            You are running a scheduled documentation sync. Code has changed since ${{ steps.check-changes.outputs.since_date }}.
+            Vous exécutez une synchronisation planifiée de la documentation. Le code a changé depuis le ${{ steps.check-changes.outputs.since_date }}.
 
-            ## Changed Files
-            The following code files have been modified:
+            ## Fichiers modifiés
+            Les fichiers de code suivants ont été modifiés :
             ```
             ${{ steps.check-changes.outputs.changed_files }}
             ```
 
-            ## Your Tasks
+            ## Vos tâches
 
-            1. **Analyze Changes**: Review the changed files to understand what functionality was added, modified, or removed.
+            1. **Analysez les modifications** : examinez les fichiers modifiés pour comprendre quelles fonctionnalités ont été ajoutées, modifiées ou supprimées.
 
-            2. **Find Related Documentation**: Search for documentation that might be affected:
-               - `/docs/` directory
-               - README.md files
-               - TSDoc comments in the code
+            2. **Trouvez la documentation concernée** : recherchez la documentation susceptible d'être affectée :
+               - le répertoire `/docs/`
+               - les fichiers README.md
+               - les commentaires TSDoc dans le code
 
-            3. **Check for Actual Problems**: For each code change, determine if existing docs are now WRONG:
-               - Do code examples still work?
-               - Are API signatures/types now incorrect?
-               - Are prop interfaces outdated?
+            3. **Recherchez les problèmes réels** : pour chaque modification du code, déterminez si la documentation existante est désormais FAUSSE :
+               - Les exemples de code fonctionnent-ils encore ?
+               - Les signatures/types d'API sont-ils désormais incorrects ?
+               - Les interfaces de props sont-elles obsolètes ?
 
-            4. **Fix Only What's Broken**: If you find documentation that is actually wrong:
-               - Fix incorrect code examples
-               - Update wrong API signatures and types
-               - Add docs ONLY for significant new features that have zero documentation
+            4. **Ne corrigez que ce qui est cassé** : si vous trouvez de la documentation réellement fausse :
+               - Corrigez les exemples de code incorrects
+               - Mettez à jour les signatures et types d'API erronés
+               - N'ajoutez de la documentation QUE pour les nouvelles fonctionnalités importantes qui n'en ont aucune
 
-            5. **Create a PR**: If you made any changes:
-               - Create a new branch from main
-               - Commit all documentation updates
-               - Create a PR with a summary of what was fixed
+            5. **Créez une PR** : si vous avez apporté des modifications :
+               - Créez une nouvelle branche à partir de main
+               - Commitez toutes les mises à jour de la documentation
+               - Créez une PR avec un résumé de ce qui a été corrigé
 
-            ## CRITICAL Guidelines
-            - Documentation is a LIVING DOCUMENT - only fix things that are actually WRONG
-            - DO NOT add changelog-style entries
-            - ONLY update docs when they are incorrect or misleading
-            - If no problems are found, report that and DO NOT create a PR
+            ## Consignes CRITIQUES
+            - La documentation est un DOCUMENT VIVANT - ne corrigez que ce qui est réellement FAUX
+            - N'ajoutez PAS d'entrées de type changelog
+            - Ne mettez à jour la documentation QUE lorsqu'elle est incorrecte ou trompeuse
+            - Si aucun problème n'est trouvé, signalez-le et NE créez PAS de PR
           claude_args: |
             --max-turns 30
             --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*)"
 
-      - name: Report no changes
+      - name: Signaler l'absence de modifications
         if: steps.check-changes.outputs.has_changes == 'false'
         run: |
-          echo "No code changes found in the last ${{ github.event.inputs.days_back || '30' }} days."
-          echo "Skipping documentation sync."
+          echo "Aucune modification de code trouvée au cours des ${{ github.event.inputs.days_back || '30' }} derniers jours."
+          echo "Synchronisation de la documentation ignorée."

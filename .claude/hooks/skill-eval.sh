@@ -1,31 +1,31 @@
 #!/bin/bash
-# Skill Evaluation Hook v2.0
-# Wrapper script that delegates to the Node.js evaluation engine
+# Hook d'évaluation des skills v2.0
+# Script d'enveloppe qui délègue au moteur d'évaluation Node.js
 #
-# This hook runs on UserPromptSubmit and analyzes the prompt for:
-# - Keywords and patterns indicating skill relevance
-# - File paths mentioned in the prompt
-# - Intent patterns (what the user wants to do)
-# - Directory mappings (what directories map to which skills)
+# Ce hook s'exécute sur UserPromptSubmit et analyse le prompt pour repérer :
+# - les mots-clés et motifs indiquant qu'un skill est pertinent ;
+# - les chemins de fichiers mentionnés dans le prompt ;
+# - les motifs d'intention (ce que l'utilisateur veut faire) ;
+# - les associations de répertoires (quels répertoires correspondent à quels skills).
 #
-# Configuration is in skill-rules.json
+# La configuration se trouve dans skill-rules.json
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NODE_SCRIPT="$SCRIPT_DIR/skill-eval.js"
 
-# Check if Node.js is available
+# Vérifier que Node.js est disponible
 if ! command -v node &>/dev/null; then
-  # Fallback: exit silently if Node.js not found
+  # Repli : sortie silencieuse si Node.js est introuvable
   exit 0
 fi
 
-# Check if the Node script exists
+# Vérifier que le script Node existe
 if [[ ! -f "$NODE_SCRIPT" ]]; then
   exit 0
 fi
 
-# Pipe stdin to the Node.js script (suppress stderr noise from nvm/shell init)
+# Transmettre l'entrée standard au script Node.js (en masquant le bruit stderr de nvm / de l'initialisation du shell)
 cat | node "$NODE_SCRIPT" 2>/dev/null
 
-# Always exit 0 to allow the prompt through
+# Toujours sortir avec 0 pour laisser passer le prompt
 exit 0

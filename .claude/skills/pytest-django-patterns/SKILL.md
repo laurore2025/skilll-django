@@ -1,47 +1,47 @@
 ---
 name: pytest-django-patterns
-description: pytest-django testing patterns, Factory Boy, fixtures, and TDD workflow. Use when writing tests, creating test factories, or following TDD red-green-refactor cycle.
+description: Patrons de test pytest-django, Factory Boy, fixtures et workflow TDD. À utiliser pour écrire des tests, créer des factories de test ou suivre le cycle TDD rouge-vert-refactorisation (red-green-refactor).
 ---
 
-# pytest-django Testing Patterns
+# Patrons de test pytest-django
 
-## TDD Workflow (RED-GREEN-REFACTOR)
+## Workflow TDD (ROUGE-VERT-REFACTORISATION)
 
-**Always follow this cycle:**
+**Suivez toujours ce cycle :**
 
-1. **RED**: Write a failing test first that describes desired behavior
-2. **GREEN**: Write minimal code to make the test pass
-3. **REFACTOR**: Clean up code while keeping tests green
-4. **REPEAT**: Never write production code without a failing test
+1. **ROUGE** : écrivez d'abord un test qui échoue et qui décrit le comportement souhaité
+2. **VERT** : écrivez le code minimal pour faire passer le test
+3. **REFACTORISER** : nettoyez le code tout en gardant les tests au vert
+4. **RECOMMENCER** : n'écrivez jamais de code de production sans un test qui échoue
 
-**Critical rule**: If implementing a feature or fixing a bug, write the test BEFORE touching production code.
+**Règle critique** : pour implémenter une fonctionnalité ou corriger un bug, écrivez le test AVANT de toucher au code de production.
 
-## Essential pytest-django Patterns
+## Patrons pytest-django essentiels
 
-### Database Access
+### Accès à la base de données
 
-- Use `@pytest.mark.django_db` on any test touching the database
-- Apply to entire module: `pytestmark = pytest.mark.django_db`
-- Transactions roll back automatically after each test
+- Utilisez `@pytest.mark.django_db` sur tout test qui accède à la base de données
+- Pour l'appliquer à tout un module : `pytestmark = pytest.mark.django_db`
+- Les transactions sont annulées (rollback) automatiquement après chaque test
 
-### Fixtures for Test Data
+### Fixtures pour les données de test
 
-**Use Factory Boy for models, pytest fixtures for setup:**
+**Utilisez Factory Boy pour les modèles et les fixtures pytest pour la mise en place :**
 
-- **Factories**: Create model instances with realistic data (`UserFactory()`)
-  - Use `factory.Sequence()` for unique fields
-  - Use `factory.Faker()` for realistic fake data
-  - Use `factory.SubFactory()` for foreign keys
-  - Use `@factory.post_generation` for M2M relationships
+- **Factories** : créent des instances de modèle avec des données réalistes (`UserFactory()`)
+  - Utilisez `factory.Sequence()` pour les champs uniques
+  - Utilisez `factory.Faker()` pour des données factices réalistes
+  - Utilisez `factory.SubFactory()` pour les clés étrangères
+  - Utilisez `@factory.post_generation` pour les relations M2M
 
-- **Fixtures**: Setup clients, auth state, or shared resources
-  - `client` fixture: Django test client
-  - Create `auth_client` fixture: `client.force_login(user)` for authenticated requests
-  - Define in `conftest.py` for reuse across test files
+- **Fixtures** : mettent en place les clients, l'état d'authentification ou les ressources partagées
+  - Fixture `client` : client de test Django
+  - Créez une fixture `auth_client` : `client.force_login(user)` pour les requêtes authentifiées
+  - Définissez-les dans `conftest.py` pour les réutiliser dans tous les fichiers de test
 
-### Test Organization
+### Organisation des tests
 
-**Structure tests to mirror app structure:**
+**Structurez les tests à l'image de la structure des applications :**
 ```
 tests/
 ├── apps/
@@ -53,108 +53,108 @@ tests/
 └── conftest.py
 ```
 
-**Group related tests in classes:**
-- Name classes `TestComponentName` (e.g., `TestPostListView`)
-- Name test methods descriptively: `test_<action>_<expected_outcome>`
-- Use `@pytest.mark.parametrize` for testing multiple scenarios
+**Regroupez les tests liés dans des classes :**
+- Nommez les classes `TestComponentName` (par ex. `TestPostListView`)
+- Donnez aux méthodes de test des noms descriptifs : `test_<action>_<expected_outcome>`
+- Utilisez `@pytest.mark.parametrize` pour tester plusieurs scénarios
 
-## What to Test
+## Que tester
 
-### Views
-- **Status codes**: Correct HTTP responses (200, 404, 302)
-- **Authentication**: Authenticated vs anonymous behavior
-- **Authorization**: User can only access their own data
-- **Context data**: Correct objects passed to template
-- **Side effects**: Database changes, emails sent, tasks queued
-- **HTMX**: Check `HTTP_HX_REQUEST` header returns partial template
+### Vues
+- **Codes de statut** : réponses HTTP correctes (200, 404, 302)
+- **Authentification** : comportement en mode authentifié ou anonyme
+- **Autorisation** : l'utilisateur n'accède qu'à ses propres données
+- **Données de contexte** : les bons objets sont transmis au gabarit
+- **Effets de bord** : modifications en base, e-mails envoyés, tâches mises en file d'attente
+- **HTMX** : vérifiez que l'en-tête `HTTP_HX_REQUEST` renvoie le gabarit partiel
 
-### Forms
-- **Validation**: Valid data passes, invalid data fails with correct errors
-- **Edge cases**: Empty fields, max lengths, unique constraints
-- **Clean methods**: Custom validation logic works
-- **Save behavior**: Objects created/updated correctly
+### Formulaires
+- **Validation** : les données valides passent, les données invalides échouent avec les bonnes erreurs
+- **Cas limites** : champs vides, longueurs maximales, contraintes d'unicité
+- **Méthodes clean** : la logique de validation personnalisée fonctionne
+- **Comportement à l'enregistrement** : les objets sont créés/mis à jour correctement
 
-### Models
-- **Methods**: `__str__`, custom methods return expected values
-- **Managers/QuerySets**: Custom filtering works correctly
-- **Constraints**: Database-level validation enforced
-- **Signals**: Pre/post save hooks execute correctly
+### Modèles
+- **Méthodes** : `__str__` et les méthodes personnalisées renvoient les valeurs attendues
+- **Managers/QuerySets** : le filtrage personnalisé fonctionne correctement
+- **Contraintes** : la validation au niveau de la base de données est appliquée
+- **Signaux** : les hooks pre/post save s'exécutent correctement
 
-### Celery Tasks
-- **Mock external calls**: Patch HTTP requests, email sending, etc.
-- **Test logic only**: Don't test actual async execution
-- **Idempotency**: Running task multiple times is safe
+### Tâches Celery
+- **Simulez (mock) les appels externes** : patchez les requêtes HTTP, l'envoi d'e-mails, etc.
+- **Testez uniquement la logique** : ne testez pas l'exécution asynchrone réelle
+- **Idempotence** : exécuter la tâche plusieurs fois est sans risque
 
-## Django-Specific Testing Patterns
+## Patrons de test propres à Django
 
-### Testing HTMX Responses
+### Tester les réponses HTMX
 
-Check partial template rendered when `HX-Request` header present:
-- Pass `HTTP_HX_REQUEST="true"` to client request
-- Assert `response.templates` contains partial template name
+Vérifiez que le gabarit partiel est rendu quand l'en-tête `HX-Request` est présent :
+- Passez `HTTP_HX_REQUEST="true"` à la requête du client
+- Vérifiez par une assertion que `response.templates` contient le nom du gabarit partiel
 
-### Testing Permissions
+### Tester les permissions
 
-Create authenticated vs anonymous client fixtures:
-- Test redirect/403 for unauthorized access
-- Test success for authorized access
+Créez des fixtures de client authentifié et de client anonyme :
+- Testez la redirection/le 403 en cas d'accès non autorisé
+- Testez la réussite en cas d'accès autorisé
 
-### Testing QuerySets
+### Tester les QuerySets
 
-Verify efficient queries:
-- Create test data with factories
-- Execute query
-- Assert correct objects returned/excluded
-- Verify related objects loaded with `select_related()`/`prefetch_related()`
+Vérifiez que les requêtes sont efficaces :
+- Créez les données de test avec des factories
+- Exécutez la requête
+- Vérifiez par une assertion que les bons objets sont renvoyés/exclus
+- Vérifiez que les objets liés sont chargés avec `select_related()`/`prefetch_related()`
 
-### Testing Forms with Model Instances
+### Tester les formulaires avec des instances de modèle
 
-Pass instance to form for updates:
+Passez l'instance au formulaire pour les mises à jour :
 - `form = MyForm(data=new_data, instance=existing_obj)`
-- Verify `form.save()` updates, doesn't create
+- Vérifiez que `form.save()` met à jour l'objet et n'en crée pas un nouveau
 
-## Common Patterns
+## Patrons courants
 
-**Parametrize multiple scenarios:**
-Use `@pytest.mark.parametrize("input,expected", [...])` for testing various inputs
+**Paramétrez plusieurs scénarios :**
+Utilisez `@pytest.mark.parametrize("input,expected", [...])` pour tester diverses entrées
 
-**Mock external services:**
-Use `mocker.patch()` to avoid actual HTTP calls, emails, file operations
+**Simulez (mock) les services externes :**
+Utilisez `mocker.patch()` pour éviter les vrais appels HTTP, envois d'e-mails et opérations sur les fichiers
 
-**Check database changes:**
-- Assert `Model.objects.filter(...).exists()` after creation
-- Assert `Model.objects.count() == expected` for deletions
-- Use `refresh_from_db()` to verify updates
+**Vérifiez les modifications en base :**
+- Vérifiez `Model.objects.filter(...).exists()` après une création
+- Vérifiez `Model.objects.count() == expected` pour les suppressions
+- Utilisez `refresh_from_db()` pour vérifier les mises à jour
 
-**Test error handling:**
-- Invalid form data produces correct errors
-- Failed operations return error responses
-- User sees appropriate error messages
+**Testez la gestion des erreurs :**
+- Des données de formulaire invalides produisent les bonnes erreurs
+- Les opérations en échec renvoient des réponses d'erreur
+- L'utilisateur voit des messages d'erreur appropriés
 
-## Running Tests
+## Lancer les tests
 
 ```bash
-uv run pytest                    # All tests
-uv run pytest -x                 # Stop on first failure
-uv run pytest --lf               # Run last failed
-uv run pytest -x --lf            # Stop first, last failed only
-uv run pytest -k "test_name"     # Run tests matching pattern
-uv run pytest tests/apps/posts/  # Specific directory
-uv run pytest --cov=apps         # With coverage report
+uv run pytest                    # Tous les tests
+uv run pytest -x                 # S'arrêter au premier échec
+uv run pytest --lf               # Relancer les derniers tests en échec
+uv run pytest -x --lf            # Derniers échecs uniquement, arrêt au premier
+uv run pytest -k "test_name"     # Tests correspondant au motif
+uv run pytest tests/apps/posts/  # Répertoire précis
+uv run pytest --cov=apps         # Avec rapport de couverture
 ```
 
-## Common Pitfalls
+## Pièges courants
 
-- **Forgetting `@pytest.mark.django_db`**: Results in "Database access not allowed" errors
-- **Not using factories**: Creating instances manually is verbose and brittle
-- **Testing implementation**: Test behavior and outcomes, not internal implementation details
-- **Skipping TDD**: Writing tests after code means tests follow implementation, missing edge cases
-- **Over-mocking**: Mock external dependencies, not your own code
-- **Testing framework code**: Don't test Django's ORM, form validation, etc. Test YOUR logic
+- **Oublier `@pytest.mark.django_db`** : provoque des erreurs « Database access not allowed »
+- **Ne pas utiliser de factories** : créer les instances à la main est verbeux et fragile
+- **Tester l'implémentation** : testez le comportement et les résultats, pas les détails internes d'implémentation
+- **Sauter le TDD** : écrire les tests après le code revient à calquer les tests sur l'implémentation et à manquer des cas limites
+- **Abuser des mocks** : simulez les dépendances externes, pas votre propre code
+- **Tester le code du framework** : ne testez pas l'ORM de Django, la validation des formulaires, etc. Testez VOTRE logique
 
-## Setup Requirements
+## Configuration requise
 
-**In `pyproject.toml`:**
+**Dans `pyproject.toml` :**
 ```toml
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
@@ -162,12 +162,12 @@ python_files = ["test_*.py"]
 addopts = ["--reuse-db", "-ra"]
 ```
 
-**In `conftest.py`:**
-Define shared fixtures (auth_client, common factories, etc.)
+**Dans `conftest.py` :**
+Définissez les fixtures partagées (auth_client, factories communes, etc.)
 
-## Integration with Other Skills
+## Intégration avec les autres skills
 
-- **systematic-debugging**: When fixing bugs, write failing test first to reproduce
-- **django-models**: Test custom managers, QuerySets, and model methods
-- **django-forms**: Test form validation, clean methods, and save behavior
-- **celery-patterns**: Test task logic with mocked external dependencies
+- **systematic-debugging** : pour corriger un bug, écrivez d'abord un test qui échoue afin de le reproduire
+- **django-models** : testez les managers personnalisés, les QuerySets et les méthodes de modèle
+- **django-forms** : testez la validation des formulaires, les méthodes clean et le comportement à l'enregistrement
+- **celery-patterns** : testez la logique des tâches avec des dépendances externes simulées (mocks)

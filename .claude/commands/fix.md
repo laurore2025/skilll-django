@@ -1,1 +1,1 @@
-Run `ruff check`, `ruff format --check`, and `ty check` on the files that were modified. Fix any errors or warnings reported. Do not suppress errors with `# noqa` or `# type: ignore` unless absolutely necessary.
+Lancez `ruff check`, `ruff format --check` et `ty check` sur les fichiers modifiés. Corrigez toutes les erreurs et tous les avertissements signalés. Ne masquez pas les erreurs avec `# noqa` ou `# type: ignore`, sauf en cas d'absolue nécessité.

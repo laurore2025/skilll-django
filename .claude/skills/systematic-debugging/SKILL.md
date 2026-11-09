@@ -1,43 +1,43 @@
 ---
 name: systematic-debugging
-description: Four-phase debugging methodology with root cause analysis for Django. Use when investigating bugs, fixing test failures, or troubleshooting unexpected behavior. Emphasizes NO FIXES WITHOUT ROOT CAUSE FIRST.
+description: Méthode de débogage en quatre phases avec analyse de la cause racine pour Django. À utiliser pour enquêter sur un bug, corriger des tests qui échouent ou comprendre un comportement inattendu. Insiste sur la règle AUCUN CORRECTIF AVANT D'AVOIR TROUVÉ LA CAUSE RACINE.
 ---
 
-# Systematic Debugging for Django
+# Débogage systématique pour Django
 
-## Core Principle
+## Principe fondamental
 
-**NO FIXES WITHOUT ROOT CAUSE FIRST**
+**AUCUN CORRECTIF AVANT D'AVOIR TROUVÉ LA CAUSE RACINE**
 
-Never apply patches that mask underlying problems. Understand WHY something fails before attempting to fix it.
+N'appliquez jamais de rustines qui masquent les problèmes sous-jacents. Comprenez POURQUOI quelque chose échoue avant de tenter de le corriger.
 
-## Four-Phase Framework
+## Cadre en quatre phases
 
-### Phase 1: Reproduce and Investigate
+### Phase 1 : reproduire et enquêter
 
-Before touching any code:
+Avant de toucher au moindre code :
 
-1. **Write a failing test** - Captures the bug behavior
-2. **Read error messages thoroughly** - Every word matters
-3. **Examine recent changes** - `git diff`, `git log`
-4. **Trace data flow** - Follow the call chain to find where bad values originate
+1. **Écrivez un test qui échoue** - il capture le comportement du bug
+2. **Lisez attentivement les messages d'erreur** - chaque mot compte
+3. **Examinez les modifications récentes** - `git diff`, `git log`
+4. **Suivez le flux de données** - remontez la chaîne d'appels pour trouver d'où viennent les valeurs erronées
 
 ```python
-# Write a failing test first
+# Écrivez d'abord un test qui échoue
 @pytest.mark.django_db
 def test_bug_reproduction():
-    """Reproduces issue #123."""
+    """Reproduit le ticket #123."""
     user = UserFactory()
     response = Client().post("/profile/", {"bio": "New"})
-    assert response.status_code == 200  # Currently failing
+    assert response.status_code == 200  # Échoue actuellement
 ```
 
-### Phase 2: Isolate
+### Phase 2 : isoler
 
-Narrow down the problem:
+Circonscrivez le problème :
 
 ```python
-# Add strategic logging
+# Ajoutez des logs à des endroits stratégiques
 import logging
 logger = logging.getLogger(__name__)
 
@@ -51,20 +51,20 @@ def problematic_view(request):
     logger.debug(f"Errors: {form.errors}")
 ```
 
-### Phase 3: Identify Root Cause
+### Phase 3 : identifier la cause racine
 
-- Read the full stack trace
-- Use debugger to inspect state
-- Check what assumptions are violated
+- Lisez la pile d'appels (stack trace) en entier
+- Utilisez le débogueur pour inspecter l'état
+- Vérifiez quelles hypothèses ne sont pas respectées
 
-### Phase 4: Fix and Verify
+### Phase 4 : corriger et vérifier
 
-1. Implement fix at the root cause
-2. Run reproduction test (should pass)
-3. Run full test suite
-4. Verify manually if needed
+1. Appliquez le correctif au niveau de la cause racine
+2. Lancez le test de reproduction (il doit passer)
+3. Lancez la suite de tests complète
+4. Vérifiez manuellement si nécessaire
 
-## Django Debug Tools
+## Outils de débogage Django
 
 ### Django Debug Toolbar
 
@@ -75,33 +75,33 @@ MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 INTERNAL_IPS = ["127.0.0.1"]
 ```
 
-Check SQL panel for N+1 queries, slow queries > 10ms.
+Consultez le panneau SQL pour repérer les requêtes N+1 et les requêtes lentes (> 10 ms).
 
-### Python Debugger
+### Débogueur Python
 
 ```python
 def problematic_view(request):
-    breakpoint()  # Execution stops here
+    breakpoint()  # L'exécution s'arrête ici
 
-    # Commands: n(ext), s(tep), c(ontinue), p var, q(uit)
+    # Commandes : n(ext), s(tep), c(ontinue), p var, q(uit)
 ```
 
 ```bash
-# Drop into debugger on test failure
+# Ouvrir le débogueur lorsqu'un test échoue
 uv run pytest --pdb -x
 ```
 
-### Query Debugging
+### Débogage des requêtes
 
 ```python
-# Log all SQL queries
+# Journaliser toutes les requêtes SQL
 LOGGING = {
     "loggers": {
         "django.db.backends": {"level": "DEBUG", "handlers": ["console"]},
     },
 }
 
-# Count queries in tests
+# Compter les requêtes dans les tests
 from django.test.utils import CaptureQueriesContext
 from django.db import connection
 
@@ -111,27 +111,27 @@ def test_no_n_plus_one():
     assert len(ctx) <= 2
 ```
 
-## Common Django Issues
+## Problèmes Django courants
 
-### N+1 Queries
+### Requêtes N+1
 
 ```python
-# Problem
+# Problème
 for post in Post.objects.all():
-    print(post.author.email)  # Query per post!
+    print(post.author.email)  # Une requête par article !
 
-# Fix
+# Correctif
 for post in Post.objects.select_related("author"):
-    print(post.author.email)  # Single query
+    print(post.author.email)  # Une seule requête
 ```
 
-### Form Not Saving
+### Le formulaire n'enregistre rien
 
 ```python
-# Check these:
-# 1. form.is_valid() returns True?
-# 2. form.save() called?
-# 3. If commit=False, did you call .save() on instance?
+# Vérifiez ces points :
+# 1. form.is_valid() renvoie-t-il True ?
+# 2. form.save() est-il appelé ?
+# 3. Avec commit=False, avez-vous appelé .save() sur l'instance ?
 
 def debug_form(request):
     form = MyForm(request.POST)
@@ -139,33 +139,33 @@ def debug_form(request):
     print(f"Errors: {form.errors}")
 ```
 
-### CSRF 403 Errors
+### Erreurs 403 CSRF
 
 ```html
-<!-- Check: csrf_token in form -->
+<!-- Vérifiez : csrf_token présent dans le formulaire -->
 <form method="post">
     {% csrf_token %}
 </form>
 ```
 
-### Migration Issues
+### Problèmes de migration
 
 ```bash
 uv run python manage.py showmigrations
 uv run python manage.py migrate app_name 0001 --fake
 ```
 
-## Debugging Celery
+## Déboguer Celery
 
 ```python
-# Run synchronously for debugging
-my_task(arg)  # Direct call, not .delay()
+# Exécuter de façon synchrone pour déboguer
+my_task(arg)  # Appel direct, pas .delay()
 
-# Or set in settings
+# Ou le définir dans les settings
 CELERY_TASK_ALWAYS_EAGER = True
 ```
 
-## Debugging HTMX
+## Déboguer HTMX
 
 ```html
 <script>htmx.logAll();</script>
@@ -176,30 +176,30 @@ def view(request):
     print(f"HTMX: {request.headers.get('HX-Request')}")
 ```
 
-## Checklist
+## Liste de vérification
 
-Before claiming fixed:
+Avant d'affirmer que c'est corrigé :
 
-- [ ] Root cause identified
-- [ ] Reproduction test passes
-- [ ] Full test suite passes (`uv run pytest`)
-- [ ] No type errors (`uv run pyright`)
-- [ ] No lint errors (`uv run ruff check .`)
+- [ ] Cause racine identifiée
+- [ ] Le test de reproduction passe
+- [ ] La suite de tests complète passe (`uv run pytest`)
+- [ ] Aucune erreur de type (`uv run pyright`)
+- [ ] Aucune erreur de lint (`uv run ruff check .`)
 
-## Red Flags
+## Signaux d'alerte
 
-Stop if you're thinking:
-- "Quick fix now, investigate later"
-- "One more attempt" (after 3+ failures)
-- "This should work" (without understanding why)
+Arrêtez-vous si vous pensez :
+- « Correctif rapide maintenant, on enquêtera plus tard »
+- « Encore une tentative » (après 3 échecs ou plus)
+- « Ça devrait marcher » (sans comprendre pourquoi)
 
-Three consecutive failed fixes = architectural problem. Stop and discuss.
+Trois correctifs consécutifs en échec = problème d'architecture. Arrêtez-vous et discutez-en.
 
-## Integration with Other Skills
+## Intégration avec les autres skills
 
-- **pytest-django-patterns**: Write reproduction tests
-- **django-models**: Debug QuerySet issues
-- **celery-patterns**: Debug async task failures
-- **htmx-alpine-patterns**: Debug HTMX requests
-- **django-extensions**: Use `show_urls`, `list_model_info`, and `shell_plus` for project introspection
-- **skill-creator**: Create debugging-specific skills for recurring issues
+- **pytest-django-patterns** : écrivez des tests de reproduction
+- **django-models** : déboguez les problèmes de QuerySet
+- **celery-patterns** : déboguez les échecs de tâches asynchrones
+- **htmx-alpine-patterns** : déboguez les requêtes HTMX
+- **django-extensions** : utilisez `show_urls`, `list_model_info` et `shell_plus` pour l'introspection du projet
+- **skill-creator** : créez des skills de débogage dédiés aux problèmes récurrents

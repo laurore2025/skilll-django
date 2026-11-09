@@ -1,43 +1,43 @@
 ---
 name: ticket
-description: Work on a JIRA/Linear ticket end-to-end: read ticket details, explore codebase, create a branch, implement with TDD, run quality checks, update ticket status, and create a PR. Use when the user provides a ticket ID to implement. Triggers on requests like "/ticket PROJ-123", "work on this ticket", "implement PROJ-123".
+description: "Traite un ticket JIRA/Linear de bout en bout : lire les détails du ticket, explorer la base de code, créer une branche, implémenter en TDD, lancer les contrôles qualité, mettre à jour le statut du ticket et créer une PR. À utiliser lorsque l'utilisateur fournit un identifiant de ticket à implémenter. Se déclenche sur des demandes comme « /ticket PROJ-123 », « travaille sur ce ticket », « implémente PROJ-123 »."
 ---
 
-# Ticket Workflow
+# Flux de travail d'un ticket
 
-Work on the ticket ID provided by the user.
+Traitez le ticket dont l'identifiant est fourni par l'utilisateur.
 
 ## Instructions
 
-### 1. Read the Ticket
+### 1. Lisez le ticket
 
-Fetch and understand the ticket using JIRA/Linear MCP tools:
-- Get ticket details (title, description, acceptance criteria)
-- Check linked tickets or epics
-- Review any comments or attachments
+Récupérez et comprenez le ticket à l'aide des outils MCP JIRA/Linear :
+- Obtenez les détails du ticket (titre, description, critères d'acceptation)
+- Vérifiez les tickets ou epics liés
+- Passez en revue les éventuels commentaires ou pièces jointes
 
-Summarize: what needs to be done, acceptance criteria, blockers or dependencies.
+Résumez : ce qui doit être fait, les critères d'acceptation, les blocages ou dépendances.
 
-### 2. Explore the Codebase
+### 2. Explorez la base de code
 
-Before coding:
-- Search for related code
-- Understand the current implementation
-- Identify files that need changes
+Avant de coder :
+- Recherchez le code associé
+- Comprenez l'implémentation actuelle
+- Identifiez les fichiers à modifier
 
-### 3. Create a Branch
+### 3. Créez une branche
 
 ```bash
 git checkout -b {initials}/{ticket-id}-{brief-description}
 ```
 
-### 4. Implement the Changes
+### 4. Implémentez les modifications
 
-- Follow project patterns (check relevant skills)
-- Write tests first (TDD)
-- Make incremental commits
+- Suivez les patrons du projet (consultez les skills pertinents)
+- Écrivez d'abord les tests (TDD)
+- Faites des commits incrémentaux
 
-### 5. Run Quality Checks
+### 5. Lancez les contrôles qualité
 
 ```bash
 uv run ruff check .
@@ -46,24 +46,24 @@ uv run pyright
 uv run pytest
 ```
 
-### 6. Update the Ticket
+### 6. Mettez à jour le ticket
 
-As you work:
-- Add comments with progress updates
-- Update status (In Progress → In Review)
-- Log any blockers or questions
+Au fil du travail :
+- Ajoutez des commentaires pour signaler l'avancement
+- Mettez à jour le statut (In Progress → In Review)
+- Consignez les éventuels blocages ou questions
 
-### 7. Create PR and Link
+### 7. Créez la PR et liez-la
 
-When ready:
-- Create PR with `gh pr create`
-- Link the PR to the ticket
-- Add ticket ID to PR title: `feat(PROJ-123): description`
+Quand c'est prêt :
+- Créez la PR avec `gh pr create`
+- Liez la PR au ticket
+- Ajoutez l'identifiant du ticket au titre de la PR : `feat(PROJ-123): description`
 
-### 8. If You Find a Bug
+### 8. Si vous trouvez un bug
 
-If you discover an unrelated bug while working:
-1. Create a new ticket with details
-2. Link it to the current ticket if related
-3. Note it in the PR description
-4. Continue with original task
+Si vous découvrez un bug sans rapport avec la tâche en cours de travail :
+1. Créez un nouveau ticket avec les détails
+2. Liez-le au ticket en cours s'il y est lié
+3. Mentionnez-le dans la description de la PR
+4. Poursuivez la tâche initiale

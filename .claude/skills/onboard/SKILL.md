@@ -1,23 +1,23 @@
 ---
 name: onboard
-description: Onboard Claude to a new task by exploring the codebase, building context, and preparing to implement. Use when starting a new task, feature, or bug fix that requires understanding the codebase first. Triggers on requests like "onboard me", "get ready for this task", "explore and prepare", "/onboard".
+description: "Prépare Claude à une nouvelle tâche en explorant la base de code, en construisant le contexte et en se préparant à l'implémentation. À utiliser au début d'une nouvelle tâche, fonctionnalité ou correction de bug qui exige d'abord de comprendre la base de code. Se déclenche sur des demandes comme « fais l'onboarding », « prépare-toi pour cette tâche », « explore et prépare-toi », « /onboard »."
 ---
 
-# Onboard
+# Onboarding
 
-The user has provided context about the task as an argument. Use it to guide exploration.
+L'utilisateur a fourni le contexte de la tâche en argument. Servez-vous-en pour guider l'exploration.
 
 ## Instructions
 
-> "AI models are geniuses who start from scratch on every task." – Noam Brown
+> « Les modèles d'IA sont des génies qui repartent de zéro à chaque tâche. » – Noam Brown
 
-Onboard to the current task by:
+Préparez-vous à la tâche en cours :
 
-- Exploring the codebase thoroughly
-- Asking the user clarifying questions if needed
+- En explorant la base de code en profondeur
+- En posant des questions de clarification à l'utilisateur si nécessaire
 
-The goal is to get fully prepared to start working on the task.
+L'objectif est d'être entièrement prêt à commencer à travailler sur la tâche.
 
-Take as long as needed. Overdoing it is better than underdoing it.
+Prenez tout le temps nécessaire. Mieux vaut en faire trop que pas assez.
 
-Record everything in a `.claude/tasks/[TASK_ID]/onboarding.md` file. This file will be used to onboard in a new session if needed, so make it comprehensive.
+Consignez tout dans un fichier `.claude/tasks/[TASK_ID]/onboarding.md`. Ce fichier servira à refaire l'onboarding dans une nouvelle session si nécessaire ; rendez-le donc exhaustif.

@@ -1,82 +1,82 @@
-# Output Patterns
+# Patrons de sortie
 
-Use these patterns when skills need to produce consistent, high-quality output.
+Utilisez ces patrons lorsque des skills doivent produire un résultat cohérent et de grande qualité.
 
-## Template Pattern
+## Patron de gabarit
 
-Provide templates for output format. Match the level of strictness to your needs.
+Fournissez des gabarits pour le format de sortie. Adaptez le niveau de rigueur à vos besoins.
 
-**For strict requirements (like API responses or data formats):**
-
-```markdown
-## Report structure
-
-ALWAYS use this exact template structure:
-
-# [Analysis Title]
-
-## Executive summary
-[One-paragraph overview of key findings]
-
-## Key findings
-- Finding 1 with supporting data
-- Finding 2 with supporting data
-- Finding 3 with supporting data
-
-## Recommendations
-1. Specific actionable recommendation
-2. Specific actionable recommendation
-```
-
-**For flexible guidance (when adaptation is useful):**
+**Pour des exigences strictes (comme des réponses d'API ou des formats de données) :**
 
 ```markdown
-## Report structure
+## Structure du rapport
 
-Here is a sensible default format, but use your best judgment:
+Utilisez TOUJOURS exactement cette structure de gabarit :
 
-# [Analysis Title]
+# [Titre de l'analyse]
 
-## Executive summary
-[Overview]
+## Synthèse
+[Vue d'ensemble des principaux constats en un paragraphe]
 
-## Key findings
-[Adapt sections based on what you discover]
+## Principaux constats
+- Constat 1 avec données à l'appui
+- Constat 2 avec données à l'appui
+- Constat 3 avec données à l'appui
 
-## Recommendations
-[Tailor to the specific context]
-
-Adjust sections as needed for the specific analysis type.
+## Recommandations
+1. Recommandation précise et applicable
+2. Recommandation précise et applicable
 ```
 
-## Examples Pattern
-
-For skills where output quality depends on seeing examples, provide input/output pairs:
+**Pour des consignes souples (quand une adaptation est utile) :**
 
 ```markdown
-## Commit message format
+## Structure du rapport
 
-Generate commit messages following these examples:
+Voici un format par défaut raisonnable, mais faites preuve de discernement :
 
-**Example 1:**
-Input: Added user authentication with JWT tokens
-Output:
-```
-feat(auth): implement JWT-based authentication
+# [Titre de l'analyse]
 
-Add login endpoint and token validation middleware
-```
+## Synthèse
+[Vue d'ensemble]
 
-**Example 2:**
-Input: Fixed bug where dates displayed incorrectly in reports
-Output:
-```
-fix(reports): correct date formatting in timezone conversion
+## Principaux constats
+[Adaptez les sections en fonction de ce que vous découvrez]
 
-Use UTC timestamps consistently across report generation
+## Recommandations
+[Adaptez au contexte précis]
+
+Ajustez les sections selon le type d'analyse.
 ```
 
-Follow this style: type(scope): brief description, then detailed explanation.
+## Patron d'exemples
+
+Pour les skills dont la qualité du résultat dépend d'exemples, fournissez des paires entrée/sortie :
+
+```markdown
+## Format des messages de commit
+
+Générez les messages de commit en suivant ces exemples :
+
+**Exemple 1 :**
+Entrée : ajout de l'authentification des utilisateurs avec des jetons JWT
+Sortie :
+```
+feat(auth): implémenter l'authentification par JWT
+
+Ajouter un endpoint de connexion et un middleware de validation des jetons
 ```
 
-Examples help Claude understand the desired style and level of detail more clearly than descriptions alone.
+**Exemple 2 :**
+Entrée : correction d'un bug qui affichait des dates incorrectes dans les rapports
+Sortie :
+```
+fix(reports): corriger le formatage des dates lors de la conversion de fuseau horaire
+
+Utiliser des horodatages UTC de façon cohérente dans toute la génération des rapports
+```
+
+Suivez ce style : type(scope): brève description, puis explication détaillée.
+```
+
+Les exemples aident Claude à comprendre le style et le niveau de détail souhaités plus clairement que de simples descriptions.

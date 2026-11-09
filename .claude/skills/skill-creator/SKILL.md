@@ -1,107 +1,109 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Guide pour créer des skills efficaces. Ce skill doit être utilisé quand l'utilisateur veut créer un nouveau skill (ou mettre à jour un skill existant) qui étend les capacités de Claude avec des connaissances spécialisées, des workflows ou des intégrations d'outils.
 license: Complete terms in LICENSE.txt
 ---
 
-# Skill Creator
+> Traduction française de l'original d'Anthropic (licence Apache 2.0, voir LICENSE.txt) ; ce fichier a été modifié.
 
-This skill provides guidance for creating effective skills.
+# Créateur de skills
 
-## About Skills
+Ce skill fournit des conseils pour créer des skills efficaces.
 
-Skills are modular, self-contained packages that extend Claude's capabilities by providing
-specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific
-domains or tasks—they transform Claude from a general-purpose agent into a specialized agent
-equipped with procedural knowledge that no model can fully possess.
+## À propos des skills
 
-### What Skills Provide
+Les skills sont des paquets modulaires et autonomes qui étendent les capacités de Claude en lui apportant
+des connaissances spécialisées, des workflows et des outils. Voyez-les comme des « guides d'intégration » pour des
+domaines ou des tâches spécifiques : ils transforment Claude, agent généraliste, en agent spécialisé
+doté de connaissances procédurales qu'aucun modèle ne peut posséder entièrement.
 
-1. Specialized workflows - Multi-step procedures for specific domains
-2. Tool integrations - Instructions for working with specific file formats or APIs
-3. Domain expertise - Company-specific knowledge, schemas, business logic
-4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
+### Ce qu'apportent les skills
 
-## Core Principles
+1. Workflows spécialisés - procédures en plusieurs étapes pour des domaines spécifiques
+2. Intégrations d'outils - instructions pour travailler avec des formats de fichiers ou des API spécifiques
+3. Expertise métier - connaissances propres à l'entreprise, schémas, logique métier
+4. Ressources incluses - scripts, références et assets pour les tâches complexes et répétitives
 
-### Concise is Key
+## Principes fondamentaux
 
-The context window is a public good. Skills share the context window with everything else Claude needs: system prompt, conversation history, other Skills' metadata, and the actual user request.
+### La concision est essentielle
 
-**Default assumption: Claude is already very smart.** Only add context Claude doesn't already have. Challenge each piece of information: "Does Claude really need this explanation?" and "Does this paragraph justify its token cost?"
+La fenêtre de contexte est un bien commun. Les skills la partagent avec tout ce dont Claude a besoin par ailleurs : prompt système, historique de la conversation, métadonnées des autres skills et requête effective de l'utilisateur.
 
-Prefer concise examples over verbose explanations.
+**Hypothèse par défaut : Claude est déjà très intelligent.** N'ajoutez que le contexte que Claude n'a pas déjà. Remettez en question chaque information : « Claude a-t-il vraiment besoin de cette explication ? » et « Ce paragraphe justifie-t-il son coût en tokens ? »
 
-### Set Appropriate Degrees of Freedom
+Préférez des exemples concis à des explications verbeuses.
 
-Match the level of specificity to the task's fragility and variability:
+### Fixer le bon degré de liberté
 
-**High freedom (text-based instructions)**: Use when multiple approaches are valid, decisions depend on context, or heuristics guide the approach.
+Adaptez le niveau de précision à la fragilité et à la variabilité de la tâche :
 
-**Medium freedom (pseudocode or scripts with parameters)**: Use when a preferred pattern exists, some variation is acceptable, or configuration affects behavior.
+**Grande liberté (instructions textuelles)** : utilisez-la quand plusieurs approches sont valables, que les décisions dépendent du contexte ou que des heuristiques guident la démarche.
 
-**Low freedom (specific scripts, few parameters)**: Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed.
+**Liberté moyenne (pseudo-code ou scripts paramétrables)** : utilisez-la quand il existe une approche privilégiée, qu'une certaine variation est acceptable ou que la configuration influe sur le comportement.
 
-Think of Claude as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+**Faible liberté (scripts spécifiques, peu de paramètres)** : utilisez-la quand les opérations sont fragiles et sujettes aux erreurs, que la cohérence est critique ou qu'une séquence précise doit être respectée.
 
-### Anatomy of a Skill
+Imaginez Claude explorant un chemin : un pont étroit bordé de falaises exige des garde-fous précis (faible liberté), tandis qu'un champ ouvert permet de nombreux itinéraires (grande liberté).
 
-Every skill consists of a required SKILL.md file and optional bundled resources:
+### Anatomie d'un skill
+
+Tout skill se compose d'un fichier SKILL.md obligatoire et de ressources incluses facultatives :
 
 ```
 skill-name/
-├── SKILL.md (required)
-│   ├── YAML frontmatter metadata (required)
-│   │   ├── name: (required)
-│   │   └── description: (required)
-│   └── Markdown instructions (required)
-└── Bundled Resources (optional)
-    ├── scripts/          - Executable code (Python/Bash/etc.)
-    ├── references/       - Documentation intended to be loaded into context as needed
-    └── assets/           - Files used in output (templates, icons, fonts, etc.)
+├── SKILL.md (obligatoire)
+│   ├── Métadonnées du frontmatter YAML (obligatoire)
+│   │   ├── name: (obligatoire)
+│   │   └── description: (obligatoire)
+│   └── Instructions en Markdown (obligatoire)
+└── Ressources incluses (facultatif)
+    ├── scripts/          - Code exécutable (Python/Bash/etc.)
+    ├── references/       - Documentation destinée à être chargée dans le contexte au besoin
+    └── assets/           - Fichiers utilisés dans le résultat (gabarits, icônes, polices, etc.)
 ```
 
-#### SKILL.md (required)
+#### SKILL.md (obligatoire)
 
-Every SKILL.md consists of:
+Tout SKILL.md se compose de :
 
-- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that Claude reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when it should be used.
-- **Body** (Markdown): Instructions and guidance for using the skill. Only loaded AFTER the skill triggers (if at all).
+- **Frontmatter** (YAML) : contient les champs `name` et `description`. Ce sont les seuls champs que Claude lit pour déterminer quand utiliser le skill ; il est donc très important de décrire de façon claire et complète ce qu'est le skill et quand il doit être utilisé.
+- **Corps** (Markdown) : instructions et conseils pour utiliser le skill. Chargé uniquement APRÈS le déclenchement du skill (s'il se déclenche).
 
-#### Bundled Resources (optional)
+#### Ressources incluses (facultatif)
 
 ##### Scripts (`scripts/`)
 
-Executable code (Python/Bash/etc.) for tasks that require deterministic reliability or are repeatedly rewritten.
+Code exécutable (Python/Bash/etc.) pour les tâches qui exigent une fiabilité déterministe ou qui sont réécrites à répétition.
 
-- **When to include**: When the same code is being rewritten repeatedly or deterministic reliability is needed
-- **Example**: `scripts/rotate_pdf.py` for PDF rotation tasks
-- **Benefits**: Token efficient, deterministic, may be executed without loading into context
-- **Note**: Scripts may still need to be read by Claude for patching or environment-specific adjustments
+- **Quand les inclure** : quand le même code est réécrit à plusieurs reprises ou qu'une fiabilité déterministe est nécessaire
+- **Exemple** : `scripts/rotate_pdf.py` pour les tâches de rotation de PDF
+- **Avantages** : économes en tokens, déterministes, peuvent être exécutés sans être chargés dans le contexte
+- **Remarque** : Claude peut tout de même avoir besoin de lire les scripts pour les corriger ou les adapter à l'environnement
 
-##### References (`references/`)
+##### Références (`references/`)
 
-Documentation and reference material intended to be loaded as needed into context to inform Claude's process and thinking.
+Documentation et documents de référence destinés à être chargés dans le contexte au besoin, pour éclairer la démarche et la réflexion de Claude.
 
-- **When to include**: For documentation that Claude should reference while working
-- **Examples**: `references/finance.md` for financial schemas, `references/mnda.md` for company NDA template, `references/policies.md` for company policies, `references/api_docs.md` for API specifications
-- **Use cases**: Database schemas, API documentation, domain knowledge, company policies, detailed workflow guides
-- **Benefits**: Keeps SKILL.md lean, loaded only when Claude determines it's needed
-- **Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md
-- **Avoid duplication**: Information should live in either SKILL.md or references files, not both. Prefer references files for detailed information unless it's truly core to the skill—this keeps SKILL.md lean while making information discoverable without hogging the context window. Keep only essential procedural instructions and workflow guidance in SKILL.md; move detailed reference material, schemas, and examples to references files.
+- **Quand les inclure** : pour la documentation que Claude doit consulter pendant son travail
+- **Exemples** : `references/finance.md` pour les schémas financiers, `references/mnda.md` pour le gabarit d'accord de confidentialité (NDA) de l'entreprise, `references/policies.md` pour les politiques de l'entreprise, `references/api_docs.md` pour les spécifications d'API
+- **Cas d'usage** : schémas de base de données, documentation d'API, connaissances métier, politiques de l'entreprise, guides de workflow détaillés
+- **Avantages** : SKILL.md reste léger ; ces fichiers ne sont chargés que lorsque Claude le juge nécessaire
+- **Bonne pratique** : si les fichiers sont volumineux (>10 000 mots), indiquez dans SKILL.md des motifs de recherche grep
+- **Évitez les doublons** : une information doit se trouver soit dans SKILL.md, soit dans les fichiers de référence, pas dans les deux. Privilégiez les fichiers de référence pour les informations détaillées, sauf si elles sont vraiment au cœur du skill : SKILL.md reste ainsi léger, et l'information reste trouvable sans accaparer la fenêtre de contexte. Ne gardez dans SKILL.md que les instructions procédurales essentielles et les indications de workflow ; déplacez les documents de référence détaillés, les schémas et les exemples dans les fichiers de référence.
 
 ##### Assets (`assets/`)
 
-Files not intended to be loaded into context, but rather used within the output Claude produces.
+Fichiers non destinés à être chargés dans le contexte, mais à être utilisés dans le résultat que produit Claude.
 
-- **When to include**: When the skill needs files that will be used in the final output
-- **Examples**: `assets/logo.png` for brand assets, `assets/slides.pptx` for PowerPoint templates, `assets/frontend-template/` for HTML/React boilerplate, `assets/font.ttf` for typography
-- **Use cases**: Templates, images, icons, boilerplate code, fonts, sample documents that get copied or modified
-- **Benefits**: Separates output resources from documentation, enables Claude to use files without loading them into context
+- **Quand les inclure** : quand le skill a besoin de fichiers qui serviront dans le résultat final
+- **Exemples** : `assets/logo.png` pour les éléments de marque, `assets/slides.pptx` pour les gabarits PowerPoint, `assets/frontend-template/` pour le code de base (boilerplate) HTML/React, `assets/font.ttf` pour la typographie
+- **Cas d'usage** : gabarits, images, icônes, code de base (boilerplate), polices, documents d'exemple destinés à être copiés ou modifiés
+- **Avantages** : sépare les ressources de sortie de la documentation, permet à Claude d'utiliser des fichiers sans les charger dans le contexte
 
-#### What to Not Include in a Skill
+#### Ce qu'il ne faut pas inclure dans un skill
 
-A skill should only contain essential files that directly support its functionality. Do NOT create extraneous documentation or auxiliary files, including:
+Un skill ne doit contenir que les fichiers essentiels qui servent directement son fonctionnement. Ne créez PAS de documentation superflue ni de fichiers auxiliaires, notamment :
 
 - README.md
 - INSTALLATION_GUIDE.md
@@ -109,248 +111,248 @@ A skill should only contain essential files that directly support its functional
 - CHANGELOG.md
 - etc.
 
-The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxilary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc. Creating additional documentation files just adds clutter and confusion.
+Le skill ne doit contenir que les informations dont un agent d'IA a besoin pour accomplir la tâche. Il ne doit pas contenir de contexte annexe sur la façon dont il a été créé, de procédures d'installation et de test, de documentation destinée aux utilisateurs, etc. Créer des fichiers de documentation supplémentaires ne fait qu'ajouter du désordre et de la confusion.
 
-### Progressive Disclosure Design Principle
+### Principe de conception : divulgation progressive
 
-Skills use a three-level loading system to manage context efficiently:
+Les skills utilisent un système de chargement à trois niveaux pour gérer le contexte efficacement :
 
-1. **Metadata (name + description)** - Always in context (~100 words)
-2. **SKILL.md body** - When skill triggers (<5k words)
-3. **Bundled resources** - As needed by Claude (Unlimited because scripts can be executed without reading into context window)
+1. **Métadonnées (name + description)** - toujours dans le contexte (~100 mots)
+2. **Corps de SKILL.md** - quand le skill se déclenche (<5 000 mots)
+3. **Ressources incluses** - selon les besoins de Claude (illimitées, car les scripts peuvent être exécutés sans être lus dans la fenêtre de contexte)
 
-#### Progressive Disclosure Patterns
+#### Patrons de divulgation progressive
 
-Keep SKILL.md body to the essentials and under 500 lines to minimize context bloat. Split content into separate files when approaching this limit. When splitting out content into other files, it is very important to reference them from SKILL.md and describe clearly when to read them, to ensure the reader of the skill knows they exist and when to use them.
+Limitez le corps de SKILL.md à l'essentiel et à moins de 500 lignes pour éviter d'encombrer le contexte. Répartissez le contenu dans des fichiers séparés à l'approche de cette limite. Lorsque vous déplacez du contenu dans d'autres fichiers, il est très important de les référencer depuis SKILL.md et d'indiquer clairement quand les lire, afin que le lecteur du skill sache qu'ils existent et quand s'en servir.
 
-**Key principle:** When a skill supports multiple variations, frameworks, or options, keep only the core workflow and selection guidance in SKILL.md. Move variant-specific details (patterns, examples, configuration) into separate reference files.
+**Principe clé :** quand un skill prend en charge plusieurs variantes, frameworks ou options, ne gardez dans SKILL.md que le workflow principal et les indications de choix. Déplacez les détails propres à chaque variante (patrons, exemples, configuration) dans des fichiers de référence séparés.
 
-**Pattern 1: High-level guide with references**
+**Patron 1 : guide de haut niveau avec références**
 
 ```markdown
-# PDF Processing
+# Traitement de PDF
 
-## Quick start
+## Démarrage rapide
 
-Extract text with pdfplumber:
-[code example]
+Extrayez le texte avec pdfplumber :
+[exemple de code]
 
-## Advanced features
+## Fonctionnalités avancées
 
-- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
-- **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
-- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
+- **Remplissage de formulaires** : voir [FORMS.md](FORMS.md) pour le guide complet
+- **Référence de l'API** : voir [REFERENCE.md](REFERENCE.md) pour toutes les méthodes
+- **Exemples** : voir [EXAMPLES.md](EXAMPLES.md) pour les patrons courants
 ```
 
-Claude loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
+Claude ne charge FORMS.md, REFERENCE.md ou EXAMPLES.md qu'en cas de besoin.
 
-**Pattern 2: Domain-specific organization**
+**Patron 2 : organisation par domaine**
 
-For Skills with multiple domains, organize content by domain to avoid loading irrelevant context:
+Pour les skills couvrant plusieurs domaines, organisez le contenu par domaine afin d'éviter de charger du contexte non pertinent :
 
 ```
 bigquery-skill/
-├── SKILL.md (overview and navigation)
+├── SKILL.md (vue d'ensemble et navigation)
 └── reference/
-    ├── finance.md (revenue, billing metrics)
-    ├── sales.md (opportunities, pipeline)
-    ├── product.md (API usage, features)
-    └── marketing.md (campaigns, attribution)
+    ├── finance.md (chiffre d'affaires, indicateurs de facturation)
+    ├── sales.md (opportunités, pipeline)
+    ├── product.md (utilisation de l'API, fonctionnalités)
+    └── marketing.md (campagnes, attribution)
 ```
 
-When a user asks about sales metrics, Claude only reads sales.md.
+Quand un utilisateur pose une question sur les indicateurs de ventes, Claude ne lit que sales.md.
 
-Similarly, for skills supporting multiple frameworks or variants, organize by variant:
+De même, pour les skills prenant en charge plusieurs frameworks ou variantes, organisez le contenu par variante :
 
 ```
 cloud-deploy/
-├── SKILL.md (workflow + provider selection)
+├── SKILL.md (workflow + choix du fournisseur)
 └── references/
-    ├── aws.md (AWS deployment patterns)
-    ├── gcp.md (GCP deployment patterns)
-    └── azure.md (Azure deployment patterns)
+    ├── aws.md (patrons de déploiement AWS)
+    ├── gcp.md (patrons de déploiement GCP)
+    └── azure.md (patrons de déploiement Azure)
 ```
 
-When the user chooses AWS, Claude only reads aws.md.
+Quand l'utilisateur choisit AWS, Claude ne lit que le fichier aws.md.
 
-**Pattern 3: Conditional details**
+**Patron 3 : détails conditionnels**
 
-Show basic content, link to advanced content:
+Présentez le contenu de base et renvoyez par un lien vers le contenu avancé :
 
 ```markdown
-# DOCX Processing
+# Traitement de DOCX
 
-## Creating documents
+## Créer des documents
 
-Use docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).
+Utilisez docx-js pour les nouveaux documents. Voir [DOCX-JS.md](DOCX-JS.md).
 
-## Editing documents
+## Modifier des documents
 
-For simple edits, modify the XML directly.
+Pour les modifications simples, modifiez directement le XML.
 
-**For tracked changes**: See [REDLINING.md](REDLINING.md)
-**For OOXML details**: See [OOXML.md](OOXML.md)
+**Pour les modifications suivies** : voir [REDLINING.md](REDLINING.md)
+**Pour les détails OOXML** : voir [OOXML.md](OOXML.md)
 ```
 
-Claude reads REDLINING.md or OOXML.md only when the user needs those features.
+Claude ne lit REDLINING.md ou OOXML.md que lorsque l'utilisateur a besoin de ces fonctionnalités.
 
-**Important guidelines:**
+**Consignes importantes :**
 
-- **Avoid deeply nested references** - Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
-- **Structure longer reference files** - For files longer than 100 lines, include a table of contents at the top so Claude can see the full scope when previewing.
+- **Évitez les références profondément imbriquées** - gardez les références à un seul niveau de profondeur depuis SKILL.md. Tous les fichiers de référence doivent être liés directement depuis SKILL.md.
+- **Structurez les fichiers de référence longs** - pour les fichiers de plus de 100 lignes, placez une table des matières en tête afin que Claude puisse en voir toute la portée lors d'un aperçu.
 
-## Skill Creation Process
+## Processus de création d'un skill
 
-Skill creation involves these steps:
+La création d'un skill comporte les étapes suivantes :
 
-1. Understand the skill with concrete examples
-2. Plan reusable skill contents (scripts, references, assets)
-3. Initialize the skill (run init_skill.py)
-4. Edit the skill (implement resources and write SKILL.md)
-5. Package the skill (run package_skill.py)
-6. Iterate based on real usage
+1. Comprendre le skill à l'aide d'exemples concrets
+2. Planifier le contenu réutilisable du skill (scripts, références, assets)
+3. Initialiser le skill (lancer init_skill.py)
+4. Modifier le skill (implémenter les ressources et rédiger SKILL.md)
+5. Empaqueter le skill (lancer package_skill.py)
+6. Itérer en fonction de l'usage réel
 
-Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
+Suivez ces étapes dans l'ordre et n'en sautez une que s'il existe une raison claire pour laquelle elle ne s'applique pas.
 
-### Step 1: Understanding the Skill with Concrete Examples
+### Étape 1 : comprendre le skill à l'aide d'exemples concrets
 
-Skip this step only when the skill's usage patterns are already clearly understood. It remains valuable even when working with an existing skill.
+Ne sautez cette étape que si les modes d'utilisation du skill sont déjà bien compris. Elle reste utile même lorsque vous travaillez sur un skill existant.
 
-To create an effective skill, clearly understand concrete examples of how the skill will be used. This understanding can come from either direct user examples or generated examples that are validated with user feedback.
+Pour créer un skill efficace, comprenez clairement des exemples concrets de la façon dont il sera utilisé. Cette compréhension peut venir d'exemples fournis directement par l'utilisateur ou d'exemples générés puis validés grâce à ses retours.
 
-For example, when building an image-editor skill, relevant questions include:
+Par exemple, pour construire un skill image-editor, voici des questions pertinentes :
 
-- "What functionality should the image-editor skill support? Editing, rotating, anything else?"
-- "Can you give some examples of how this skill would be used?"
-- "I can imagine users asking for things like 'Remove the red-eye from this image' or 'Rotate this image'. Are there other ways you imagine this skill being used?"
-- "What would a user say that should trigger this skill?"
+- « Quelles fonctionnalités le skill image-editor doit-il prendre en charge ? La retouche, la rotation, autre chose ? »
+- « Pouvez-vous donner quelques exemples d'utilisation de ce skill ? »
+- « J'imagine des utilisateurs demander par exemple “Supprimez les yeux rouges de cette image” ou “Faites pivoter cette image”. Voyez-vous d'autres façons d'utiliser ce skill ? »
+- « Que dirait un utilisateur pour déclencher ce skill ? »
 
-To avoid overwhelming users, avoid asking too many questions in a single message. Start with the most important questions and follow up as needed for better effectiveness.
+Pour ne pas submerger l'utilisateur, évitez de poser trop de questions dans un même message. Commencez par les plus importantes et complétez ensuite selon les besoins, pour plus d'efficacité.
 
-Conclude this step when there is a clear sense of the functionality the skill should support.
+Terminez cette étape lorsque vous avez une idée claire des fonctionnalités que le skill doit prendre en charge.
 
-### Step 2: Planning the Reusable Skill Contents
+### Étape 2 : planifier le contenu réutilisable du skill
 
-To turn concrete examples into an effective skill, analyze each example by:
+Pour transformer des exemples concrets en un skill efficace, analysez chaque exemple en :
 
-1. Considering how to execute on the example from scratch
-2. Identifying what scripts, references, and assets would be helpful when executing these workflows repeatedly
+1. examinant comment le traiter en partant de zéro ;
+2. identifiant les scripts, références et assets qui seraient utiles pour exécuter ces workflows de façon répétée.
 
-Example: When building a `pdf-editor` skill to handle queries like "Help me rotate this PDF," the analysis shows:
+Exemple : pour construire un skill `pdf-editor` traitant des demandes comme « Aidez-moi à faire pivoter ce PDF », l'analyse montre que :
 
-1. Rotating a PDF requires re-writing the same code each time
-2. A `scripts/rotate_pdf.py` script would be helpful to store in the skill
+1. faire pivoter un PDF oblige à réécrire le même code à chaque fois ;
+2. il serait utile de stocker un script `scripts/rotate_pdf.py` dans le skill.
 
-Example: When designing a `frontend-webapp-builder` skill for queries like "Build me a todo app" or "Build me a dashboard to track my steps," the analysis shows:
+Exemple : pour concevoir un skill `frontend-webapp-builder` traitant des demandes comme « Créez-moi une application de liste de tâches » ou « Créez-moi un tableau de bord pour suivre mes pas », l'analyse montre que :
 
-1. Writing a frontend webapp requires the same boilerplate HTML/React each time
-2. An `assets/hello-world/` template containing the boilerplate HTML/React project files would be helpful to store in the skill
+1. écrire une application web frontend demande à chaque fois le même code de base (boilerplate) HTML/React ;
+2. il serait utile de stocker dans le skill un gabarit `assets/hello-world/` contenant les fichiers de projet HTML/React de base.
 
-Example: When building a `big-query` skill to handle queries like "How many users have logged in today?" the analysis shows:
+Exemple : pour construire un skill `big-query` traitant des demandes comme « Combien d'utilisateurs se sont connectés aujourd'hui ? », l'analyse montre que :
 
-1. Querying BigQuery requires re-discovering the table schemas and relationships each time
-2. A `references/schema.md` file documenting the table schemas would be helpful to store in the skill
+1. interroger BigQuery oblige à redécouvrir à chaque fois les schémas des tables et leurs relations ;
+2. il serait utile de stocker dans le skill un fichier `references/schema.md` documentant les schémas des tables.
 
-To establish the skill's contents, analyze each concrete example to create a list of the reusable resources to include: scripts, references, and assets.
+Pour établir le contenu du skill, analysez chaque exemple concret afin de dresser la liste des ressources réutilisables à inclure : scripts, références et assets.
 
-### Step 3: Initializing the Skill
+### Étape 3 : initialiser le skill
 
-At this point, it is time to actually create the skill.
+Il est maintenant temps de créer réellement le skill.
 
-Skip this step only if the skill being developed already exists, and iteration or packaging is needed. In this case, continue to the next step.
+Ne sautez cette étape que si le skill en cours de développement existe déjà et qu'il faut l'itérer ou l'empaqueter. Dans ce cas, passez à l'étape suivante.
 
-When creating a new skill from scratch, always run the `init_skill.py` script. The script conveniently generates a new template skill directory that automatically includes everything a skill requires, making the skill creation process much more efficient and reliable.
+Pour créer un nouveau skill à partir de zéro, lancez toujours le script `init_skill.py`. Il génère commodément un nouveau répertoire de skill à partir d'un gabarit, qui contient automatiquement tout ce dont un skill a besoin, ce qui rend la création bien plus efficace et fiable.
 
-Usage:
+Utilisation :
 
 ```bash
 scripts/init_skill.py <skill-name> --path <output-directory>
 ```
 
-The script:
+Le script :
 
-- Creates the skill directory at the specified path
-- Generates a SKILL.md template with proper frontmatter and TODO placeholders
-- Creates example resource directories: `scripts/`, `references/`, and `assets/`
-- Adds example files in each directory that can be customized or deleted
+- crée le répertoire du skill à l'emplacement indiqué ;
+- génère un gabarit SKILL.md avec un frontmatter correct et des espaces réservés TODO ;
+- crée des répertoires de ressources d'exemple : `scripts/`, `references/` et `assets/` ;
+- ajoute dans chaque répertoire des fichiers d'exemple que vous pouvez personnaliser ou supprimer.
 
-After initialization, customize or remove the generated SKILL.md and example files as needed.
+Après l'initialisation, personnalisez ou supprimez selon les besoins le SKILL.md généré et les fichiers d'exemple.
 
-### Step 4: Edit the Skill
+### Étape 4 : modifier le skill
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of Claude to use. Include information that would be beneficial and non-obvious to Claude. Consider what procedural knowledge, domain-specific details, or reusable assets would help another Claude instance execute these tasks more effectively.
+Lorsque vous modifiez le skill (fraîchement généré ou existant), gardez à l'esprit qu'il est créé pour être utilisé par une autre instance de Claude. Incluez les informations utiles et non évidentes pour Claude. Demandez-vous quelles connaissances procédurales, quels détails propres au domaine ou quels assets réutilisables aideraient une autre instance de Claude à exécuter ces tâches plus efficacement.
 
-#### Learn Proven Design Patterns
+#### S'inspirer de patrons de conception éprouvés
 
-Consult these helpful guides based on your skill's needs:
+Consultez ces guides utiles selon les besoins de votre skill :
 
-- **Multi-step processes**: See references/workflows.md for sequential workflows and conditional logic
-- **Specific output formats or quality standards**: See references/output-patterns.md for template and example patterns
+- **Processus en plusieurs étapes** : voir references/workflows.md pour les workflows séquentiels et la logique conditionnelle
+- **Formats de sortie précis ou exigences de qualité** : voir references/output-patterns.md pour les patrons de gabarit et d'exemples
 
-These files contain established best practices for effective skill design.
+Ces fichiers rassemblent des bonnes pratiques établies pour concevoir des skills efficaces.
 
-#### Start with Reusable Skill Contents
+#### Commencer par le contenu réutilisable du skill
 
-To begin implementation, start with the reusable resources identified above: `scripts/`, `references/`, and `assets/` files. Note that this step may require user input. For example, when implementing a `brand-guidelines` skill, the user may need to provide brand assets or templates to store in `assets/`, or documentation to store in `references/`.
+Pour commencer l'implémentation, partez des ressources réutilisables identifiées plus haut : fichiers `scripts/`, `references/` et `assets/`. Notez que cette étape peut nécessiter une contribution de l'utilisateur. Par exemple, pour implémenter un skill `brand-guidelines`, l'utilisateur devra peut-être fournir des éléments de marque ou des gabarits à stocker dans `assets/`, ou de la documentation à stocker dans `references/`.
 
-Added scripts must be tested by actually running them to ensure there are no bugs and that the output matches what is expected. If there are many similar scripts, only a representative sample needs to be tested to ensure confidence that they all work while balancing time to completion.
+Les scripts ajoutés doivent être testés en les exécutant réellement, pour s'assurer qu'ils ne contiennent pas de bug et que leur sortie correspond à ce qui est attendu. S'il y a beaucoup de scripts similaires, il suffit d'en tester un échantillon représentatif pour avoir confiance dans leur bon fonctionnement, tout en maîtrisant le temps nécessaire.
 
-Any example files and directories not needed for the skill should be deleted. The initialization script creates example files in `scripts/`, `references/`, and `assets/` to demonstrate structure, but most skills won't need all of them.
+Supprimez les fichiers et répertoires d'exemple dont le skill n'a pas besoin. Le script d'initialisation crée des fichiers d'exemple dans `scripts/`, `references/` et `assets/` pour illustrer la structure, mais la plupart des skills n'en auront pas tous besoin.
 
-#### Update SKILL.md
+#### Mettre à jour SKILL.md
 
-**Writing Guidelines:** Always use imperative/infinitive form.
+**Consignes de rédaction :** utilisez toujours la forme impérative/infinitive.
 
 ##### Frontmatter
 
-Write the YAML frontmatter with `name` and `description`:
+Rédigez le frontmatter YAML avec `name` et `description` :
 
-- `name`: The skill name
-- `description`: This is the primary triggering mechanism for your skill, and helps Claude understand when to use the skill.
-  - Include both what the Skill does and specific triggers/contexts for when to use it.
-  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
-  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
+- `name` : le nom du skill
+- `description` : c'est le principal mécanisme de déclenchement de votre skill ; il aide Claude à comprendre quand utiliser le skill.
+  - Indiquez à la fois ce que fait le skill et les déclencheurs/contextes précis dans lesquels l'utiliser.
+  - Placez ici toutes les informations « quand l'utiliser », et non dans le corps. Le corps n'est chargé qu'après le déclenchement : les sections « Quand utiliser ce skill » dans le corps ne sont donc d'aucune aide pour Claude.
+  - Exemple de description pour un skill `docx` : « Création, modification et analyse complètes de documents, avec prise en charge des modifications suivies, des commentaires, de la conservation de la mise en forme et de l'extraction de texte. À utiliser quand Claude doit travailler sur des documents professionnels (fichiers .docx) pour : (1) créer de nouveaux documents, (2) modifier ou retoucher du contenu, (3) travailler avec les modifications suivies, (4) ajouter des commentaires, ou toute autre tâche sur des documents »
 
-Do not include any other fields in YAML frontmatter.
+N'incluez aucun autre champ dans le frontmatter YAML.
 
-##### Body
+##### Corps
 
-Write instructions for using the skill and its bundled resources.
+Rédigez les instructions d'utilisation du skill et de ses ressources incluses.
 
-### Step 5: Packaging a Skill
+### Étape 5 : empaqueter un skill
 
-Once development of the skill is complete, it must be packaged into a distributable .skill file that gets shared with the user. The packaging process automatically validates the skill first to ensure it meets all requirements:
+Une fois le développement du skill terminé, il doit être empaqueté dans un fichier .skill distribuable, qui sera partagé avec l'utilisateur. Le processus d'empaquetage commence par valider automatiquement le skill pour s'assurer qu'il respecte toutes les exigences :
 
 ```bash
 scripts/package_skill.py <path/to/skill-folder>
 ```
 
-Optional output directory specification:
+Indication facultative du répertoire de sortie :
 
 ```bash
 scripts/package_skill.py <path/to/skill-folder> ./dist
 ```
 
-The packaging script will:
+Le script d'empaquetage va :
 
-1. **Validate** the skill automatically, checking:
+1. **Valider** automatiquement le skill, en vérifiant :
 
-   - YAML frontmatter format and required fields
-   - Skill naming conventions and directory structure
-   - Description completeness and quality
-   - File organization and resource references
+   - le format du frontmatter YAML et les champs obligatoires ;
+   - les conventions de nommage du skill et la structure des répertoires ;
+   - l'exhaustivité et la qualité de la description ;
+   - l'organisation des fichiers et les références aux ressources.
 
-2. **Package** the skill if validation passes, creating a .skill file named after the skill (e.g., `my-skill.skill`) that includes all files and maintains the proper directory structure for distribution. The .skill file is a zip file with a .skill extension.
+2. **Empaqueter** le skill si la validation réussit, en créant un fichier .skill portant le nom du skill (par ex. `my-skill.skill`) qui inclut tous les fichiers et conserve la structure de répertoires adéquate pour la distribution. Le fichier .skill est un fichier zip avec l'extension .skill.
 
-If validation fails, the script will report the errors and exit without creating a package. Fix any validation errors and run the packaging command again.
+Si la validation échoue, le script signale les erreurs et s'arrête sans créer de paquet. Corrigez les erreurs de validation et relancez la commande d'empaquetage.
 
-### Step 6: Iterate
+### Étape 6 : itérer
 
-After testing the skill, users may request improvements. Often this happens right after using the skill, with fresh context of how the skill performed.
+Après avoir testé le skill, les utilisateurs peuvent demander des améliorations. Cela arrive souvent juste après l'utilisation du skill, quand on a encore bien en tête la façon dont il s'est comporté.
 
-**Iteration workflow:**
+**Workflow d'itération :**
 
-1. Use the skill on real tasks
-2. Notice struggles or inefficiencies
-3. Identify how SKILL.md or bundled resources should be updated
-4. Implement changes and test again
+1. Utilisez le skill sur des tâches réelles
+2. Repérez les difficultés ou les inefficacités
+3. Déterminez comment SKILL.md ou les ressources incluses doivent être mis à jour
+4. Appliquez les modifications et testez à nouveau

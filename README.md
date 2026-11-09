@@ -1,78 +1,78 @@
-# Claude Code Configuration for Django Projects
+# Configuration de Claude Code pour les projets Django
 
-> Most software engineers are seriously sleeping on how good LLM agents are right now, especially something like Claude Code.
+> La plupart des ingénieurs logiciels sous-estiment sérieusement à quel point les agents LLM sont performants aujourd'hui, en particulier un outil comme Claude Code.
 
-Once you've got Claude Code set up, you can point it at your codebase, have it learn your conventions, pull in best practices, and refine everything until it's basically operating like a super-powered teammate. **The real unlock is building a solid set of reusable "[skills](#skills---domain-knowledge)" plus a few "[agents](#agents---specialized-assistants)" for the stuff you do all the time.**
+Une fois Claude Code configuré, vous pouvez le diriger vers votre base de code, lui faire apprendre vos conventions, y intégrer les bonnes pratiques et tout affiner jusqu'à ce qu'il fonctionne pratiquement comme un coéquipier doté de super-pouvoirs. **Le vrai déclic, c'est de construire un solide ensemble de « [skills](#skills---connaissances-métier) » réutilisables, plus quelques « [agents](#agents---assistants-spécialisés) », pour les tâches que vous faites tout le temps.**
 
-### What This Looks Like in Practice
+### Ce que cela donne en pratique
 
-**Domain Knowledge Skills?** We have [15 specialized skills](.claude/skills/) covering everything from [Django models](.claude/skills/django-models/SKILL.md) and [forms](.claude/skills/django-forms/SKILL.md) to [HTMX patterns](.claude/skills/htmx-patterns/SKILL.md) and [Celery tasks](.claude/skills/celery-patterns/SKILL.md). When debugging, our [systematic debugging skill](.claude/skills/systematic-debugging/SKILL.md) ensures root cause analysis before fixes. Need to explore your Django project? Use [django-extensions](.claude/skills/django-extensions/SKILL.md). Want to create new skills? Follow the [skill-creator guide](.claude/skills/skill-creator/SKILL.md).
+**Des skills de connaissances métier ?** Nous avons [15 skills spécialisés](.claude/skills/) qui couvrent tout, des [modèles Django](.claude/skills/django-models/SKILL.md) et des [formulaires](.claude/skills/django-forms/SKILL.md) aux [patterns HTMX](.claude/skills/htmx-patterns/SKILL.md) et aux [tâches Celery](.claude/skills/celery-patterns/SKILL.md). Lors du débogage, notre [skill de débogage systématique](.claude/skills/systematic-debugging/SKILL.md) garantit une analyse de la cause racine avant toute correction. Besoin d'explorer votre projet Django ? Utilisez [django-extensions](.claude/skills/django-extensions/SKILL.md). Vous voulez créer de nouveaux skills ? Suivez le [guide skill-creator](.claude/skills/skill-creator/SKILL.md).
 
-**Automated Quality Gates?** We use [hooks](.claude/settings.json) to auto-format code with Ruff, run tests when test files change, type-check with pyright, and even [block edits on the main branch](.claude/settings.md). The hooks catch issues like missing type hints, N+1 queries, and lint violations before they hit review.
+**Des contrôles qualité automatisés ?** Nous utilisons des [hooks](.claude/settings.json) pour formater automatiquement le code avec Ruff, lancer les tests quand des fichiers de test changent, effectuer la vérification des types avec pyright, et même [bloquer les modifications sur la branche main](.claude/settings.md). Les hooks détectent des problèmes comme des annotations de type manquantes, des requêtes N+1 et des violations de lint avant qu'ils n'arrivent en revue.
 
-**Deep Code Review?** We have a [code review agent](.claude/agents/code-reviewer.md) that Claude runs after changes are made. It follows a detailed checklist covering Python type hints, QuerySet optimization, error handling, form validation, and more. When a PR goes up, we have a [GitHub Action](.github/workflows/pr-claude-code-review.yml) that does a full PR review automatically.
+**Une revue de code approfondie ?** Nous avons un [agent de revue de code](.claude/agents/code-reviewer.md) que Claude exécute une fois les modifications effectuées. Il suit une liste de vérification détaillée qui couvre les annotations de type Python, l'optimisation des QuerySet, la gestion des erreurs, la validation des formulaires, et plus encore. Quand une PR est ouverte, une [GitHub Action](.github/workflows/pr-claude-code-review.yml) en fait automatiquement une revue complète.
 
-**Scheduled Maintenance?** We've got GitHub workflow agents that run on a schedule:
-- [Monthly docs sync](.github/workflows/scheduled-claude-code-docs-sync.yml) - Reads commits from the last month and makes sure docs are still aligned
-- [Weekly code quality](.github/workflows/scheduled-claude-code-quality.yml) - Reviews random directories and auto-fixes issues
-- [Biweekly dependency audit](.github/workflows/scheduled-claude-code-dependency-audit.yml) - Safe dependency updates with test verification
+**Une maintenance planifiée ?** Nous avons des agents de workflow GitHub qui s'exécutent selon un calendrier :
+- [Synchronisation mensuelle de la documentation](.github/workflows/scheduled-claude-code-docs-sync.yml) - Lit les commits du dernier mois et vérifie que la documentation est toujours alignée
+- [Qualité du code hebdomadaire](.github/workflows/scheduled-claude-code-quality.yml) - Passe en revue des répertoires choisis au hasard et corrige automatiquement les problèmes
+- [Audit bimensuel des dépendances](.github/workflows/scheduled-claude-code-dependency-audit.yml) - Mises à jour sûres des dépendances, vérifiées par les tests
 
-**Intelligent Skill Suggestions?** We built a [skill evaluation system](#skill-evaluation-hooks) that analyzes every prompt and automatically suggests which skills Claude should activate based on keywords, file paths, and intent patterns.
+**Des suggestions de skills intelligentes ?** Nous avons construit un [système d'évaluation des skills](#hooks-dévaluation-des-skills) qui analyse chaque prompt et suggère automatiquement les skills que Claude doit activer, en fonction des mots-clés, des chemins de fichiers et des motifs d'intention.
 
-A ton of maintenance and quality work is just... automated. It runs ridiculously smoothly.
+Une énorme partie du travail de maintenance et de qualité est tout simplement... automatisée. Et ça tourne incroyablement bien.
 
-**JIRA/Linear Integration?** We connect Claude Code to our ticket system via [MCP servers](.mcp.json). Now Claude can read the ticket, understand the requirements, implement the feature, update the ticket status, and even create new tickets if it finds bugs along the way. The [`ticket` skill](.claude/skills/ticket/SKILL.md) handles the entire workflow—from reading acceptance criteria to linking the PR back to the ticket.
+**Une intégration JIRA/Linear ?** Nous connectons Claude Code à notre système de tickets via des [serveurs MCP](.mcp.json). Claude peut désormais lire le ticket, comprendre les exigences, implémenter la fonctionnalité, mettre à jour le statut du ticket, et même créer de nouveaux tickets s'il trouve des bugs en cours de route. Le [skill `ticket`](.claude/skills/ticket/SKILL.md) gère l'ensemble du workflow, de la lecture des critères d'acceptation jusqu'à la liaison de la PR avec le ticket.
 
-We even use Claude Code for ticket triage. It reads the ticket, digs into the codebase, and leaves a comment with what it thinks should be done. So when an engineer picks it up, they're basically starting halfway through already.
+Nous utilisons même Claude Code pour le tri des tickets. Il lit le ticket, explore la base de code et laisse un commentaire indiquant ce qui, selon lui, devrait être fait. Ainsi, quand un ingénieur prend le ticket, il démarre pratiquement à mi-chemin.
 
-**There is so much low-hanging fruit here that it honestly blows my mind people aren't all over it.**
-
----
-
-## Table of Contents
-
-- [Directory Structure](#directory-structure)
-- [Quick Start](#quick-start)
-- [Working with Worktrees](#working-with-worktrees)
-- [Configuration Reference](#configuration-reference)
-  - [CLAUDE.md - Project Memory](#claudemd---project-memory)
-  - [settings.json - Hooks & Environment](#settingsjson---hooks--environment)
-  - [MCP Servers - External Integrations](#mcp-servers---external-integrations)
-  - [LSP Servers - Real-Time Code Intelligence](#lsp-servers---real-time-code-intelligence)
-  - [Skill Evaluation Hooks](#skill-evaluation-hooks)
-  - [Skills - Domain Knowledge](#skills---domain-knowledge)
-  - [Agents - Specialized Assistants](#agents---specialized-assistants)
-- [GitHub Actions Workflows](#github-actions-workflows)
-- [Best Practices](#best-practices)
-- [Examples in This Repository](#examples-in-this-repository)
+**Il y a tellement de gains faciles à portée de main que je suis franchement sidéré que tout le monde ne s'en empare pas.**
 
 ---
 
-## Directory Structure
+## Table des matières
+
+- [Structure des répertoires](#structure-des-répertoires)
+- [Démarrage rapide](#démarrage-rapide)
+- [Travailler avec les worktrees](#travailler-avec-les-worktrees)
+- [Référence de configuration](#référence-de-configuration)
+  - [CLAUDE.md - Mémoire du projet](#claudemd---mémoire-du-projet)
+  - [settings.json - Hooks et environnement](#settingsjson---hooks-et-environnement)
+  - [Serveurs MCP - Intégrations externes](#serveurs-mcp---intégrations-externes)
+  - [Serveurs LSP - Intelligence du code en temps réel](#serveurs-lsp---intelligence-du-code-en-temps-réel)
+  - [Hooks d'évaluation des skills](#hooks-dévaluation-des-skills)
+  - [Skills - Connaissances métier](#skills---connaissances-métier)
+  - [Agents - Assistants spécialisés](#agents---assistants-spécialisés)
+- [Workflows GitHub Actions](#workflows-github-actions)
+- [Bonnes pratiques](#bonnes-pratiques)
+- [Exemples dans ce dépôt](#exemples-dans-ce-dépôt)
+
+---
+
+## Structure des répertoires
 
 ```
 your-project/
-├── CLAUDE.md                      # Project memory (alternative location)
-├── .mcp.json                      # MCP server configuration (JIRA, GitHub, etc.)
+├── CLAUDE.md                      # Mémoire du projet (emplacement alternatif)
+├── .mcp.json                      # Configuration des serveurs MCP (JIRA, GitHub, etc.)
 ├── .claude/
-│   ├── settings.json              # Hooks, environment, permissions
-│   ├── settings.local.json        # Personal overrides (gitignored)
-│   ├── settings.md                # Human-readable hook documentation
-│   ├── .gitignore                 # Ignore local/personal files
+│   ├── settings.json              # Hooks, environnement, permissions
+│   ├── settings.local.json        # Surcharges personnelles (ignoré par git)
+│   ├── settings.md                # Documentation des hooks lisible par un humain
+│   ├── .gitignore                 # Ignore les fichiers locaux/personnels
 │   │
-│   ├── agents/                    # Custom AI agents
-│   │   └── code-reviewer.md       # Proactive code review agent
+│   ├── agents/                    # Agents IA personnalisés
+│   │   └── code-reviewer.md       # Agent de revue de code proactif
 │   │
-│   ├── hooks/                     # Hook scripts
-│   │   ├── skill-eval.sh          # Skill matching on prompt submit
-│   │   ├── skill-eval.js          # Node.js skill matching engine
-│   │   └── skill-rules.json       # Pattern matching configuration
+│   ├── hooks/                     # Scripts de hooks
+│   │   ├── skill-eval.sh          # Correspondance des skills à la soumission d'un prompt
+│   │   ├── skill-eval.js          # Moteur Node.js de correspondance des skills
+│   │   └── skill-rules.json       # Configuration de la correspondance de motifs
 │   │
-│   ├── skills/                    # Domain knowledge + workflow skills
-│   │   ├── README.md              # Skills overview
+│   ├── skills/                    # Skills de connaissances métier + skills de workflow
+│   │   ├── README.md              # Vue d'ensemble des skills
 │   │   ├── skill-creator/
 │   │   │   └── SKILL.md
-│   │   ├── ticket/                # User-invocable workflow skills
+│   │   ├── ticket/                # Skills de workflow invocables par l'utilisateur
 │   │   │   └── SKILL.md
 │   │   ├── pr-review/
 │   │   │   └── SKILL.md
@@ -82,59 +82,59 @@ your-project/
 │   │   │   └── SKILL.md
 │   │   └── ...
 │   │
-│   └── rules/                     # Modular instructions (optional)
+│   └── rules/                     # Instructions modulaires (facultatif)
 │       ├── code-style.md
 │       └── security.md
 │
 └── .github/
     └── workflows/
-        ├── pr-claude-code-review.yml           # Auto PR review
-        ├── scheduled-claude-code-docs-sync.yml # Monthly docs sync
-        ├── scheduled-claude-code-quality.yml   # Weekly quality review
+        ├── pr-claude-code-review.yml           # Revue automatique des PR
+        ├── scheduled-claude-code-docs-sync.yml # Synchronisation mensuelle de la documentation
+        ├── scheduled-claude-code-quality.yml   # Revue qualité hebdomadaire
         └── scheduled-claude-code-dependency-audit.yml
 ```
 
 ---
 
-## Quick Start
+## Démarrage rapide
 
-### 1. Create the `.claude` directory
+### 1. Créez le répertoire `.claude`
 
 ```bash
 mkdir -p .claude/{agents,hooks,skills}
 ```
 
-### 2. Add a CLAUDE.md file
+### 2. Ajoutez un fichier CLAUDE.md
 
-Create `CLAUDE.md` in your project root with your project's key information. See [CLAUDE.md](CLAUDE.md) for a complete example.
+Créez `CLAUDE.md` à la racine de votre projet avec les informations clés de votre projet. Consultez [CLAUDE.md](CLAUDE.md) pour un exemple complet.
 
 ```markdown
-# Project Name
+# Nom du projet
 
-## Quick Facts
-- **Stack**: Django, PostgreSQL, HTMX
-- **Package Manager**: uv
-- **Test Command**: `uv run pytest`
-- **Lint Command**: `uv run ruff check .`
-- **Format Command**: `uv run ruff format .`
-- **Type Check**: `uv run pyright`
+## Informations clés
+- **Stack** : Django, PostgreSQL, HTMX
+- **Gestionnaire de paquets** : uv
+- **Commande de test** : `uv run pytest`
+- **Commande de lint** : `uv run ruff check .`
+- **Commande de formatage** : `uv run ruff format .`
+- **Vérification des types** : `uv run pyright`
 
-## Key Directories
-- `apps/` - Django applications
-- `config/` - Django settings and root URLconf
-- `templates/` - Django templates
-- `tests/` - Test files
+## Répertoires clés
+- `apps/` - Applications Django
+- `config/` - Settings Django et URLconf racine
+- `templates/` - Gabarits Django
+- `tests/` - Fichiers de test
 
-## Code Style
-- Python 3.12+ with type hints required
-- No `Any` types - use proper type hints
-- Use early returns, avoid nested conditionals
-- Prefer Function-Based Views
+## Style de code
+- Python 3.12+ avec annotations de type obligatoires
+- Pas de types `Any` - utilisez des annotations de type appropriées
+- Utilisez les retours anticipés, évitez les conditions imbriquées
+- Privilégiez les vues basées sur des fonctions
 ```
 
-### 3. Add settings.json with hooks
+### 3. Ajoutez settings.json avec des hooks
 
-Create `.claude/settings.json`. See [settings.json](.claude/settings.json) for a full example with auto-formatting, testing, and more.
+Créez `.claude/settings.json`. Consultez [settings.json](.claude/settings.json) pour un exemple complet avec formatage automatique, tests, et plus encore.
 
 ```json
 {
@@ -155,53 +155,53 @@ Create `.claude/settings.json`. See [settings.json](.claude/settings.json) for a
 }
 ```
 
-### 4. Add your first skill
+### 4. Ajoutez votre premier skill
 
-Create `.claude/skills/your-skill-name/SKILL.md`. See [skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md) for guidance on creating effective skills, or [django-extensions/SKILL.md](.claude/skills/django-extensions/SKILL.md) for a simple example.
+Créez `.claude/skills/your-skill-name/SKILL.md`. Consultez [skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md) pour des conseils sur la création de skills efficaces, ou [django-extensions/SKILL.md](.claude/skills/django-extensions/SKILL.md) pour un exemple simple.
 
 ```markdown
 ---
 name: your-skill-name
-description: What this skill does and when to use it. Include keywords users would mention.
+description: Ce que fait ce skill et quand l'utiliser. Incluez les mots-clés que les utilisateurs mentionneraient.
 ---
 
-# Your Skill Title
+# Titre de votre skill
 
-## When to Use
-- Describe when Claude should use this skill
-- Include specific trigger scenarios
+## Quand l'utiliser
+- Décrivez quand Claude doit utiliser ce skill
+- Incluez des scénarios de déclenchement précis
 
-## Core Patterns
-- Show examples and best practices
-- Include code snippets if relevant
+## Patrons essentiels
+- Montrez des exemples et des bonnes pratiques
+- Incluez des extraits de code si c'est pertinent
 ```
 
-> **Tip:** The `description` field is critical—Claude uses it to decide when to apply the skill. Include keywords users would naturally mention.
+> **Astuce :** le champ `description` est essentiel : Claude s'en sert pour décider quand appliquer le skill. Incluez les mots-clés que les utilisateurs mentionneraient naturellement.
 
 ---
 
-## Working with Worktrees
+## Travailler avec les worktrees
 
-Claude Code has built-in worktree support that lets you run Claude in an isolated copy of your repository. This keeps your main working directory clean while Claude experiments, implements features, or makes sweeping changes.
+Claude Code prend en charge nativement les worktrees, ce qui vous permet d'exécuter Claude dans une copie isolée de votre dépôt. Votre répertoire de travail principal reste ainsi propre pendant que Claude expérimente, implémente des fonctionnalités ou effectue des modifications de grande ampleur.
 
 ```bash
-claude --worktree   # or: claude -w
+claude --worktree   # ou : claude -w
 ```
 
-This creates a temporary git worktree on a new branch, starts Claude inside it, and leaves your current branch untouched.
+Cette commande crée un worktree git temporaire sur une nouvelle branche, y démarre Claude et laisse votre branche actuelle intacte.
 
-### Why Use Worktrees
+### Pourquoi utiliser les worktrees
 
-- **Safe experimentation** — Claude can make and undo changes freely without touching your working tree
-- **Parallel work** — run multiple Claude sessions on different features simultaneously
-- **Clean merges** — review the worktree branch before merging anything to `main`
+- **Expérimentation sans risque** — Claude peut effectuer et annuler des modifications librement, sans toucher à votre arbre de travail
+- **Travail en parallèle** — exécutez plusieurs sessions Claude sur différentes fonctionnalités simultanément
+- **Fusions (merges) propres** — relisez la branche du worktree avant de fusionner quoi que ce soit dans `main`
 
-### Automatic Environment with direnv
+### Environnement automatique avec direnv
 
-Worktrees need the same Python virtualenv and environment variables as the main repo — but they live in a different directory. Our [`.envrc`](.envrc) handles this automatically via [direnv](https://direnv.net/):
+Les worktrees ont besoin du même virtualenv Python et des mêmes variables d'environnement que le dépôt principal — mais ils se trouvent dans un autre répertoire. Notre [`.envrc`](.envrc) gère cela automatiquement grâce à [direnv](https://direnv.net/) :
 
 ```bash
-# .envrc — works in both the main repo and any worktree
+# .envrc — fonctionne aussi bien dans le dépôt principal que dans n'importe quel worktree
 _main_venv="$(git worktree list --porcelain | awk 'NR==1{print $2}')/.venv"
 export VIRTUAL_ENV="$_main_venv"
 PATH_add "$_main_venv/bin"
@@ -211,12 +211,12 @@ dotenv_if_exists "$_main_worktree/.env"
 dotenv_if_exists ".env"
 ```
 
-When direnv loads this in a worktree, it automatically:
-- Activates the **main repo's `.venv`** — no need to reinstall dependencies per worktree
-- Loads the **main repo's `.env`** — secrets and config are inherited without copying
-- Loads a local `.env` if one exists in the worktree (for overrides)
+Lorsque direnv charge ce fichier dans un worktree, il effectue automatiquement les opérations suivantes :
+- Il active le **`.venv` du dépôt principal** — inutile de réinstaller les dépendances pour chaque worktree
+- Il charge le **`.env` du dépôt principal** — les secrets et la configuration sont hérités sans copie
+- Il charge un `.env` local s'il en existe un dans le worktree (pour les surcharges)
 
-To enable this, install direnv and hook it into your shell:
+Pour l'activer, installez direnv et raccordez-le à votre shell :
 
 ```bash
 # macOS
@@ -225,113 +225,113 @@ brew install direnv
 # Ubuntu/Debian
 sudo apt install direnv
 
-# Add to ~/.zshrc or ~/.bashrc
-eval "$(direnv hook zsh)"   # or bash
+# Ajoutez à ~/.zshrc ou ~/.bashrc
+eval "$(direnv hook zsh)"   # ou bash
 ```
 
-Then allow the `.envrc` once in your project root:
+Autorisez ensuite le `.envrc` une fois pour toutes à la racine de votre projet :
 
 ```bash
 direnv allow
 ```
 
-Every worktree Claude creates will inherit the right environment automatically from that point on.
+À partir de là, chaque worktree créé par Claude héritera automatiquement du bon environnement.
 
-### Committing and Merging Back
+### Commit et fusion en retour
 
-Once you're happy with the changes in a worktree session, use the [`worktree-commit-merge` skill](.claude/skills/worktree-commit-merge/SKILL.md) to commit the work and merge it back to `main`:
+Une fois satisfait des modifications d'une session dans un worktree, utilisez le [skill `worktree-commit-merge`](.claude/skills/worktree-commit-merge/SKILL.md) pour commiter le travail et le fusionner dans `main` :
 
 ```
-You: we're done, commit and merge to main
+Vous : c'est terminé, commite et fusionne dans main
 ```
 
-Claude will:
-1. Commit all changes in the worktree with a conventional commit message
-2. Merge the worktree branch into `main`
-3. Sync the worktree branch with `main`
+Claude va :
+1. Commiter toutes les modifications du worktree avec un message de commit conventionnel
+2. Fusionner la branche du worktree dans `main`
+3. Synchroniser la branche du worktree avec `main`
 
-The skill triggers automatically when you say things like "commit and merge to master/main" or "we're done with this worktree."
+Le skill se déclenche automatiquement lorsque vous dites par exemple « commite et fusionne dans master/main » ou « on a fini avec ce worktree ».
 
 ---
 
-## Configuration Reference
+## Référence de configuration
 
-### CLAUDE.md - Project Memory
+### CLAUDE.md - Mémoire du projet
 
-CLAUDE.md is Claude's persistent memory that loads automatically at session start.
+CLAUDE.md est la mémoire persistante de Claude, chargée automatiquement au démarrage de la session.
 
-**Locations (in order of precedence):**
-1. `.claude/CLAUDE.md` (project, in .claude folder)
-2. `./CLAUDE.md` (project root)
-3. `~/.claude/CLAUDE.md` (user-level, all projects)
+**Emplacements (par ordre de priorité) :**
+1. `.claude/CLAUDE.md` (projet, dans le dossier .claude)
+2. `./CLAUDE.md` (racine du projet)
+3. `~/.claude/CLAUDE.md` (niveau utilisateur, tous les projets)
 
-**What to include:**
-- Project stack and architecture overview
-- Key commands (test, build, lint, deploy)
-- Code style guidelines
-- Important directories and their purposes
-- Critical rules and constraints
+**Ce qu'il faut inclure :**
+- La stack du projet et une vue d'ensemble de l'architecture
+- Les commandes clés (test, build, lint, déploiement)
+- Les règles de style de code
+- Les répertoires importants et leur rôle
+- Les règles et contraintes critiques
 
-**📄 Example:** [CLAUDE.md](CLAUDE.md)
+**📄 Exemple :** [CLAUDE.md](CLAUDE.md)
 
 ---
 
-### settings.json - Hooks & Environment
+### settings.json - Hooks et environnement
 
-The main configuration file for hooks, environment variables, and permissions.
+Le fichier de configuration principal pour les hooks, les variables d'environnement et les permissions.
 
-**Location:** `.claude/settings.json`
+**Emplacement :** `.claude/settings.json`
 
-**📄 Example:** [settings.json](.claude/settings.json) | [Human-readable docs](.claude/settings.md)
+**📄 Exemple :** [settings.json](.claude/settings.json) | [Documentation lisible par un humain](.claude/settings.md)
 
-#### Hook Events
+#### Événements de hook
 
-| Event | When It Fires | Use Case |
+| Événement | Moment du déclenchement | Cas d'usage |
 |-------|---------------|----------|
-| `PreToolUse` | Before tool execution | Block edits on main, validate commands |
-| `PostToolUse` | After tool completes | Auto-format, run tests, lint |
-| `UserPromptSubmit` | User submits prompt | Add context, suggest skills |
-| `Stop` | Agent finishes | Decide if Claude should continue |
+| `PreToolUse` | Avant l'exécution d'un outil | Bloquer les modifications sur main, valider les commandes |
+| `PostToolUse` | Après l'exécution d'un outil | Formatage automatique, exécution des tests, lint |
+| `UserPromptSubmit` | L'utilisateur soumet un prompt | Ajouter du contexte, suggérer des skills |
+| `Stop` | L'agent a terminé | Décider si Claude doit continuer |
 
-#### Hook Response Format
+#### Format de réponse des hooks
 
 ```json
 {
-  "block": true,           // Block the action (PreToolUse only)
-  "message": "Reason",     // Message to show user
-  "feedback": "Info",      // Non-blocking feedback
-  "suppressOutput": true,  // Hide command output
-  "continue": false        // Whether to continue
+  "block": true,           // Bloque l'action (PreToolUse uniquement)
+  "message": "Reason",     // Message affiché à l'utilisateur
+  "feedback": "Info",      // Retour non bloquant
+  "suppressOutput": true,  // Masque la sortie de la commande
+  "continue": false        // Indique s'il faut continuer
 }
 ```
 
-#### Exit Codes
-- `0` - Success
-- `2` - Blocking error (PreToolUse only, blocks the tool)
-- Other - Non-blocking error
+#### Codes de sortie
+- `0` - Succès
+- `2` - Erreur bloquante (PreToolUse uniquement, bloque l'outil)
+- Autre - Erreur non bloquante
 
 ---
 
-### MCP Servers - External Integrations
+### Serveurs MCP - Intégrations externes
 
-MCP (Model Context Protocol) servers let Claude Code connect to external tools like JIRA, GitHub, Slack, databases, and more. This is how you enable workflows like "read a ticket, implement it, and update the ticket status."
+Les serveurs MCP (Model Context Protocol) permettent à Claude Code de se connecter à des outils externes comme JIRA, GitHub, Slack, des bases de données, et bien d'autres. C'est ainsi que vous rendez possibles des workflows comme « lire un ticket, l'implémenter et mettre à jour le statut du ticket ».
 
-**Location:** `.mcp.json` (project root, committed to git for team sharing)
+**Emplacement :** `.mcp.json` (racine du projet, commité dans git pour le partage en équipe)
 
-**📄 Example:** [.mcp.json](.mcp.json)
+**📄 Exemple :** [.mcp.json](.mcp.json)
 
-#### How MCP Works
+#### Fonctionnement de MCP
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Claude Code   │────▶│   MCP Server    │────▶│  External API   │
-│                 │◀────│  (local bridge) │◀────│  (JIRA, GitHub) │
+│   Claude Code   │────▶│   Serveur MCP   │────▶│   API externe   │
+│                 │◀────│  (pont local)   │◀────│  (JIRA, GitHub) │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
-MCP servers run locally and provide Claude with tools to interact with external services. When you configure a JIRA MCP server, Claude gets tools like `jira_get_issue`, `jira_update_issue`, `jira_create_issue`, etc.
+Les serveurs MCP s'exécutent localement et fournissent à Claude des outils pour interagir avec des services externes. Lorsque vous configurez un serveur MCP JIRA, Claude obtient des outils comme `jira_get_issue`, `jira_update_issue`, `jira_create_issue`, etc.
 
-#### .mcp.json Format
+#### Format de .mcp.json
 
 ```json
 {
@@ -348,18 +348,18 @@ MCP servers run locally and provide Claude with tools to interact with external 
 }
 ```
 
-**Fields:**
+**Champs :**
 
-| Field | Required | Description |
+| Champ | Obligatoire | Description |
 |-------|----------|-------------|
-| `type` | Yes | Server type: `stdio` (local process) or `http` (remote) |
-| `command` | For stdio | Executable to run (e.g., `npx`, `python`) |
-| `args` | No | Command-line arguments |
-| `env` | No | Environment variables (supports `${VAR}` expansion) |
-| `url` | For http | Remote server URL |
-| `headers` | For http | HTTP headers for authentication |
+| `type` | Oui | Type de serveur : `stdio` (processus local) ou `http` (distant) |
+| `command` | Pour stdio | Exécutable à lancer (par ex. `npx`, `python`) |
+| `args` | Non | Arguments de ligne de commande |
+| `env` | Non | Variables d'environnement (prend en charge l'expansion `${VAR}`) |
+| `url` | Pour http | URL du serveur distant |
+| `headers` | Pour http | En-têtes HTTP pour l'authentification |
 
-#### Example: JIRA Integration
+#### Exemple : intégration JIRA
 
 ```json
 {
@@ -378,43 +378,43 @@ MCP servers run locally and provide Claude with tools to interact with external 
 }
 ```
 
-**What this enables:**
-- Read ticket details, acceptance criteria, and comments
-- Update ticket status (To Do → In Progress → In Review)
-- Add comments with progress updates
-- Create new tickets for bugs found during development
-- Link PRs to tickets
+**Ce que cela permet :**
+- Lire les détails du ticket, les critères d'acceptation et les commentaires
+- Mettre à jour le statut du ticket (To Do → In Progress → In Review)
+- Ajouter des commentaires pour signaler l'avancement
+- Créer de nouveaux tickets pour les bugs trouvés pendant le développement
+- Lier les PR aux tickets
 
-**Example workflow with the [`ticket` skill](.claude/skills/ticket/SKILL.md):**
+**Exemple de workflow avec le [skill `ticket`](.claude/skills/ticket/SKILL.md) :**
 ```
-You: /ticket PROJ-123
+Vous : /ticket PROJ-123
 
-Claude:
-1. Fetching PROJ-123 from JIRA...
-   "Add user profile avatar upload"
+Claude :
+1. Récupération de PROJ-123 depuis JIRA...
+   "Ajouter l'envoi d'un avatar sur le profil utilisateur"
 
-2. Reading acceptance criteria...
-   - Upload button on profile page
-   - Support JPG/PNG up to 5MB
-   - Show loading state
+2. Lecture des critères d'acceptation...
+   - Bouton d'envoi sur la page de profil
+   - Prise en charge de JPG/PNG jusqu'à 5 Mo
+   - Affichage d'un état de chargement
 
-3. Searching codebase for related files...
-   Found: apps/users/views.py
-   Found: templates/users/profile.html
+3. Recherche des fichiers associés dans la base de code...
+   Trouvé : apps/users/views.py
+   Trouvé : templates/users/profile.html
 
-4. Creating branch: cw/PROJ-123-avatar-upload
+4. Création de la branche : cw/PROJ-123-avatar-upload
 
-5. [Implements feature...]
+5. [Implémentation de la fonctionnalité...]
 
-6. Updating JIRA status to "In Review"
-   Adding comment: "PR #456 ready for review"
+6. Passage du statut JIRA à "In Review"
+   Ajout du commentaire : "PR #456 prête pour la revue"
 
-7. Creating PR linked to PROJ-123...
+7. Création de la PR liée à PROJ-123...
 ```
 
-#### Common MCP Server Configurations
+#### Configurations courantes de serveurs MCP
 
-**Issue Tracking:**
+**Suivi des tickets :**
 ```json
 {
   "jira": {
@@ -436,7 +436,7 @@ Claude:
 }
 ```
 
-**Code & DevOps:**
+**Code et DevOps :**
 ```json
 {
   "github": {
@@ -457,7 +457,7 @@ Claude:
 }
 ```
 
-**Communication:**
+**Communication :**
 ```json
 {
   "slack": {
@@ -472,8 +472,8 @@ Claude:
 }
 ```
 
-**Databases:**
-Take a look at [postgres-mcp](https://github.com/crystaldba/postgres-mcp).
+**Bases de données :**
+Jetez un œil à [postgres-mcp](https://github.com/crystaldba/postgres-mcp).
 ```json
 {
   "postgres": {
@@ -490,22 +490,22 @@ Take a look at [postgres-mcp](https://github.com/crystaldba/postgres-mcp).
 }
 ```
 
-#### Environment Variables
+#### Variables d'environnement
 
-MCP configs support variable expansion:
-- `${VAR}` - Expands to environment variable (fails if not set)
-- `${VAR:-default}` - Uses default if VAR is not set
+Les configurations MCP prennent en charge l'expansion de variables :
+- `${VAR}` - Est remplacé par la variable d'environnement (échoue si elle n'est pas définie)
+- `${VAR:-default}` - Utilise la valeur par défaut si VAR n'est pas définie
 
-Set these in your shell profile or `.env` file (don't commit secrets!):
+Définissez-les dans le profil de votre shell ou dans un fichier `.env` (ne commitez pas de secrets !) :
 ```bash
 export JIRA_HOST="https://yourcompany.atlassian.net"
 export JIRA_EMAIL="you@company.com"
 export JIRA_API_TOKEN="your-api-token"
 ```
 
-#### Settings for MCP
+#### Settings pour MCP
 
-In `settings.json`, you can auto-approve MCP servers:
+Dans `settings.json`, vous pouvez approuver automatiquement les serveurs MCP :
 
 ```json
 {
@@ -513,7 +513,7 @@ In `settings.json`, you can auto-approve MCP servers:
 }
 ```
 
-Or approve specific servers:
+Ou approuver des serveurs précis :
 ```json
 {
   "enabledMcpjsonServers": ["jira", "github", "slack"]
@@ -522,15 +522,15 @@ Or approve specific servers:
 
 ---
 
-### LSP Servers - Real-Time Code Intelligence
+### Serveurs LSP - Intelligence du code en temps réel
 
-LSP (Language Server Protocol) gives Claude real-time understanding of your code—type information, errors, completions, and navigation. Instead of just reading text, Claude can "see" your code the way your IDE does.
+LSP (Language Server Protocol) donne à Claude une compréhension en temps réel de votre code : informations de type, erreurs, complétions et navigation. Au lieu de simplement lire du texte, Claude peut « voir » votre code comme le fait votre IDE.
 
-**Why this matters:** When you edit TypeScript, Claude immediately knows if you introduced a type error. When you reference a function, Claude can jump to its definition. This dramatically improves code generation quality.
+**Pourquoi c'est important :** lorsque vous modifiez du TypeScript, Claude sait immédiatement si vous avez introduit une erreur de type. Lorsque vous faites référence à une fonction, Claude peut aller directement à sa définition. Cela améliore considérablement la qualité du code généré.
 
-#### Enabling LSP
+#### Activer LSP
 
-LSP support is enabled through plugins in `settings.json`:
+La prise en charge de LSP s'active au moyen de plugins dans `settings.json` :
 
 ```json
 {
@@ -541,26 +541,26 @@ LSP support is enabled through plugins in `settings.json`:
 }
 ```
 
-#### What Claude Gets from LSP
+#### Ce que LSP apporte à Claude
 
-| Feature | Description |
+| Fonctionnalité | Description |
 |---------|-------------|
-| **Diagnostics** | Real-time errors and warnings after every edit |
-| **Type Information** | Hover info, function signatures, type definitions |
-| **Code Navigation** | Go to definition, find references |
-| **Completions** | Context-aware symbol suggestions |
+| **Diagnostics** | Erreurs et avertissements en temps réel après chaque modification |
+| **Informations de type** | Infos au survol, signatures de fonctions, définitions de types |
+| **Navigation dans le code** | Aller à la définition, trouver les références |
+| **Complétions** | Suggestions de symboles adaptées au contexte |
 
-#### Available LSP Plugins
+#### Plugins LSP disponibles
 
-| Plugin | Language | Install Binary First |
+| Plugin | Langage | Binaire à installer au préalable |
 |--------|----------|---------------------|
-| `pyright-lsp` | Python | `pip install pyright` or `uv tool install pyright` |
+| `pyright-lsp` | Python | `pip install pyright` ou `uv tool install pyright` |
 | `typescript-lsp` | TypeScript/JavaScript | `npm install -g typescript-language-server typescript` |
 | `rust-lsp` | Rust | `rustup component add rust-analyzer` |
 
-#### Custom LSP Configuration
+#### Configuration LSP personnalisée
 
-For advanced setups, create `.lsp.json`:
+Pour des configurations avancées, créez `.lsp.json` :
 
 ```json
 {
@@ -580,49 +580,49 @@ For advanced setups, create `.lsp.json`:
 }
 ```
 
-#### Troubleshooting
+#### Dépannage
 
-If LSP isn't working:
+Si LSP ne fonctionne pas :
 
-1. **Check binary is installed:**
+1. **Vérifiez que le binaire est installé :**
    ```bash
-   which typescript-language-server  # Should return a path
+   which typescript-language-server  # Doit renvoyer un chemin
    ```
 
-2. **Enable debug logging:**
+2. **Activez la journalisation de débogage :**
    ```bash
    claude --enable-lsp-logging
    ```
 
-3. **Check plugin status:**
+3. **Vérifiez l'état du plugin :**
    ```bash
-   claude /plugin  # View Errors tab
+   claude /plugin  # Consultez l'onglet Errors
    ```
 
-4. **Set an environment variable:**
+4. **Définissez une variable d'environnement :**
    ```bash
    export ENABLE_LSP_TOOL=1
    ```
 
 ---
 
-### Skill Evaluation Hooks
+### Hooks d'évaluation des skills
 
-One of our most powerful automations is the **skill evaluation system**. It runs on every prompt submission and intelligently suggests which skills Claude should activate.
+L'une de nos automatisations les plus puissantes est le **système d'évaluation des skills**. Il s'exécute à chaque soumission de prompt et suggère intelligemment les skills que Claude doit activer.
 
-**📄 Files:** [skill-eval.sh](.claude/hooks/skill-eval.sh) | [skill-eval.js](.claude/hooks/skill-eval.js) | [skill-rules.json](.claude/hooks/skill-rules.json)
+**📄 Fichiers :** [skill-eval.sh](.claude/hooks/skill-eval.sh) | [skill-eval.js](.claude/hooks/skill-eval.js) | [skill-rules.json](.claude/hooks/skill-rules.json)
 
-#### How It Works
+#### Fonctionnement
 
-When you submit a prompt, the `UserPromptSubmit` hook triggers our skill evaluation engine:
+Lorsque vous soumettez un prompt, le hook `UserPromptSubmit` déclenche notre moteur d'évaluation des skills :
 
-1. **Prompt Analysis** - The engine analyzes your prompt for:
-   - **Keywords**: Simple word matching (`test`, `form`, `graphql`, `bug`)
-   - **Patterns**: Regex matching (`\btest(?:s|ing)?\b`, `\.stories\.`)
-   - **File Paths**: Extracts mentioned files (`src/components/Button.tsx`)
-   - **Intent**: Detects what you're trying to do (`create.*test`, `fix.*bug`)
+1. **Analyse du prompt** - Le moteur recherche dans votre prompt :
+   - **Mots-clés** : correspondance simple de mots (`test`, `form`, `graphql`, `bug`)
+   - **Motifs** : correspondance par expressions régulières (`\btest(?:s|ing)?\b`, `\.stories\.`)
+   - **Chemins de fichiers** : extraction des fichiers mentionnés (`src/components/Button.tsx`)
+   - **Intention** : détection de ce que vous cherchez à faire (`create.*test`, `fix.*bug`)
 
-2. **Directory Mapping** - File paths are mapped to relevant skills:
+2. **Correspondance des répertoires** - Les chemins de fichiers sont associés aux skills pertinents :
    ```json
    {
      "src/components/core": "core-components",
@@ -632,7 +632,7 @@ When you submit a prompt, the `UserPromptSubmit` hook triggers our skill evaluat
    }
    ```
 
-3. **Confidence Scoring** - Each trigger type has a point value:
+3. **Score de confiance** - Chaque type de déclencheur a une valeur en points :
    ```json
    {
      "keyword": 2,
@@ -643,22 +643,22 @@ When you submit a prompt, the `UserPromptSubmit` hook triggers our skill evaluat
    }
    ```
 
-4. **Skill Suggestion** - Skills exceeding the confidence threshold are suggested with reasons:
+4. **Suggestion de skills** - Les skills qui dépassent le seuil de confiance sont suggérés, avec leurs justifications :
    ```
-   SKILL ACTIVATION REQUIRED
+   ACTIVATION DE SKILLS REQUISE
 
-   Detected file paths: .claude/skills/README.md, README.md
+   Chemins de fichiers détectés : .claude/skills/README.md, README.md
 
-   Matched skills (ranked by relevance):
-   1. skill-creator (HIGH confidence)
-      Matched: keyword "skill", path ".claude/skills/"
-   2. django-extensions (MEDIUM confidence)
-      Matched: directory mapping ".claude/"
+   Skills correspondants (classés par pertinence) :
+   1. skill-creator (confiance ÉLEVÉE)
+      Correspondance : mot-clé "skill", chemin ".claude/skills/"
+   2. django-extensions (confiance MOYENNE)
+      Correspondance : association de répertoire ".claude/"
    ```
 
 #### Configuration
 
-Skills are defined in [skill-rules.json](.claude/hooks/skill-rules.json):
+Les skills sont définis dans [skill-rules.json](.claude/hooks/skill-rules.json) :
 
 ```json
 {
@@ -679,14 +679,14 @@ Skills are defined in [skill-rules.json](.claude/hooks/skill-rules.json):
 }
 ```
 
-#### Adding to Your Project
+#### Ajout à votre projet
 
-1. Copy the hooks to your project:
+1. Copiez les hooks dans votre projet :
    ```bash
    cp -r .claude/hooks/ your-project/.claude/hooks/
    ```
 
-2. Add the hook to your `settings.json`:
+2. Ajoutez le hook à votre `settings.json` :
    ```json
    {
      "hooks": {
@@ -705,64 +705,64 @@ Skills are defined in [skill-rules.json](.claude/hooks/skill-rules.json):
    }
    ```
 
-3. Customize [skill-rules.json](.claude/hooks/skill-rules.json) with your project's skills and triggers.
+3. Personnalisez [skill-rules.json](.claude/hooks/skill-rules.json) avec les skills et les déclencheurs de votre projet.
 
 ---
 
-### Skills - Domain Knowledge
+### Skills - Connaissances métier
 
-Skills are markdown documents that teach Claude project-specific patterns and conventions.
+Les skills sont des documents Markdown qui enseignent à Claude les patrons et les conventions propres au projet.
 
-**Location:** `.claude/skills/{skill-name}/SKILL.md`
+**Emplacement :** `.claude/skills/{skill-name}/SKILL.md`
 
-**📄 Examples:**
+**📄 Exemples :**
 
-*Workflow skills (user-invocable):*
-- [ticket](.claude/skills/ticket/SKILL.md) - JIRA/Linear ticket end-to-end workflow
-- [onboard](.claude/skills/onboard/SKILL.md) - Deep task exploration and context building
-- [pr-review](.claude/skills/pr-review/SKILL.md) - PR review with project checklist
-- [pr-summary](.claude/skills/pr-summary/SKILL.md) - Generate PR description from branch diff
-- [code-quality](.claude/skills/code-quality/SKILL.md) - Run ruff, pyright, pytest and report findings
-- [docs-sync](.claude/skills/docs-sync/SKILL.md) - Verify docs match current code
-- [worktree-commit-merge](.claude/skills/worktree-commit-merge/SKILL.md) - Commit worktree changes and merge into master/main
+*Skills de workflow (invocables par l'utilisateur) :*
+- [ticket](.claude/skills/ticket/SKILL.md) - Workflow de bout en bout pour les tickets JIRA/Linear
+- [onboard](.claude/skills/onboard/SKILL.md) - Exploration approfondie de la tâche et constitution du contexte
+- [pr-review](.claude/skills/pr-review/SKILL.md) - Revue de PR avec la liste de vérification du projet
+- [pr-summary](.claude/skills/pr-summary/SKILL.md) - Génère la description de la PR à partir du diff de la branche
+- [code-quality](.claude/skills/code-quality/SKILL.md) - Exécute ruff, pyright, pytest et rend compte des résultats
+- [docs-sync](.claude/skills/docs-sync/SKILL.md) - Vérifie que la documentation correspond au code actuel
+- [worktree-commit-merge](.claude/skills/worktree-commit-merge/SKILL.md) - Commite les modifications du worktree et les fusionne dans master/main
 
-*Domain knowledge skills (auto-triggered):*
-- [skill-creator](.claude/skills/skill-creator/SKILL.md) - Guide for creating effective skills
-- [django-extensions](.claude/skills/django-extensions/SKILL.md) - Django-extensions management commands
-- [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md) - Four-phase debugging methodology
+*Skills de connaissances métier (déclenchés automatiquement) :*
+- [skill-creator](.claude/skills/skill-creator/SKILL.md) - Guide de création de skills efficaces
+- [django-extensions](.claude/skills/django-extensions/SKILL.md) - Commandes de gestion de django-extensions
+- [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md) - Méthodologie de débogage en quatre phases
 - [pytest-django-patterns](.claude/skills/pytest-django-patterns/SKILL.md) - pytest-django, Factory Boy, fixtures, TDD
-- [django-models](.claude/skills/django-models/SKILL.md) - Model design, QuerySet optimization, migrations
-- [django-forms](.claude/skills/django-forms/SKILL.md) - Form handling, validation, ModelForm patterns
-- [django-templates](.claude/skills/django-templates/SKILL.md) - Template inheritance, tags, filters
-- [htmx-patterns](.claude/skills/htmx-patterns/SKILL.md) - HTMX attributes, dynamic UI
-- [celery-patterns](.claude/skills/celery-patterns/SKILL.md) - Celery tasks, retry strategies
+- [django-models](.claude/skills/django-models/SKILL.md) - Conception des modèles, optimisation des QuerySet, migrations
+- [django-forms](.claude/skills/django-forms/SKILL.md) - Gestion des formulaires, validation, patterns ModelForm
+- [django-templates](.claude/skills/django-templates/SKILL.md) - Héritage de gabarits, balises, filtres
+- [htmx-patterns](.claude/skills/htmx-patterns/SKILL.md) - Attributs HTMX, interface dynamique
+- [celery-patterns](.claude/skills/celery-patterns/SKILL.md) - Tâches Celery, stratégies de nouvelle tentative
 
-#### SKILL.md Frontmatter Fields
+#### Champs du frontmatter de SKILL.md
 
-| Field | Required | Max Length | Description |
+| Champ | Obligatoire | Longueur max. | Description |
 |-------|----------|------------|-------------|
-| `name` | **Yes** | 64 chars | Lowercase letters, numbers, and hyphens only. Should match directory name. |
-| `description` | **Yes** | 1024 chars | What the skill does and when to use it. Claude uses this to decide when to apply the skill. Include trigger keywords and user-invocation examples. |
+| `name` | **Oui** | 64 caractères | Lettres minuscules, chiffres et tirets uniquement. Doit correspondre au nom du répertoire. |
+| `description` | **Oui** | 1024 caractères | Ce que fait le skill et quand l'utiliser. Claude s'en sert pour décider quand appliquer le skill. Incluez des mots-clés déclencheurs et des exemples d'invocation par l'utilisateur. |
 
-#### SKILL.md Format
+#### Format de SKILL.md
 
 ````markdown
 ---
 name: skill-name
-description: What this skill does and when to use it. Include keywords users would mention.
+description: Ce que fait ce skill et quand l'utiliser. Incluez les mots-clés que les utilisateurs mentionneraient.
 ---
 
-# Skill Title
+# Titre du skill
 
-## When to Use
-- Trigger condition 1
-- Trigger condition 2
+## Quand l'utiliser
+- Condition de déclenchement 1
+- Condition de déclenchement 2
 
-## Core Patterns
+## Patrons essentiels
 
-### Pattern Name
+### Nom du patron
 ```python
-# Example code
+# Exemple de code
 from django.db import models
 
 class User(models.Model):
@@ -770,90 +770,90 @@ class User(models.Model):
     is_active = models.BooleanField(default=True)
 ```
 
-## Anti-Patterns
+## Anti-patrons
 
-### What NOT to Do
+### Ce qu'il ne faut PAS faire
 ```python
-# Bad example - N+1 query
+# Mauvais exemple - requête N+1
 for user in User.objects.all():
-    print(user.profile.bio)  # Query per user!
+    print(user.profile.bio)  # Une requête par utilisateur !
 ```
 
-## Integration
-- Related skill: `other-skill`
+## Intégration
+- Skill associé : `other-skill`
 ```
 
-#### Best Practices for Skills
+#### Bonnes pratiques pour les skills
 
-1. **Keep SKILL.md focused** - Under 500 lines; put detailed docs in separate referenced files
-2. **Write trigger-rich descriptions** - Claude uses semantic matching on descriptions to decide when to apply skills
-3. **Include examples** - Show both good and bad patterns with code
-4. **Reference other skills** - Show how skills work together
-5. **Use exact filename** - Must be `SKILL.md` (case-sensitive)
+1. **Gardez SKILL.md ciblé** - Moins de 500 lignes ; placez la documentation détaillée dans des fichiers séparés et référencés
+2. **Rédigez des descriptions riches en déclencheurs** - Claude effectue une correspondance sémantique sur les descriptions pour décider quand appliquer les skills
+3. **Incluez des exemples** - Montrez avec du code les bons comme les mauvais patrons
+4. **Faites référence à d'autres skills** - Montrez comment les skills fonctionnent ensemble
+5. **Utilisez le nom de fichier exact** - Il doit s'agir de `SKILL.md` (sensible à la casse)
 ````
 ---
 
-### Agents - Specialized Assistants
+### Agents - Assistants spécialisés
 
-Agents are AI assistants with focused purposes and their own prompts.
+Les agents sont des assistants IA dotés d'un objectif ciblé et de leurs propres prompts.
 
-**Location:** `.claude/agents/{agent-name}.md`
+**Emplacement :** `.claude/agents/{agent-name}.md`
 
-**📄 Examples:**
-- [code-reviewer.md](.claude/agents/code-reviewer.md) - Comprehensive code review with checklist
-- [github-workflow.md](.claude/agents/github-workflow.md) - Git commits, branches, PRs
+**📄 Exemples :**
+- [code-reviewer.md](.claude/agents/code-reviewer.md) - Revue de code complète avec liste de vérification
+- [github-workflow.md](.claude/agents/github-workflow.md) - Commits Git, branches, PR
 
-#### Agent Format
+#### Format d'un agent
 
 ```markdown
 ---
 name: code-reviewer
-description: Reviews code for quality, security, and conventions. Use after writing or modifying code.
+description: Relit le code pour en vérifier la qualité, la sécurité et le respect des conventions. À utiliser après avoir écrit ou modifié du code.
 model: opus
 ---
 
-# Agent System Prompt
+# Prompt système de l'agent
 
-You are a senior code reviewer...
+Vous êtes un relecteur de code senior...
 
-## Your Process
-1. Run `git diff` to see changes
-2. Apply review checklist
-3. Provide feedback
+## Votre processus
+1. Exécutez `git diff` pour voir les modifications
+2. Appliquez la liste de vérification de la revue
+3. Formulez vos retours
 
-## Checklist
-- [ ] No Python `Any` types
-- [ ] Proper error handling (no silent exceptions)
-- [ ] QuerySet optimization (select_related/prefetch_related)
-- [ ] Tests included
+## Liste de vérification
+- [ ] Aucun type Python `Any`
+- [ ] Gestion correcte des erreurs (pas d'exceptions silencieuses)
+- [ ] Optimisation des QuerySet (select_related/prefetch_related)
+- [ ] Tests inclus
 ```
 
-#### Agent Configuration Fields
+#### Champs de configuration d'un agent
 
-| Field | Required | Description |
+| Champ | Obligatoire | Description |
 |-------|----------|-------------|
-| `name` | Yes | Lowercase with hyphens |
-| `description` | Yes | When/why to use (max 1024 chars) |
-| `model` | No | `sonnet`, `opus`, or `haiku` |
-| `tools` | No | Comma-separated tool list |
+| `name` | Oui | Minuscules avec tirets |
+| `description` | Oui | Quand/pourquoi l'utiliser (1024 caractères max.) |
+| `model` | Non | `sonnet`, `opus` ou `haiku` |
+| `tools` | Non | Liste d'outils séparés par des virgules |
 
 ---
 
 ---
 
-## GitHub Actions Workflows
+## Workflows GitHub Actions
 
-Automate code review, quality checks, and maintenance with Claude Code.
+Automatisez la revue de code, les contrôles qualité et la maintenance avec Claude Code.
 
-**📄 Examples:**
-- [pr-claude-code-review.yml](.github/workflows/pr-claude-code-review.yml) - Auto PR review
-- [scheduled-claude-code-docs-sync.yml](.github/workflows/scheduled-claude-code-docs-sync.yml) - Monthly docs sync
-- [scheduled-claude-code-quality.yml](.github/workflows/scheduled-claude-code-quality.yml) - Weekly quality review
-- [scheduled-claude-code-dependency-audit.yml](.github/workflows/scheduled-claude-code-dependency-audit.yml) - Biweekly dependency updates
+**📄 Exemples :**
+- [pr-claude-code-review.yml](.github/workflows/pr-claude-code-review.yml) - Revue automatique des PR
+- [scheduled-claude-code-docs-sync.yml](.github/workflows/scheduled-claude-code-docs-sync.yml) - Synchronisation mensuelle de la documentation
+- [scheduled-claude-code-quality.yml](.github/workflows/scheduled-claude-code-quality.yml) - Revue qualité hebdomadaire
+- [scheduled-claude-code-dependency-audit.yml](.github/workflows/scheduled-claude-code-dependency-audit.yml) - Mises à jour bimensuelles des dépendances
 
-### PR Code Review
+### Revue de code des PR
 
-Automatically reviews PRs and responds to `@claude` mentions.
+Relit automatiquement les PR et répond aux mentions `@claude`.
 
 ```yaml
 name: PR - Claude Code Review
@@ -885,131 +885,131 @@ jobs:
             Run `git diff origin/main...HEAD` to see changes.
 ```
 
-### Scheduled Workflows
+### Workflows planifiés
 
-| Workflow | Schedule | Purpose |
+| Workflow | Planification | Objectif |
 |----------|----------|---------|
-| [Code Quality](.github/workflows/scheduled-claude-code-quality.yml) | Weekly (Sunday) | Reviews random directories, auto-fixes issues |
-| [Docs Sync](.github/workflows/scheduled-claude-code-docs-sync.yml) | Monthly (1st) | Ensures docs align with code changes |
-| [Dependency Audit](.github/workflows/scheduled-claude-code-dependency-audit.yml) | Biweekly (1st & 15th) | Safe dependency updates with testing |
+| [Qualité du code](.github/workflows/scheduled-claude-code-quality.yml) | Hebdomadaire (dimanche) | Passe en revue des répertoires choisis au hasard, corrige automatiquement les problèmes |
+| [Synchronisation de la documentation](.github/workflows/scheduled-claude-code-docs-sync.yml) | Mensuel (le 1er) | Garantit que la documentation reste alignée sur les modifications du code |
+| [Audit des dépendances](.github/workflows/scheduled-claude-code-dependency-audit.yml) | Bimensuel (le 1er et le 15) | Mises à jour sûres des dépendances, avec tests |
 
-### Setup Required
+### Configuration requise
 
-Add `ANTHROPIC_API_KEY` to your repository secrets:
+Ajoutez `ANTHROPIC_API_KEY` aux secrets de votre dépôt :
 - Settings → Secrets and variables → Actions → New repository secret
 
-### Cost Estimate
+### Estimation des coûts
 
-| Workflow | Frequency | Est. Cost |
+| Workflow | Fréquence | Coût estimé |
 |----------|-----------|-----------|
-| PR Review | Per PR | ~$0.05 - $0.50 |
-| Docs Sync | Monthly | ~$0.50 - $2.00 |
-| Dependency Audit | Biweekly | ~$0.20 - $1.00 |
-| Code Quality | Weekly | ~$1.00 - $5.00 |
+| Revue de PR | Par PR | ~0,05 $ - 0,50 $ |
+| Synchronisation de la documentation | Mensuelle | ~0,50 $ - 2,00 $ |
+| Audit des dépendances | Bimensuelle | ~0,20 $ - 1,00 $ |
+| Qualité du code | Hebdomadaire | ~1,00 $ - 5,00 $ |
 
-**Estimated monthly total:** ~$10 - $50 (depending on PR volume)
-
----
-
-## Best Practices
-
-### 1. Start with CLAUDE.md
-
-Your `CLAUDE.md` is the foundation. Include:
-- Stack overview
-- Key commands
-- Critical rules
-- Directory structure
-
-### 2. Build Skills Incrementally
-
-Don't try to document everything at once:
-1. Start with your most common patterns
-2. Add skills as pain points emerge
-3. Keep each skill focused on one domain
-
-### 3. Use Hooks for Automation
-
-Let hooks handle repetitive tasks:
-- Auto-format on save
-- Run tests when test files change
-- Regenerate types when schemas change
-- Block edits on protected branches
-
-### 4. Create Agents for Complex Workflows
-
-Agents are great for:
-- Code review (with your team's checklist)
-- PR creation and management
-- Debugging workflows
-- Onboarding to tasks
-
-### 5. Leverage GitHub Actions
-
-Automate maintenance:
-- PR reviews on every PR
-- Weekly quality sweeps
-- Monthly docs alignment
-- Dependency updates
-
-### 6. Version Control Your Config
-
-Commit everything except:
-- `settings.local.json` (personal preferences)
-- `CLAUDE.local.md` (personal notes)
-- User-specific credentials
+**Total mensuel estimé :** ~10 $ - 50 $ (selon le volume de PR)
 
 ---
 
-## Examples in This Repository
+## Bonnes pratiques
 
-| File | Description |
+### 1. Commencez par CLAUDE.md
+
+Votre `CLAUDE.md` est la base de tout. Incluez-y :
+- Une vue d'ensemble de la stack
+- Les commandes clés
+- Les règles critiques
+- La structure des répertoires
+
+### 2. Construisez vos skills progressivement
+
+N'essayez pas de tout documenter d'un coup :
+1. Commencez par vos patrons les plus courants
+2. Ajoutez des skills au fur et à mesure que des points de friction apparaissent
+3. Concentrez chaque skill sur un seul domaine
+
+### 3. Utilisez les hooks pour l'automatisation
+
+Laissez les hooks gérer les tâches répétitives :
+- Formatage automatique à l'enregistrement
+- Exécution des tests quand des fichiers de test changent
+- Régénération des types quand les schémas changent
+- Blocage des modifications sur les branches protégées
+
+### 4. Créez des agents pour les workflows complexes
+
+Les agents sont parfaits pour :
+- La revue de code (avec la liste de vérification de votre équipe)
+- La création et la gestion des PR
+- Les workflows de débogage
+- La prise en main de nouvelles tâches
+
+### 5. Tirez parti de GitHub Actions
+
+Automatisez la maintenance :
+- Revue de chaque PR
+- Passes qualité hebdomadaires
+- Alignement mensuel de la documentation
+- Mises à jour des dépendances
+
+### 6. Versionnez votre configuration
+
+Commitez tout, sauf :
+- `settings.local.json` (préférences personnelles)
+- `CLAUDE.local.md` (notes personnelles)
+- Les identifiants propres à chaque utilisateur
+
+---
+
+## Exemples dans ce dépôt
+
+| Fichier | Description |
 |------|-------------|
-| [CLAUDE.md](CLAUDE.md) | Example project memory file |
-| [.claude/settings.json](.claude/settings.json) | Full hooks configuration |
-| [.claude/settings.md](.claude/settings.md) | Human-readable hooks documentation |
-| [.mcp.json](.mcp.json) | MCP server configuration (JIRA, GitHub, Slack, etc.) |
+| [CLAUDE.md](CLAUDE.md) | Exemple de fichier de mémoire du projet |
+| [.claude/settings.json](.claude/settings.json) | Configuration complète des hooks |
+| [.claude/settings.md](.claude/settings.md) | Documentation des hooks lisible par un humain |
+| [.mcp.json](.mcp.json) | Configuration des serveurs MCP (JIRA, GitHub, Slack, etc.) |
 | **Agents** | |
-| [.claude/agents/code-reviewer.md](.claude/agents/code-reviewer.md) | Comprehensive code review agent |
-| [.claude/agents/github-workflow.md](.claude/agents/github-workflow.md) | Git workflow agent |
+| [.claude/agents/code-reviewer.md](.claude/agents/code-reviewer.md) | Agent de revue de code complète |
+| [.claude/agents/github-workflow.md](.claude/agents/github-workflow.md) | Agent de workflow Git |
 | **Hooks** | |
-| [.claude/hooks/skill-eval.sh](.claude/hooks/skill-eval.sh) | Skill evaluation wrapper |
-| [.claude/hooks/skill-eval.js](.claude/hooks/skill-eval.js) | Node.js skill matching engine |
-| [.claude/hooks/skill-rules.json](.claude/hooks/skill-rules.json) | Pattern matching rules |
+| [.claude/hooks/skill-eval.sh](.claude/hooks/skill-eval.sh) | Script d'enveloppe de l'évaluation des skills |
+| [.claude/hooks/skill-eval.js](.claude/hooks/skill-eval.js) | Moteur Node.js de correspondance des skills |
+| [.claude/hooks/skill-rules.json](.claude/hooks/skill-rules.json) | Règles de correspondance de motifs |
 | **Skills (workflow)** | |
-| [.claude/skills/ticket/SKILL.md](.claude/skills/ticket/SKILL.md) | **JIRA/Linear ticket workflow (read → implement → update)** |
-| [.claude/skills/onboard/SKILL.md](.claude/skills/onboard/SKILL.md) | Deep task exploration and context building |
-| [.claude/skills/pr-review/SKILL.md](.claude/skills/pr-review/SKILL.md) | PR review with project checklist |
-| [.claude/skills/pr-summary/SKILL.md](.claude/skills/pr-summary/SKILL.md) | Generate PR description from branch diff |
-| [.claude/skills/code-quality/SKILL.md](.claude/skills/code-quality/SKILL.md) | Run ruff, pyright, pytest and report findings |
-| [.claude/skills/docs-sync/SKILL.md](.claude/skills/docs-sync/SKILL.md) | Verify docs match current code |
-| [.claude/skills/worktree-commit-merge/SKILL.md](.claude/skills/worktree-commit-merge/SKILL.md) | Commit worktree changes and merge into master/main |
-| **Skills (domain knowledge)** | |
-| [.claude/skills/skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md) | Guide for creating effective skills |
-| [.claude/skills/django-extensions/SKILL.md](.claude/skills/django-extensions/SKILL.md) | Django-extensions management commands |
-| [.claude/skills/systematic-debugging/SKILL.md](.claude/skills/systematic-debugging/SKILL.md) | Four-phase debugging methodology |
+| [.claude/skills/ticket/SKILL.md](.claude/skills/ticket/SKILL.md) | **Workflow des tickets JIRA/Linear (lecture → implémentation → mise à jour)** |
+| [.claude/skills/onboard/SKILL.md](.claude/skills/onboard/SKILL.md) | Exploration approfondie de la tâche et constitution du contexte |
+| [.claude/skills/pr-review/SKILL.md](.claude/skills/pr-review/SKILL.md) | Revue de PR avec la liste de vérification du projet |
+| [.claude/skills/pr-summary/SKILL.md](.claude/skills/pr-summary/SKILL.md) | Génère la description de la PR à partir du diff de la branche |
+| [.claude/skills/code-quality/SKILL.md](.claude/skills/code-quality/SKILL.md) | Exécute ruff, pyright, pytest et rend compte des résultats |
+| [.claude/skills/docs-sync/SKILL.md](.claude/skills/docs-sync/SKILL.md) | Vérifie que la documentation correspond au code actuel |
+| [.claude/skills/worktree-commit-merge/SKILL.md](.claude/skills/worktree-commit-merge/SKILL.md) | Commite les modifications du worktree et les fusionne dans master/main |
+| **Skills (connaissances métier)** | |
+| [.claude/skills/skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md) | Guide de création de skills efficaces |
+| [.claude/skills/django-extensions/SKILL.md](.claude/skills/django-extensions/SKILL.md) | Commandes de gestion de django-extensions |
+| [.claude/skills/systematic-debugging/SKILL.md](.claude/skills/systematic-debugging/SKILL.md) | Méthodologie de débogage en quatre phases |
 | [.claude/skills/pytest-django-patterns/SKILL.md](.claude/skills/pytest-django-patterns/SKILL.md) | pytest-django, Factory Boy, fixtures, TDD |
-| [.claude/skills/django-models/SKILL.md](.claude/skills/django-models/SKILL.md) | Model design, QuerySet optimization |
-| [.claude/skills/django-forms/SKILL.md](.claude/skills/django-forms/SKILL.md) | Form handling, validation |
-| [.claude/skills/django-templates/SKILL.md](.claude/skills/django-templates/SKILL.md) | Template inheritance, tags, filters |
-| [.claude/skills/htmx-patterns/SKILL.md](.claude/skills/htmx-patterns/SKILL.md) | HTMX attributes, dynamic UI |
-| [.claude/skills/celery-patterns/SKILL.md](.claude/skills/celery-patterns/SKILL.md) | Celery tasks, retry strategies |
-| **GitHub Workflows** | |
-| [.github/workflows/pr-claude-code-review.yml](.github/workflows/pr-claude-code-review.yml) | Auto PR review |
-| [.github/workflows/scheduled-claude-code-docs-sync.yml](.github/workflows/scheduled-claude-code-docs-sync.yml) | Monthly docs sync |
-| [.github/workflows/scheduled-claude-code-quality.yml](.github/workflows/scheduled-claude-code-quality.yml) | Weekly quality review |
-| [.github/workflows/scheduled-claude-code-dependency-audit.yml](.github/workflows/scheduled-claude-code-dependency-audit.yml) | Biweekly dependency audit |
+| [.claude/skills/django-models/SKILL.md](.claude/skills/django-models/SKILL.md) | Conception des modèles, optimisation des QuerySet |
+| [.claude/skills/django-forms/SKILL.md](.claude/skills/django-forms/SKILL.md) | Gestion des formulaires, validation |
+| [.claude/skills/django-templates/SKILL.md](.claude/skills/django-templates/SKILL.md) | Héritage de gabarits, balises, filtres |
+| [.claude/skills/htmx-patterns/SKILL.md](.claude/skills/htmx-patterns/SKILL.md) | Attributs HTMX, interface dynamique |
+| [.claude/skills/celery-patterns/SKILL.md](.claude/skills/celery-patterns/SKILL.md) | Tâches Celery, stratégies de nouvelle tentative |
+| **Workflows GitHub** | |
+| [.github/workflows/pr-claude-code-review.yml](.github/workflows/pr-claude-code-review.yml) | Revue automatique des PR |
+| [.github/workflows/scheduled-claude-code-docs-sync.yml](.github/workflows/scheduled-claude-code-docs-sync.yml) | Synchronisation mensuelle de la documentation |
+| [.github/workflows/scheduled-claude-code-quality.yml](.github/workflows/scheduled-claude-code-quality.yml) | Revue qualité hebdomadaire |
+| [.github/workflows/scheduled-claude-code-dependency-audit.yml](.github/workflows/scheduled-claude-code-dependency-audit.yml) | Audit bimensuel des dépendances |
 
 ---
 
-## Learn More
+## Pour aller plus loin
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- [Documentation de Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - [Claude Code Action](https://github.com/anthropics/claude-code-action) - GitHub Action
-- [Anthropic API](https://docs.anthropic.com/en/api)
+- [API Anthropic](https://docs.anthropic.com/en/api)
 
 ---
 
-## License
+## Licence
 
-MIT - Use this as a template for your own projects.
+MIT - Utilisez ce dépôt comme modèle pour vos propres projets.

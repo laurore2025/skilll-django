@@ -1,105 +1,105 @@
-# Claude Code Skills
+# Skills Claude Code
 
-This directory contains project-specific skills that provide Claude with domain knowledge and best practices for this Django codebase.
+Ce répertoire contient des skills propres au projet, qui apportent à Claude la connaissance du domaine et les bonnes pratiques de cette base de code Django.
 
-## Skills by Category
+## Skills par catégorie
 
-### Meta & Development Tools
+### Méta et outils de développement
 | Skill | Description |
 |-------|-------------|
-| [skill-creator](./skill-creator/SKILL.md) | Guide for creating effective skills that extend Claude's capabilities |
-| [django-extensions](./django-extensions/SKILL.md) | Django-extensions management commands for introspection, debugging, and development |
+| [skill-creator](./skill-creator/SKILL.md) | Guide pour créer des skills efficaces qui étendent les capacités de Claude |
+| [django-extensions](./django-extensions/SKILL.md) | Commandes de gestion de django-extensions pour l'introspection, le débogage et le développement |
 
-### Workflows
+### Flux de travail
 | Skill | Description |
 |-------|-------------|
-| [onboard](./onboard/SKILL.md) | Onboard Claude to a new task by exploring the codebase and building context |
-| [ticket](./ticket/SKILL.md) | Work on a JIRA/Linear ticket end-to-end |
-| [pr-review](./pr-review/SKILL.md) | Review a pull request using project standards |
-| [pr-summary](./pr-summary/SKILL.md) | Generate a pull request summary for the current branch |
-| [code-quality](./code-quality/SKILL.md) | Run code quality checks and report findings by severity |
-| [docs-sync](./docs-sync/SKILL.md) | Check if documentation is in sync with code |
-| [worktree-commit-merge](./worktree-commit-merge/SKILL.md) | Commit worktree changes, merge into master/main, sync branch |
+| [onboard](./onboard/SKILL.md) | Préparer Claude à une nouvelle tâche en explorant la base de code et en construisant le contexte |
+| [ticket](./ticket/SKILL.md) | Traiter un ticket JIRA/Linear de bout en bout |
+| [pr-review](./pr-review/SKILL.md) | Faire la revue d'une pull request selon les standards du projet |
+| [pr-summary](./pr-summary/SKILL.md) | Générer un résumé de pull request pour la branche courante |
+| [code-quality](./code-quality/SKILL.md) | Exécuter les contrôles de qualité du code et présenter les constats par gravité |
+| [docs-sync](./docs-sync/SKILL.md) | Vérifier que la documentation est synchronisée avec le code |
+| [worktree-commit-merge](./worktree-commit-merge/SKILL.md) | Committer les modifications du worktree, fusionner (merge) dans master/main, synchroniser la branche |
 
-### Testing & Debugging
+### Tests et débogage
 | Skill | Description |
 |-------|-------------|
-| [pytest-django-patterns](./pytest-django-patterns/SKILL.md) | pytest-django, Factory Boy, fixtures, TDD workflow |
-| [systematic-debugging](./systematic-debugging/SKILL.md) | Four-phase debugging methodology, root cause analysis |
+| [pytest-django-patterns](./pytest-django-patterns/SKILL.md) | pytest-django, Factory Boy, fixtures, flux de travail TDD |
+| [systematic-debugging](./systematic-debugging/SKILL.md) | Méthode de débogage en quatre phases, analyse de la cause racine |
 
-### Django Core
+### Cœur de Django
 | Skill | Description |
 |-------|-------------|
-| [django-models](./django-models/SKILL.md) | Model design, QuerySet optimization, signals, migrations |
-| [django-forms](./django-forms/SKILL.md) | Form handling, validation, ModelForm patterns |
-| [django-templates](./django-templates/SKILL.md) | Template inheritance, tags, filters, partials |
+| [django-models](./django-models/SKILL.md) | Conception des modèles, optimisation des QuerySet, signaux, migrations |
+| [django-forms](./django-forms/SKILL.md) | Gestion des formulaires, validation, patrons ModelForm |
+| [django-templates](./django-templates/SKILL.md) | Héritage de gabarits, balises, filtres, gabarits partiels |
 
-### Frontend & UI
+### Frontend et interface utilisateur
 | Skill | Description |
 |-------|-------------|
-| [htmx-patterns](./htmx-patterns/SKILL.md) | HTMX attributes, partial templates, dynamic UI |
+| [htmx-patterns](./htmx-patterns/SKILL.md) | Attributs HTMX, gabarits partiels, interface dynamique |
 
-### Background Tasks
+### Tâches d'arrière-plan
 | Skill | Description |
 |-------|-------------|
-| [celery-patterns](./celery-patterns/SKILL.md) | Celery tasks, retry strategies, periodic tasks |
+| [celery-patterns](./celery-patterns/SKILL.md) | Tâches Celery, stratégies de nouvelle tentative, tâches périodiques |
 
-## Skill Combinations for Common Tasks
+## Combinaisons de skills pour les tâches courantes
 
-### Building a New Feature
-1. **django-models** - Design models
-2. **django-forms** - Create forms for user input
-3. **htmx-patterns** - Dynamic UI
-4. **django-templates** - Page templates
-5. **pytest-django-patterns** - Write tests (TDD)
+### Développer une nouvelle fonctionnalité
+1. **django-models** - Concevez les modèles
+2. **django-forms** - Créez les formulaires de saisie utilisateur
+3. **htmx-patterns** - Interface dynamique
+4. **django-templates** - Gabarits de page
+5. **pytest-django-patterns** - Écrivez les tests (TDD)
 
-### Building a Background Task
-1. **celery-patterns** - Task definition
-2. **django-models** - Database operations
-3. **pytest-django-patterns** - Task tests
+### Développer une tâche d'arrière-plan
+1. **celery-patterns** - Définition de la tâche
+2. **django-models** - Opérations sur la base de données
+3. **pytest-django-patterns** - Tests de la tâche
 
-### Debugging an Issue
-1. **systematic-debugging** - Root cause analysis
-2. **pytest-django-patterns** - Write failing test first
-3. **django-extensions** - Use show_urls, list_model_info, shell_plus for investigation
+### Déboguer un problème
+1. **systematic-debugging** - Analyse de la cause racine
+2. **pytest-django-patterns** - Écrivez d'abord un test qui échoue
+3. **django-extensions** - Utilisez show_urls, list_model_info, shell_plus pour l'investigation
 
-### Creating New Skills
-1. **skill-creator** - Follow the skill creation guide
-2. **django-extensions** - Test your skill with project introspection commands
+### Créer de nouveaux skills
+1. **skill-creator** - Suivez le guide de création de skills
+2. **django-extensions** - Testez votre skill avec les commandes d'introspection du projet
 
-## How Skills Work
+## Fonctionnement des skills
 
-Skills are automatically invoked when Claude recognizes relevant context. Each skill provides:
+Les skills sont invoqués automatiquement lorsque Claude reconnaît un contexte pertinent. Chaque skill fournit :
 
-- **When to Use** - Trigger conditions
-- **Core Patterns** - Best practices and examples
-- **Anti-Patterns** - What to avoid
-- **Integration** - How skills connect
+- **Quand l'utiliser** - Conditions de déclenchement
+- **Patrons essentiels** - Bonnes pratiques et exemples
+- **Anti-patrons** - Ce qu'il faut éviter
+- **Intégration** - Comment les skills s'articulent entre eux
 
-## Adding New Skills
+## Ajouter de nouveaux skills
 
-1. Create directory: `.claude/skills/skill-name/`
-2. Add `SKILL.md` (case-sensitive) with YAML frontmatter:
+1. Créez le répertoire : `.claude/skills/skill-name/`
+2. Ajoutez `SKILL.md` (sensible à la casse) avec un frontmatter YAML :
    ```yaml
    ---
-   # Required fields
-   name: skill-name              # Lowercase, hyphens, max 64 chars
-   description: What it does and when to use it. Include trigger keywords.  # Max 1024 chars
+   # Champs obligatoires
+   name: skill-name              # Minuscules, tirets, 64 caractères max.
+   description: Ce qu'il fait et quand l'utiliser. Incluez des mots-clés déclencheurs.  # 1 024 caractères max.
 
-   # Optional fields
-   allowed-tools: Read, Grep, Glob    # Restrict available tools
-   model: claude-sonnet-4-20250514    # Specific model to use
+   # Champs facultatifs
+   allowed-tools: Read, Grep, Glob    # Restreint les outils disponibles
+   model: claude-sonnet-4-20250514    # Modèle spécifique à utiliser
    ---
    ```
-3. Include standard sections: When to Use, Core Patterns, Anti-Patterns, Integration
-4. Add to this README
-5. Add triggers to `.claude/hooks/skill-rules.json`
+3. Incluez les sections standard : Quand l'utiliser, Patrons essentiels, Anti-patrons, Intégration
+4. Ajoutez-le à ce README
+5. Ajoutez les déclencheurs dans `.claude/hooks/skill-rules.json`
 
-**Important:** The `description` field is critical—Claude uses semantic matching on it to decide when to apply the skill. Include keywords users would naturally mention.
+**Important :** le champ `description` est essentiel — Claude s'appuie sur une correspondance sémantique avec ce champ pour décider quand appliquer le skill. Incluez les mots-clés que les utilisateurs mentionneraient naturellement.
 
 ## Maintenance
 
-- Update skills when patterns change
-- Remove outdated information
-- Add new patterns as they emerge
-- Keep examples current with codebase
+- Mettez à jour les skills lorsque les patrons évoluent
+- Supprimez les informations obsolètes
+- Ajoutez de nouveaux patrons à mesure qu'ils apparaissent
+- Maintenez les exemples à jour par rapport à la base de code

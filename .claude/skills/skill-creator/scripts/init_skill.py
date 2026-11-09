@@ -1,13 +1,14 @@
+# Traduction française : fichier modifié par rapport à l'original d'Anthropic (Apache 2.0).
 # ruff: noqa: PGH004
 # ruff: noqa
 #!/usr/bin/env python3
 """
-Skill Initializer - Creates a new skill from template
+Initialiseur de skill - Crée un nouveau skill à partir d'un gabarit
 
-Usage:
+Utilisation :
     init_skill.py <skill-name> --path <path>
 
-Examples:
+Exemples :
     init_skill.py my-new-skill --path skills/public
     init_skill.py my-api-helper --path skills/private
     init_skill.py custom-skill --path /custom/location
@@ -19,265 +20,265 @@ from pathlib import Path
 
 SKILL_TEMPLATE = """---
 name: {skill_name}
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: [TODO: Expliquez de façon complète et informative ce que fait le skill et quand l'utiliser. Indiquez QUAND utiliser ce skill - scénarios précis, types de fichiers ou tâches qui le déclenchent.]
 ---
 
 # {skill_title}
 
-## Overview
+## Vue d'ensemble
 
-[TODO: 1-2 sentences explaining what this skill enables]
+[TODO: 1 à 2 phrases expliquant ce que ce skill permet de faire]
 
-## Structuring This Skill
+## Structurer ce skill
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+[TODO: Choisissez la structure la mieux adaptée à l'objectif de ce skill. Patrons courants :
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" → "Reading" → "Creating" → "Editing"
-- Structure: ## Overview → ## Workflow Decision Tree → ## Step 1 → ## Step 2...
+**1. Par workflow** (idéal pour les processus séquentiels)
+- Convient quand il existe des procédures claires, étape par étape
+- Exemple : skill DOCX avec « Arbre de décision du workflow » → « Lecture » → « Création » → « Modification »
+- Structure : ## Vue d'ensemble → ## Arbre de décision du workflow → ## Étape 1 → ## Étape 2...
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" → "Merge PDFs" → "Split PDFs" → "Extract Text"
-- Structure: ## Overview → ## Quick Start → ## Task Category 1 → ## Task Category 2...
+**2. Par tâche** (idéal pour les collections d'outils)
+- Convient quand le skill propose différentes opérations/capacités
+- Exemple : skill PDF avec « Démarrage rapide » → « Fusionner des PDF » → « Scinder des PDF » → « Extraire le texte »
+- Structure : ## Vue d'ensemble → ## Démarrage rapide → ## Catégorie de tâches 1 → ## Catégorie de tâches 2...
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" → "Colors" → "Typography" → "Features"
-- Structure: ## Overview → ## Guidelines → ## Specifications → ## Usage...
+**3. Référence/Consignes** (idéal pour les normes ou les spécifications)
+- Convient aux chartes de marque, aux normes de codage ou aux exigences
+- Exemple : style de marque avec « Charte de marque » → « Couleurs » → « Typographie » → « Fonctionnalités »
+- Structure : ## Vue d'ensemble → ## Consignes → ## Spécifications → ## Utilisation...
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" → numbered capability list
-- Structure: ## Overview → ## Core Capabilities → ### 1. Feature → ### 2. Feature...
+**4. Par capacités** (idéal pour les systèmes intégrés)
+- Convient quand le skill fournit plusieurs fonctionnalités liées entre elles
+- Exemple : gestion de produit avec « Capacités principales » → liste numérotée des capacités
+- Structure : ## Vue d'ensemble → ## Capacités principales → ### 1. Fonctionnalité → ### 2. Fonctionnalité...
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+Les patrons peuvent être mélangés et combinés selon les besoins. La plupart des skills combinent plusieurs patrons (par ex. commencer par une structure par tâche, puis ajouter un workflow pour les opérations complexes).
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+Supprimez entièrement cette section « Structurer ce skill » une fois terminé - ce n'est qu'une aide.]
 
-## [TODO: Replace with the first main section based on chosen structure]
+## [TODO: Remplacez par la première section principale selon la structure choisie]
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+[TODO: Ajoutez le contenu ici. Voir les exemples dans les skills existants :
+- Exemples de code pour les skills techniques
+- Arbres de décision pour les workflows complexes
+- Exemples concrets avec des demandes d'utilisateur réalistes
+- Références aux scripts/gabarits/références selon les besoins]
 
-## Resources
+## Ressources
 
-This skill includes example resource directories that demonstrate how to organize different types of bundled resources:
+Ce skill comprend des répertoires de ressources d'exemple qui montrent comment organiser les différents types de ressources incluses :
 
 ### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
+Code exécutable (Python/Bash/etc.) qui peut être lancé directement pour effectuer des opérations précises.
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
+**Exemples tirés d'autres skills :**
+- Skill PDF : `fill_fillable_fields.py`, `extract_form_field_info.py` - utilitaires de manipulation de PDF
+- Skill DOCX : `document.py`, `utilities.py` - modules Python de traitement de documents
 
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
+**Adapté pour :** les scripts Python, les scripts shell ou tout code exécutable qui réalise de l'automatisation, du traitement de données ou des opérations précises.
 
-**Note:** Scripts may be executed without loading into context, but can still be read by Claude for patching or environment adjustments.
+**Remarque :** les scripts peuvent être exécutés sans être chargés dans le contexte, mais Claude peut tout de même les lire pour les corriger ou les adapter à l'environnement.
 
 ### references/
-Documentation and reference material intended to be loaded into context to inform Claude's process and thinking.
+Documentation et documents de référence destinés à être chargés dans le contexte pour éclairer la démarche et la réflexion de Claude.
 
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
+**Exemples tirés d'autres skills :**
+- Gestion de produit : `communication.md`, `context_building.md` - guides de workflow détaillés
+- BigQuery : documentation de référence de l'API et exemples de requêtes
+- Finance : documentation des schémas, politiques de l'entreprise
 
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Claude should reference while working.
+**Adapté pour :** la documentation approfondie, les références d'API, les schémas de base de données, les guides complets ou toute information détaillée que Claude doit consulter pendant son travail.
 
 ### assets/
-Files not intended to be loaded into context, but rather used within the output Claude produces.
+Fichiers non destinés à être chargés dans le contexte, mais à être utilisés dans le résultat que produit Claude.
 
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
+**Exemples tirés d'autres skills :**
+- Style de marque : fichiers de gabarit PowerPoint (.pptx), fichiers de logo
+- Générateur frontend : répertoires de projet de base (boilerplate) HTML/React
+- Typographie : fichiers de police (.ttf, .woff2)
 
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
+**Adapté pour :** les gabarits, le code de base (boilerplate), les gabarits de documents, les images, les icônes, les polices ou tout fichier destiné à être copié ou utilisé dans le résultat final.
 
 ---
 
-**Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
+**Les répertoires inutiles peuvent être supprimés.** Tous les skills n'ont pas besoin des trois types de ressources.
 """
 
 EXAMPLE_SCRIPT = '''#!/usr/bin/env python3
 """
-Example helper script for {skill_name}
+Script d'aide d'exemple pour {skill_name}
 
-This is a placeholder script that can be executed directly.
-Replace with actual implementation or delete if not needed.
+Ceci est un script provisoire qui peut être exécuté directement.
+Remplacez-le par une implémentation réelle ou supprimez-le s'il n'est pas nécessaire.
 
-Example real scripts from other skills:
-- pdf/scripts/fill_fillable_fields.py - Fills PDF form fields
-- pdf/scripts/convert_pdf_to_images.py - Converts PDF pages to images
+Exemples de scripts réels tirés d'autres skills :
+- pdf/scripts/fill_fillable_fields.py - Remplit les champs d'un formulaire PDF
+- pdf/scripts/convert_pdf_to_images.py - Convertit les pages d'un PDF en images
 """
 
 def main():
-    print("This is an example script for {skill_name}")
-    # TODO: Add actual script logic here
-    # This could be data processing, file conversion, API calls, etc.
+    print("Ceci est un script d'exemple pour {skill_name}")
+    # TODO: Ajoutez ici la logique réelle du script
+    # Il peut s'agir de traitement de données, de conversion de fichiers, d'appels d'API, etc.
 
 if __name__ == "__main__":
     main()
 '''
 
-EXAMPLE_REFERENCE = """# Reference Documentation for {skill_title}
+EXAMPLE_REFERENCE = """# Documentation de référence pour {skill_title}
 
-This is a placeholder for detailed reference documentation.
-Replace with actual reference content or delete if not needed.
+Ceci est un espace réservé pour une documentation de référence détaillée.
+Remplacez-le par un contenu de référence réel ou supprimez-le s'il n'est pas nécessaire.
 
-Example real reference docs from other skills:
-- product-management/references/communication.md - Comprehensive guide for status updates
-- product-management/references/context_building.md - Deep-dive on gathering context
-- bigquery/references/ - API references and query examples
+Exemples de documents de référence réels tirés d'autres skills :
+- product-management/references/communication.md - Guide complet pour les points d'avancement
+- product-management/references/context_building.md - Analyse approfondie de la collecte de contexte
+- bigquery/references/ - Références d'API et exemples de requêtes
 
-## When Reference Docs Are Useful
+## Quand les documents de référence sont utiles
 
-Reference docs are ideal for:
-- Comprehensive API documentation
-- Detailed workflow guides
-- Complex multi-step processes
-- Information too lengthy for main SKILL.md
-- Content that's only needed for specific use cases
+Les documents de référence sont idéaux pour :
+- Une documentation d'API complète
+- Des guides de workflow détaillés
+- Des processus complexes en plusieurs étapes
+- Des informations trop longues pour le SKILL.md principal
+- Du contenu nécessaire uniquement pour des cas d'usage précis
 
-## Structure Suggestions
+## Suggestions de structure
 
-### API Reference Example
-- Overview
-- Authentication
-- Endpoints with examples
-- Error codes
-- Rate limits
+### Exemple de référence d'API
+- Vue d'ensemble
+- Authentification
+- Points de terminaison (endpoints) avec exemples
+- Codes d'erreur
+- Limites de débit
 
-### Workflow Guide Example
-- Prerequisites
-- Step-by-step instructions
-- Common patterns
-- Troubleshooting
-- Best practices
+### Exemple de guide de workflow
+- Prérequis
+- Instructions étape par étape
+- Patrons courants
+- Dépannage
+- Bonnes pratiques
 """
 
-EXAMPLE_ASSET = """# Example Asset File
+EXAMPLE_ASSET = """# Fichier d'asset d'exemple
 
-This placeholder represents where asset files would be stored.
-Replace with actual asset files (templates, images, fonts, etc.) or delete if not needed.
+Cet espace réservé indique où seraient stockés les fichiers d'assets.
+Remplacez-le par de vrais fichiers d'assets (gabarits, images, polices, etc.) ou supprimez-le s'il n'est pas nécessaire.
 
-Asset files are NOT intended to be loaded into context, but rather used within
-the output Claude produces.
+Les fichiers d'assets ne sont PAS destinés à être chargés dans le contexte, mais à être utilisés
+dans le résultat que produit Claude.
 
-Example asset files from other skills:
-- Brand guidelines: logo.png, slides_template.pptx
-- Frontend builder: hello-world/ directory with HTML/React boilerplate
-- Typography: custom-font.ttf, font-family.woff2
-- Data: sample_data.csv, test_dataset.json
+Exemples de fichiers d'assets tirés d'autres skills :
+- Charte de marque : logo.png, slides_template.pptx
+- Générateur frontend : répertoire hello-world/ avec du code de base (boilerplate) HTML/React
+- Typographie : custom-font.ttf, font-family.woff2
+- Données : sample_data.csv, test_dataset.json
 
-## Common Asset Types
+## Types d'assets courants
 
-- Templates: .pptx, .docx, boilerplate directories
-- Images: .png, .jpg, .svg, .gif
-- Fonts: .ttf, .otf, .woff, .woff2
-- Boilerplate code: Project directories, starter files
-- Icons: .ico, .svg
-- Data files: .csv, .json, .xml, .yaml
+- Gabarits : .pptx, .docx, répertoires de code de base
+- Images : .png, .jpg, .svg, .gif
+- Polices : .ttf, .otf, .woff, .woff2
+- Code de base : répertoires de projet, fichiers de démarrage
+- Icônes : .ico, .svg
+- Fichiers de données : .csv, .json, .xml, .yaml
 
-Note: This is a text placeholder. Actual assets can be any file type.
+Remarque : ceci est un espace réservé textuel. Les vrais assets peuvent être de n'importe quel type de fichier.
 """
 
 
 def title_case_skill_name(skill_name):
-    """Convert hyphenated skill name to Title Case for display."""
+    """Convertit un nom de skill à tirets en casse de titre (Title Case) pour l'affichage."""
     return " ".join(word.capitalize() for word in skill_name.split("-"))
 
 
 def init_skill(skill_name, path):
     """
-    Initialize a new skill directory with template SKILL.md.
+    Initialise un nouveau répertoire de skill avec un gabarit SKILL.md.
 
     Args:
-        skill_name: Name of the skill
-        path: Path where the skill directory should be created
+        skill_name: Nom du skill
+        path: Chemin où créer le répertoire du skill
 
     Returns:
-        Path to created skill directory, or None if error
+        Chemin du répertoire de skill créé, ou None en cas d'erreur
     """
-    # Determine skill directory path
+    # Déterminer le chemin du répertoire du skill
     skill_dir = Path(path).resolve() / skill_name
 
-    # Check if directory already exists
+    # Vérifier si le répertoire existe déjà
     if skill_dir.exists():
-        print(f"❌ Error: Skill directory already exists: {skill_dir}")
+        print(f"❌ Erreur : le répertoire du skill existe déjà : {skill_dir}")
         return None
 
-    # Create skill directory
+    # Créer le répertoire du skill
     try:
         skill_dir.mkdir(parents=True, exist_ok=False)
-        print(f"✅ Created skill directory: {skill_dir}")
+        print(f"✅ Répertoire du skill créé : {skill_dir}")
     except Exception as e:
-        print(f"❌ Error creating directory: {e}")
+        print(f"❌ Erreur lors de la création du répertoire : {e}")
         return None
 
-    # Create SKILL.md from template
+    # Créer SKILL.md à partir du gabarit
     skill_title = title_case_skill_name(skill_name)
     skill_content = SKILL_TEMPLATE.format(skill_name=skill_name, skill_title=skill_title)
 
     skill_md_path = skill_dir / "SKILL.md"
     try:
         skill_md_path.write_text(skill_content)
-        print("✅ Created SKILL.md")
+        print("✅ SKILL.md créé")
     except Exception as e:
-        print(f"❌ Error creating SKILL.md: {e}")
+        print(f"❌ Erreur lors de la création de SKILL.md : {e}")
         return None
 
-    # Create resource directories with example files
+    # Créer les répertoires de ressources avec des fichiers d'exemple
     try:
-        # Create scripts/ directory with example script
+        # Créer le répertoire scripts/ avec un script d'exemple
         scripts_dir = skill_dir / "scripts"
         scripts_dir.mkdir(exist_ok=True)
         example_script = scripts_dir / "example.py"
         example_script.write_text(EXAMPLE_SCRIPT.format(skill_name=skill_name))
         example_script.chmod(0o755)
-        print("✅ Created scripts/example.py")
+        print("✅ scripts/example.py créé")
 
-        # Create references/ directory with example reference doc
+        # Créer le répertoire references/ avec un document de référence d'exemple
         references_dir = skill_dir / "references"
         references_dir.mkdir(exist_ok=True)
         example_reference = references_dir / "api_reference.md"
         example_reference.write_text(EXAMPLE_REFERENCE.format(skill_title=skill_title))
-        print("✅ Created references/api_reference.md")
+        print("✅ references/api_reference.md créé")
 
-        # Create assets/ directory with example asset placeholder
+        # Créer le répertoire assets/ avec un asset d'exemple provisoire
         assets_dir = skill_dir / "assets"
         assets_dir.mkdir(exist_ok=True)
         example_asset = assets_dir / "example_asset.txt"
         example_asset.write_text(EXAMPLE_ASSET)
-        print("✅ Created assets/example_asset.txt")
+        print("✅ assets/example_asset.txt créé")
     except Exception as e:
-        print(f"❌ Error creating resource directories: {e}")
+        print(f"❌ Erreur lors de la création des répertoires de ressources : {e}")
         return None
 
-    # Print next steps
-    print(f"\n✅ Skill '{skill_name}' initialized successfully at {skill_dir}")
-    print("\nNext steps:")
-    print("1. Edit SKILL.md to complete the TODO items and update the description")
-    print("2. Customize or delete the example files in scripts/, references/, and assets/")
-    print("3. Run the validator when ready to check the skill structure")
+    # Afficher les étapes suivantes
+    print(f"\n✅ Skill '{skill_name}' initialisé avec succès dans {skill_dir}")
+    print("\nÉtapes suivantes :")
+    print("1. Modifiez SKILL.md pour compléter les éléments TODO et mettre à jour la description")
+    print("2. Personnalisez ou supprimez les fichiers d'exemple dans scripts/, references/ et assets/")
+    print("3. Lancez le validateur, une fois prêt, pour vérifier la structure du skill")
 
     return skill_dir
 
 
 def main():
     if len(sys.argv) < 4 or sys.argv[2] != "--path":
-        print("Usage: init_skill.py <skill-name> --path <path>")
-        print("\nSkill name requirements:")
-        print("  - Hyphen-case identifier (e.g., 'data-analyzer')")
-        print("  - Lowercase letters, digits, and hyphens only")
-        print("  - Max 40 characters")
-        print("  - Must match directory name exactly")
-        print("\nExamples:")
+        print("Utilisation : init_skill.py <skill-name> --path <path>")
+        print("\nExigences pour le nom du skill :")
+        print("  - Identifiant en hyphen-case (par ex. 'data-analyzer')")
+        print("  - Lettres minuscules, chiffres et tirets uniquement")
+        print("  - 40 caractères maximum")
+        print("  - Doit correspondre exactement au nom du répertoire")
+        print("\nExemples :")
         print("  init_skill.py my-new-skill --path skills/public")
         print("  init_skill.py my-api-helper --path skills/private")
         print("  init_skill.py custom-skill --path /custom/location")
@@ -286,8 +287,8 @@ def main():
     skill_name = sys.argv[1]
     path = sys.argv[3]
 
-    print(f"🚀 Initializing skill: {skill_name}")
-    print(f"   Location: {path}")
+    print(f"🚀 Initialisation du skill : {skill_name}")
+    print(f"   Emplacement : {path}")
     print()
 
     result = init_skill(skill_name, path)

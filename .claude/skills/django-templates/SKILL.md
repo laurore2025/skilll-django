@@ -1,84 +1,84 @@
 ---
 name: django-templates
-description: Django template patterns including inheritance, partials, tags, and filters. Use when working with templates, creating reusable components, or organizing template structure.
+description: "Patrons de gabarits (templates) Django : héritage, gabarits partiels, balises et filtres. À utiliser pour travailler sur des gabarits, créer des composants réutilisables ou organiser la structure des gabarits."
 ---
 
-# Django Template Patterns
+# Patrons de gabarits Django
 
-## Template Organization
+## Organisation des gabarits
 
 ```
 templates/
-├── base.html              # Root template with common structure
-├── partials/              # Reusable fragments (navbar, footer, pagination)
-├── components/            # UI components (button, card, modal)
-└── <app>/                 # App-specific templates
-    ├── list.html          # Full pages extend base.html
+├── base.html              # Gabarit racine avec la structure commune
+├── partials/              # Fragments réutilisables (barre de navigation, pied de page, pagination)
+├── components/            # Composants d'interface (bouton, carte, fenêtre modale)
+└── <app>/                 # Gabarits propres à l'application
+    ├── list.html          # Les pages complètes étendent base.html
     ├── detail.html
-    ├── _list.html         # HTMX partials (underscore prefix)
+    ├── _list.html         # Gabarits partiels HTMX (préfixe tiret bas)
     └── _form.html
 ```
 
-**Naming conventions:**
-- Full pages: `list.html`, `detail.html`, `form.html`
-- HTMX partials: `_list.html`, `_card.html` (underscore prefix)
-- Shared partials: `partials/_navbar.html`, `partials/_pagination.html`
-- Components: `components/_button.html`, `components/_modal.html`
+**Conventions de nommage :**
+- Pages complètes : `list.html`, `detail.html`, `form.html`
+- Gabarits partiels HTMX : `_list.html`, `_card.html` (préfixe tiret bas)
+- Gabarits partiels partagés : `partials/_navbar.html`, `partials/_pagination.html`
+- Composants : `components/_button.html`, `components/_modal.html`
 
-## Template Inheritance
+## Héritage de gabarits
 
-Use three-level inheritance for consistent layouts:
+Utilisez un héritage à trois niveaux pour des mises en page cohérentes :
 
-1. **base.html** - Site-wide structure (HTML skeleton, navbar, footer)
-2. **Section templates** - Optional intermediate templates for sections with shared elements
-3. **Page templates** - Individual pages that extend base or section templates
+1. **base.html** - Structure globale du site (squelette HTML, barre de navigation, pied de page)
+2. **Gabarits de section** - Gabarits intermédiaires facultatifs pour les sections qui partagent des éléments
+3. **Gabarits de page** - Pages individuelles qui étendent base ou les gabarits de section
 
-**Standard blocks to define in base.html:**
-- `title` - Page title (use `{{ block.super }}` to append to site name)
-- `content` - Main page content
-- `extra_css` - Page-specific stylesheets
-- `extra_js` - Page-specific scripts
+**Blocs standard à définir dans base.html :**
+- `title` - Titre de la page (utilisez `{{ block.super }}` pour l'ajouter au nom du site)
+- `content` - Contenu principal de la page
+- `extra_css` - Feuilles de style propres à la page
+- `extra_js` - Scripts propres à la page
 
-## Partials and Components
+## Gabarits partiels et composants
 
-**Partials** are template fragments included in other templates. Use for:
-- Repeated content (pagination, empty states)
-- HTMX responses that replace portions of the page
-- Keeping templates DRY
+Les **gabarits partiels** sont des fragments de gabarit inclus dans d'autres gabarits. Utilisez-les pour :
+- Le contenu répété (pagination, états vides)
+- Les réponses HTMX qui remplacent des portions de la page
+- Garder les gabarits DRY
 
-**Components** are self-contained UI elements with configurable behavior. Pass context with:
-- `{% include "components/_button.html" with text="Submit" variant="primary" %}`
-- Add `only` to isolate context: `{% include "_card.html" with title=post.title only %}`
+Les **composants** sont des éléments d'interface autonomes au comportement configurable. Passez-leur le contexte avec :
+- `{% include "components/_button.html" with text="Envoyer" variant="primary" %}`
+- Ajoutez `only` pour isoler le contexte : `{% include "_card.html" with title=post.title only %}`
 
-## Custom Tags and Filters
+## Balises et filtres personnalisés
 
-**When to create custom template tags:**
-- `simple_tag` - Return a string value (e.g., active link class, formatted output)
-- `inclusion_tag` - Render a template fragment (e.g., pagination component, user avatar)
+**Quand créer des balises de gabarit personnalisées :**
+- `simple_tag` - Renvoie une valeur de type chaîne (par ex. classe de lien actif, sortie formatée)
+- `inclusion_tag` - Effectue le rendu d'un fragment de gabarit (par ex. composant de pagination, avatar d'utilisateur)
 
-**When to create custom filters:**
-- Transform a single value (e.g., initials from name, percentage calculation)
-- Chain with other filters for composable transformations
+**Quand créer des filtres personnalisés :**
+- Pour transformer une seule valeur (par ex. initiales à partir d'un nom, calcul de pourcentage)
+- Pour les chaîner avec d'autres filtres et composer des transformations
 
-**Location:** `apps/<app>/templatetags/<app>_tags.py` (create `__init__.py` in templatetags directory)
+**Emplacement :** `apps/<app>/templatetags/<app>_tags.py` (créez `__init__.py` dans le répertoire templatetags)
 
-## Anti-Patterns
+## Anti-patrons
 
-**Move logic out of templates:**
-- Complex conditionals belong in views or model methods
-- Use `user.can_moderate` not `user.role == "admin" or user.role == "moderator"`
+**Sortez la logique des gabarits :**
+- Les conditions complexes ont leur place dans les vues ou les méthodes de modèle
+- Utilisez `user.can_moderate` et non `user.role == "admin" or user.role == "moderator"`
 
-**Use URL names, not hardcoded paths:**
-- Use `{% url 'posts:detail' pk=post.pk %}` not `/posts/{{ post.id }}/`
+**Utilisez les noms d'URL, pas des chemins codés en dur :**
+- Utilisez `{% url 'posts:detail' pk=post.pk %}` et non `/posts/{{ post.id }}/`
 
-**Use CSS classes, not inline styles:**
-- Use `class="error-message"` not `style="color: red;"`
+**Utilisez des classes CSS, pas des styles en ligne :**
+- Utilisez `class="error-message"` et non `style="color: red;"`
 
-**Handle empty states:**
-- Always include `{% empty %}` clause in loops that might have no items
+**Gérez les états vides :**
+- Incluez toujours une clause `{% empty %}` dans les boucles susceptibles de ne contenir aucun élément
 
-## Integration with Other Skills
+## Intégration avec les autres skills
 
-- **htmx-patterns** - HTMX partial templates and dynamic UI
-- **django-forms** - Form rendering and validation patterns
-- **pytest-django-patterns** - Testing template rendering
+- **htmx-patterns** - Gabarits partiels HTMX et interface dynamique
+- **django-forms** - Patrons de rendu et de validation des formulaires
+- **pytest-django-patterns** - Tests du rendu des gabarits

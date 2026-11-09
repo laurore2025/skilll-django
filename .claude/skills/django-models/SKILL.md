@@ -1,141 +1,141 @@
 ---
 name: django-models
-description: Django model design patterns emphasizing fat models/thin views, QuerySet optimization, and domain logic encapsulation. Use when designing models, optimizing queries, implementing business logic, or working with the ORM.
+description: "Patrons de conception des modèles Django privilégiant les modèles riches et les vues légères (fat models/thin views), l'optimisation des QuerySet et l'encapsulation de la logique du domaine. À utiliser pour concevoir des modèles, optimiser des requêtes, implémenter de la logique métier ou travailler avec l'ORM."
 ---
 
-# Django Model Patterns
+# Patrons de modèles Django
 
-## Core Philosophy: Fat Models, Thin Views
+## Philosophie de base : modèles riches, vues légères
 
-**Business logic belongs in models and managers, not views.** Views orchestrate workflows; models implement domain behavior. This principle creates testable, reusable code that stays maintainable as complexity grows.
+**La logique métier a sa place dans les modèles et les managers, pas dans les vues.** Les vues orchestrent les flux de travail ; les modèles implémentent le comportement du domaine. Ce principe produit un code testable et réutilisable, qui reste maintenable à mesure que la complexité augmente.
 
-**Good**: Model methods handle business rules, state transitions, validation
-**Bad**: Views contain if/else logic for domain rules, calculate derived values
+**Bien** : les méthodes de modèle gèrent les règles métier, les transitions d'état, la validation
+**Mal** : les vues contiennent de la logique if/else pour les règles du domaine, calculent des valeurs dérivées
 
-## Model Design
+## Conception des modèles
 
-### Structure Your Models Around Domain Concepts
-- Use `TextChoices`/`IntegerChoices` for status fields and enums
-- Add `get_absolute_url()` for canonical object URLs
-- Include `__str__()` for readable representations
-- Set proper `ordering` in Meta for consistent default sorting
-- Add database indexes for frequently filtered/sorted fields
-- Use abstract base models for shared fields (timestamps, soft deletes, etc.)
+### Structurez vos modèles autour des concepts du domaine
+- Utilisez `TextChoices`/`IntegerChoices` pour les champs de statut et les énumérations
+- Ajoutez `get_absolute_url()` pour les URL canoniques des objets
+- Incluez `__str__()` pour des représentations lisibles
+- Définissez un `ordering` approprié dans Meta pour un tri par défaut cohérent
+- Ajoutez des index de base de données pour les champs fréquemment filtrés ou triés
+- Utilisez des modèles de base abstraits pour les champs partagés (horodatages, suppressions logiques, etc.)
 
-### Field Selection Guidelines
-- Use `blank=True, default=""` for optional text fields (avoid null)
-- Use `null=True, blank=True` for optional foreign keys
-- For unique optional fields, use `null=True` to avoid collision issues
-- Leverage `JSONField` for flexible metadata (avoid creating many optional fields)
-- Set appropriate `max_length` based on actual data needs
+### Règles de choix des champs
+- Utilisez `blank=True, default=""` pour les champs texte facultatifs (évitez null)
+- Utilisez `null=True, blank=True` pour les clés étrangères facultatives
+- Pour les champs uniques facultatifs, utilisez `null=True` afin d'éviter les problèmes de collision
+- Tirez parti de `JSONField` pour les métadonnées flexibles (évitez de créer de nombreux champs facultatifs)
+- Définissez une `max_length` adaptée aux besoins réels des données
 
-### Encapsulate Business Logic in Model Methods
-- State transitions: `post.publish()`, `order.cancel()`
-- Permission checks: `post.is_editable_by(user)`
-- Complex calculations: `invoice.calculate_total()`
-- Use properties for computed read-only values
-- Specify `update_fields` when saving partial changes
+### Encapsulez la logique métier dans les méthodes de modèle
+- Transitions d'état : `post.publish()`, `order.cancel()`
+- Vérifications de permissions : `post.is_editable_by(user)`
+- Calculs complexes : `invoice.calculate_total()`
+- Utilisez des propriétés pour les valeurs calculées en lecture seule
+- Précisez `update_fields` lors de l'enregistrement de modifications partielles
 
-## QuerySet Patterns: The Power of Composition
+## Patrons de QuerySet : la puissance de la composition
 
-**Custom QuerySet classes are your secret weapon.** They make queries reusable, chainable, and testable.
+**Les classes QuerySet personnalisées sont votre arme secrète.** Elles rendent les requêtes réutilisables, chaînables et testables.
 
-### Pattern: QuerySet as Manager
+### Patron : QuerySet comme manager
 ```
-Define a QuerySet subclass with domain-specific filter methods
-Attach it to your model: objects = YourQuerySet.as_manager()
-Chain methods for composable queries
+Définissez une sous-classe de QuerySet avec des méthodes de filtrage propres au domaine
+Attachez-la à votre modèle : objects = YourQuerySet.as_manager()
+Chaînez les méthodes pour composer des requêtes
 ```
 
-### Benefits
-- Reusable query logic across views, tasks, management commands
-- Chainable methods enable expressive, readable queries
-- Easy to test in isolation
-- Encapsulates query complexity away from views
+### Avantages
+- Logique de requête réutilisable dans les vues, les tâches, les commandes de gestion
+- Les méthodes chaînables permettent des requêtes expressives et lisibles
+- Faciles à tester isolément
+- Encapsulent la complexité des requêtes à l'écart des vues
 
-### Common QuerySet Methods
-- Filtering by status/state
-- Date range queries (recent, upcoming, expired)
-- User-scoped queries (owned_by, visible_to)
-- Combined lookups (published_and_recent)
+### Méthodes de QuerySet courantes
+- Filtrage par statut/état
+- Requêtes par plage de dates (récents, à venir, expirés)
+- Requêtes limitées à un utilisateur (owned_by, visible_to)
+- Recherches combinées (published_and_recent)
 
-## Query Optimization: Avoid N+1 Queries
+## Optimisation des requêtes : évitez les requêtes N+1
 
-### The Golden Rules
-1. **select_related()**: Use for ForeignKey and OneToOneField (creates SQL JOIN)
-2. **prefetch_related()**: Use for ManyToManyField and reverse ForeignKeys (separate query + Python join)
-3. **only()**: Load specific fields when you don't need the whole object
-4. **defer()**: Exclude heavy fields (TextField, JSONField) you won't use
-5. **Prefetch()** object: Customize prefetch with filters and select_related
+### Les règles d'or
+1. **select_related()** : à utiliser pour ForeignKey et OneToOneField (crée une jointure SQL)
+2. **prefetch_related()** : à utiliser pour ManyToManyField et les ForeignKey inverses (requête séparée + jointure en Python)
+3. **only()** : chargez uniquement certains champs lorsque vous n'avez pas besoin de l'objet entier
+4. **defer()** : excluez les champs lourds (TextField, JSONField) que vous n'utiliserez pas
+5. Objet **Prefetch()** : personnalisez le préchargement avec des filtres et select_related
 
-### Efficient Counting and Existence Checks
-- Use `.exists()` instead of `if queryset:` or `if len(queryset):`
-- Use `.count()` instead of `len(queryset.all())`
-- Both perform database-level operations without loading objects
+### Comptages et tests d'existence efficaces
+- Utilisez `.exists()` au lieu de `if queryset:` ou `if len(queryset):`
+- Utilisez `.count()` au lieu de `len(queryset.all())`
+- Les deux effectuent l'opération au niveau de la base de données sans charger les objets
 
-### Aggregation and Annotation
-- `annotate()`: Add computed fields to each object (Count, Sum, Avg, etc.)
-- `aggregate()`: Compute values across entire queryset
-- Use `F()` expressions for database-level updates (`views=F('views') + 1`)
-- Combine annotate with filter for "objects with at least N related items"
+### Agrégation et annotation
+- `annotate()` : ajoute des champs calculés à chaque objet (Count, Sum, Avg, etc.)
+- `aggregate()` : calcule des valeurs sur l'ensemble du queryset
+- Utilisez des expressions `F()` pour les mises à jour au niveau de la base de données (`views=F('views') + 1`)
+- Combinez annotate et filter pour obtenir les « objets ayant au moins N éléments liés »
 
-## Managers vs QuerySets
+## Managers ou QuerySets
 
-**Use QuerySets for chainable query logic.**
-**Use Managers for model-level operations that don't return querysets.**
+**Utilisez les QuerySets pour la logique de requête chaînable.**
+**Utilisez les Managers pour les opérations au niveau du modèle qui ne renvoient pas de querysets.**
 
-Manager: Think "factory methods" - `User.objects.create_user()`
-QuerySet: Think "filters and transformations" - `Post.objects.published().recent()`
+Manager : pensez « méthodes factory » - `User.objects.create_user()`
+QuerySet : pensez « filtres et transformations » - `Post.objects.published().recent()`
 
-Most of the time, you want a custom QuerySet, not a custom Manager.
+La plupart du temps, c'est un QuerySet personnalisé qu'il vous faut, pas un Manager personnalisé.
 
-## Signals: Use Sparingly
+## Signaux : à utiliser avec parcimonie
 
-Signals create implicit coupling and make code harder to follow. **Prefer explicit method calls.**
+Les signaux créent un couplage implicite et rendent le code plus difficile à suivre. **Préférez les appels de méthode explicites.**
 
-### When Signals Make Sense
-- Audit logging (track all changes to a model)
-- Cache invalidation (clear cache when model changes)
-- Decoupling apps (third-party app needs to react to your models)
+### Quand les signaux ont du sens
+- Journalisation d'audit (suivi de toutes les modifications d'un modèle)
+- Invalidation de cache (vider le cache quand le modèle change)
+- Découplage d'applications (une application tierce doit réagir à vos modèles)
 
-### When to Avoid Signals
-- Business logic that should be in model methods
-- Logic tightly coupled to the calling code (just call the function directly)
-- Complex workflows (use explicit service layer instead)
+### Quand éviter les signaux
+- Logique métier qui devrait se trouver dans les méthodes de modèle
+- Logique étroitement couplée au code appelant (appelez simplement la fonction directement)
+- Flux de travail complexes (utilisez plutôt une couche de services explicite)
 
-**Rule of thumb**: If you control both the trigger and the reaction, don't use a signal.
+**Règle empirique** : si vous contrôlez à la fois le déclencheur et la réaction, n'utilisez pas de signal.
 
 ## Migrations
 
-### Workflow
-- Run `makemigrations` after model changes
-- Review generated migration files before applying
-- Run `migrate` to apply migrations
-- Migrations should be reversible when possible
+### Flux de travail
+- Exécutez `makemigrations` après toute modification des modèles
+- Relisez les fichiers de migration générés avant de les appliquer
+- Exécutez `migrate` pour appliquer les migrations
+- Les migrations doivent être réversibles autant que possible
 
-### Data Migrations
-Create with `makemigrations --empty app_name`. Use `apps.get_model()` to access models (not direct imports). Write both forward and reverse operations.
+### Migrations de données
+Créez-les avec `makemigrations --empty app_name`. Utilisez `apps.get_model()` pour accéder aux modèles (pas d'imports directs). Écrivez à la fois l'opération aller et l'opération retour.
 
-**Use data migrations for**: Populating new fields, transforming data, migrating between fields.
+**Utilisez les migrations de données pour** : renseigner de nouveaux champs, transformer des données, migrer d'un champ à un autre.
 
-## Anti-Patterns to Avoid
+## Anti-patrons à éviter
 
-### Query Anti-Patterns
-- Iterating over objects and accessing relations without `select_related()`/`prefetch_related()`
-- Using `if queryset:` instead of `.exists()`
-- Using `len()` to count instead of `.count()`
-- Loading entire objects when you only need specific fields
+### Anti-patrons de requêtes
+- Itérer sur des objets et accéder à leurs relations sans `select_related()`/`prefetch_related()`
+- Utiliser `if queryset:` au lieu de `.exists()`
+- Utiliser `len()` pour compter au lieu de `.count()`
+- Charger des objets entiers alors que vous n'avez besoin que de certains champs
 
-### Design Anti-Patterns
-- Business logic in views instead of models
-- Views performing calculations that belong in model methods
-- Overusing signals for synchronous operations
-- Creating new models when JSONField would suffice
-- Forgetting to add indexes for filtered/sorted fields
+### Anti-patrons de conception
+- Logique métier dans les vues au lieu des modèles
+- Vues effectuant des calculs qui relèvent des méthodes de modèle
+- Usage excessif des signaux pour des opérations synchrones
+- Création de nouveaux modèles alors qu'un JSONField suffirait
+- Oubli des index sur les champs filtrés ou triés
 
-## Integration
+## Intégration
 
-Works with:
-- **pytest-django-patterns**: Factory-based model testing
-- **celery-patterns**: Async operations on models (pass IDs, not instances)
-- **django-forms**: ModelForm validation and saving
+Fonctionne avec :
+- **pytest-django-patterns** : tests de modèles à base de factories
+- **celery-patterns** : opérations asynchrones sur les modèles (passez des identifiants, pas des instances)
+- **django-forms** : validation et enregistrement via ModelForm

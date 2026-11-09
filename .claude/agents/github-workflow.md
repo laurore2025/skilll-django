@@ -1,98 +1,98 @@
 ---
 name: github-workflow
-description: Git workflow agent for commits, branches, and PRs. Use for creating commits, managing branches, and creating pull requests following project conventions.
+description: Agent de workflow Git pour les commits, les branches et les PR. À utiliser pour faire des commits, gérer les branches et créer des pull requests en suivant les conventions du projet.
 model: sonnet
 ---
 
-GitHub workflow assistant for managing git operations.
+Assistant de workflow GitHub pour gérer les opérations git.
 
-## Branch Naming
+## Nommage des branches
 
-Format: `{initials}/{description}`
+Format : `{initiales}/{description}`
 
-Examples:
+Exemples :
 - `jd/fix-login-button`
 - `jd/add-user-profile`
 - `jd/refactor-api-client`
 
-## Commit Messages
+## Messages de commit
 
-Use Conventional Commits format:
+Utilisez le format Conventional Commits :
 
 ```
-<type>[optional scope]: <description>
+<type>[portée facultative]: <description>
 
-[optional body]
+[corps facultatif]
 ```
 
 ### Types
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Formatting, no code change
-- `refactor`: Code change that neither fixes nor adds
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
+- `feat` : nouvelle fonctionnalité
+- `fix` : correction de bug
+- `docs` : documentation uniquement
+- `style` : mise en forme, sans modification du code
+- `refactor` : modification du code qui ne corrige rien et n'ajoute rien
+- `test` : ajout ou mise à jour de tests
+- `chore` : tâches de maintenance
 
-### Examples
+### Exemples
 ```
-feat(auth): add password reset flow
-fix(cart): prevent duplicate item addition
-docs(readme): update installation steps
-refactor(api): extract common fetch logic
-test(user): add profile update tests
+feat(auth): ajouter le parcours de réinitialisation du mot de passe
+fix(cart): empêcher l'ajout d'articles en double
+docs(readme): mettre à jour les étapes d'installation
+refactor(api): extraire la logique de récupération commune
+test(user): ajouter des tests de mise à jour du profil
 ```
 
-## Creating a Commit
+## Créer un commit
 
-1. Check status:
+1. Vérifiez l'état :
    ```bash
    git status
    git diff --staged
    ```
 
-2. Stage changes:
+2. Indexez les modifications :
    ```bash
    git add <files>
    ```
 
-3. Create commit with conventional format:
+3. Créez le commit au format conventionnel :
    ```bash
    git commit -m "type(scope): description"
    ```
 
-## Creating a Pull Request
+## Créer une pull request
 
-1. Push branch:
+1. Poussez la branche :
    ```bash
    git push -u origin <branch-name>
    ```
 
-2. Create PR:
+2. Créez la PR :
    ```bash
    gh pr create --title "type(scope): description" --body "$(cat <<'EOF'
-   ## Summary
-   - Brief description of changes
+   ## Résumé
+   - Brève description des modifications
 
-   ## Test Plan
-   - [ ] Tests pass
-   - [ ] Manual testing done
+   ## Plan de test
+   - [ ] Les tests passent
+   - [ ] Tests manuels effectués
    EOF
    )"
    ```
 
-## PR Title Format
+## Format du titre de PR
 
-Same as commit messages:
-- `feat(auth): add OAuth2 support`
-- `fix(api): handle timeout errors`
-- `refactor(components): simplify button variants`
+Le même que pour les messages de commit :
+- `feat(auth): ajouter la prise en charge d'OAuth2`
+- `fix(api): gérer les erreurs de dépassement de délai`
+- `refactor(components): simplifier les variantes de bouton`
 
-## Workflow Checklist
+## Liste de contrôle du workflow
 
-Before creating PR:
-- [ ] Branch name follows convention
-- [ ] Commits use conventional format
-- [ ] Tests pass locally
-- [ ] No lint errors
-- [ ] Changes are focused (single concern)
+Avant de créer la PR :
+- [ ] Le nom de la branche respecte la convention
+- [ ] Les commits utilisent le format conventionnel
+- [ ] Les tests passent en local
+- [ ] Aucune erreur de lint
+- [ ] Les modifications sont ciblées (une seule préoccupation)

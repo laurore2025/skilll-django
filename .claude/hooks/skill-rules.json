@@ -25,145 +25,164 @@
   },
   "skills": {
     "pytest-django-patterns": {
-      "description": "pytest-django testing patterns and TDD workflow",
+      "description": "Motifs de test pytest-django et démarche TDD",
       "priority": 9,
       "triggers": {
-        "keywords": ["test", "pytest", "fixture", "factory", "mock", "tdd"],
-        "keywordPatterns": ["\\btest(?:s|ing)?\\b", "\\bspec\\b", "\\bfixture\\b"],
+        "keywords": ["test", "pytest", "fixture", "factory", "mock", "tdd", "test unitaire"],
+        "keywordPatterns": ["\\btest(?:s|ing)?\\b", "\\bspec\\b", "\\bfixture\\b", "\\btester\\b"],
         "pathPatterns": ["**/test_*.py", "**/*_test.py", "**/conftest.py", "**/factories.py"],
         "intentPatterns": [
           "(?:write|add|create|fix).*(?:test)",
           "(?:test).*(?:for|the)",
-          "(?:red.green.refactor|tdd)"
+          "(?:red.green.refactor|tdd)",
+          "(?:écri[rst]|ajoute[rz]?|crée[rz]?|corrige[rz]?).*(?:test)",
+          "(?:test).*(?:pour|de la|du|des)"
         ],
         "contentPatterns": ["@pytest", "def test_", "Factory", "pytest.mark"]
       },
       "excludePatterns": ["e2e", "playwright", "selenium"]
     },
     "django-forms": {
-      "description": "Django form handling with validation",
+      "description": "Gestion des formulaires Django et de leur validation",
       "priority": 7,
       "triggers": {
-        "keywords": ["form", "modelform", "validation", "clean", "widget"],
-        "keywordPatterns": ["\\bform(?:s)?\\b", "Form\\b", "\\bvalidat(?:e|ion)\\b"],
+        "keywords": ["form", "modelform", "validation", "clean", "widget", "formulaire", "champ"],
+        "keywordPatterns": ["\\bform(?:s)?\\b", "Form\\b", "\\bvalidat(?:e|ion)\\b", "\\bformulaires?\\b"],
         "pathPatterns": ["**/forms.py", "**/forms/*.py"],
         "intentPatterns": [
           "(?:create|build|add).*(?:form)",
           "(?:form).*(?:validation|submit|field)",
-          "(?:validat(?:e|ion)).*(?:schema|rule)"
+          "(?:validat(?:e|ion)).*(?:schema|rule)",
+          "(?:crée[rz]?|ajoute[rz]?|construi[rst]).*(?:formulaire)",
+          "(?:formulaire).*(?:validation|soumission|champ)"
         ],
         "contentPatterns": ["forms.Form", "ModelForm", "clean_", "is_valid"]
       },
       "excludePatterns": ["format", "transform", "platform"]
     },
     "htmx-alpine-patterns": {
-      "description": "HTMX patterns for dynamic Django templates",
+      "description": "Motifs HTMX pour des gabarits Django dynamiques",
       "priority": 7,
       "triggers": {
-        "keywords": ["htmx", "hx-", "partial", "ajax", "dynamic"],
-        "keywordPatterns": ["\\bhtmx\\b", "\\bhx-\\w+\\b", "\\bpartial\\b"],
+        "keywords": ["htmx", "hx-", "partial", "ajax", "dynamic", "partiel", "dynamique"],
+        "keywordPatterns": ["\\bhtmx\\b", "\\bhx-\\w+\\b", "\\bpartial\\b", "\\bpartiels?\\b"],
         "pathPatterns": ["**/templates/**/_*.html", "**/partials/**"],
         "intentPatterns": [
           "(?:add|create).*(?:htmx|dynamic|ajax)",
-          "(?:htmx).*(?:request|swap|trigger)"
+          "(?:htmx).*(?:request|swap|trigger)",
+          "(?:ajoute[rz]?|crée[rz]?).*(?:htmx|dynamique|ajax)"
         ],
         "contentPatterns": ["hx-get", "hx-post", "hx-target", "hx-swap", "HX-Request"]
       }
     },
     "django-templates": {
-      "description": "Django template inheritance and patterns",
+      "description": "Héritage de gabarits Django et motifs associés",
       "priority": 6,
       "triggers": {
-        "keywords": ["template", "html", "extends", "block", "include"],
-        "keywordPatterns": ["\\btemplate\\b", "\\bhtml\\b"],
+        "keywords": ["template", "html", "extends", "block", "include", "gabarit"],
+        "keywordPatterns": ["\\btemplate\\b", "\\bhtml\\b", "\\bgabarits?\\b"],
         "pathPatterns": ["**/templates/**/*.html"],
         "intentPatterns": [
           "(?:create|add).*(?:template|page)",
-          "(?:template).*(?:tag|filter)"
+          "(?:template).*(?:tag|filter)",
+          "(?:crée[rz]?|ajoute[rz]?).*(?:gabarit|template|page)",
+          "(?:gabarit|template).*(?:balise|filtre)"
         ],
         "contentPatterns": ["{% extends", "{% block", "{% include", "{% for"]
       }
     },
     "celery-patterns": {
-      "description": "Celery task patterns and async processing",
+      "description": "Tâches Celery et traitements asynchrones",
       "priority": 7,
       "triggers": {
-        "keywords": ["celery", "task", "async", "background", "queue", "worker"],
+        "keywords": ["celery", "task", "async", "background", "queue", "worker", "tâche de fond", "arrière-plan", "file d'attente", "asynchrone"],
         "keywordPatterns": ["\\bcelery\\b", "\\btask\\b", "\\basync\\b", "\\.delay\\("],
         "pathPatterns": ["**/tasks.py", "**/tasks/*.py", "**/celery.py"],
         "intentPatterns": [
           "(?:create|add).*(?:task|background)",
-          "(?:async|background).*(?:job|process)"
+          "(?:async|background).*(?:job|process)",
+          "(?:crée[rz]?|ajoute[rz]?).*(?:tâche|arrière-plan)",
+          "(?:traitement|tâche).*(?:asynchrone|de fond|planifiée)"
         ],
         "contentPatterns": ["@shared_task", "@celery", ".delay(", ".apply_async"]
       }
     },
     "django-models": {
-      "description": "Django model design and QuerySet optimization",
+      "description": "Conception des modèles Django et optimisation des QuerySet",
       "priority": 7,
       "triggers": {
-        "keywords": ["model", "queryset", "migration", "orm", "database", "query"],
-        "keywordPatterns": ["\\bmodel\\b", "\\bqueryset\\b", "\\bmigration\\b"],
+        "keywords": ["model", "queryset", "migration", "orm", "database", "query", "modèle", "base de données", "requête"],
+        "keywordPatterns": ["\\bmodel\\b", "\\bqueryset\\b", "\\bmigration\\b", "\\bmodèles?\\b"],
         "pathPatterns": ["**/models.py", "**/models/*.py", "**/migrations/*.py"],
         "intentPatterns": [
           "(?:create|add|design).*(?:model)",
-          "(?:optimize|fix).*(?:query|n\\+1)"
+          "(?:optimize|fix).*(?:query|n\\+1)",
+          "(?:crée[rz]?|ajoute[rz]?|conçoi[st]|concevoir).*(?:modèle)",
+          "(?:optimise[rz]?|corrige[rz]?).*(?:requête|n\\+1)"
         ],
         "contentPatterns": ["models.Model", "models.CharField", "objects.filter", "select_related"]
       }
     },
     "systematic-debugging": {
-      "description": "Four-phase debugging with root cause analysis",
+      "description": "Débogage en quatre phases avec analyse de la cause racine",
       "priority": 9,
       "triggers": {
-        "keywords": ["bug", "debug", "fix", "error", "issue", "broken", "failing"],
-        "keywordPatterns": ["\\bbug\\b", "\\bfix\\b", "\\berror\\b", "\\bissue\\b", "doesn't work", "not working"],
+        "keywords": ["bug", "debug", "fix", "error", "issue", "broken", "failing", "erreur", "bogue", "plante", "échoue", "problème"],
+        "keywordPatterns": ["\\bbug\\b", "\\bfix\\b", "\\berror\\b", "\\bissue\\b", "doesn't work", "not working", "\\berreurs?\\b", "ne (?:marche|fonctionne) (?:pas|plus)"],
         "intentPatterns": [
           "(?:fix|debug|resolve|investigate).*(?:bug|error|issue|problem)",
           "(?:why).*(?:not working|broken|failing)",
-          "(?:something).*(?:wrong|broken)"
+          "(?:something).*(?:wrong|broken)",
+          "(?:corrige[rz]?|débogue[rz]?|résou(?:s|dre)|enquête[rz]?|analyse[rz]?).*(?:bug|bogue|erreur|problème)",
+          "(?:pourquoi).*(?:marche pas|fonctionne pas|échoue|plante)"
         ]
       },
-      "excludePatterns": ["fix typo", "fix formatting", "fix lint"]
+      "excludePatterns": ["fix typo", "fix formatting", "fix lint", "corrige la faute", "corrige le formatage", "corrige le lint"]
     },
     "github-actions": {
-      "description": "GitHub Actions CI/CD workflow patterns",
+      "description": "Workflows CI/CD GitHub Actions",
       "priority": 6,
       "triggers": {
-        "keywords": ["github action", "workflow", "ci/cd", "pipeline", "ci"],
+        "keywords": ["github action", "workflow", "ci/cd", "pipeline", "ci", "intégration continue"],
         "keywordPatterns": ["github.action", "ci/?cd", "\\bworkflow\\b"],
         "pathPatterns": [".github/workflows/**", ".github/**/*.yml"],
         "intentPatterns": [
           "(?:create|add|update).*(?:workflow|action|pipeline)",
-          "(?:ci|cd).*(?:pipeline|workflow)"
+          "(?:ci|cd).*(?:pipeline|workflow)",
+          "(?:crée[rz]?|ajoute[rz]?|mets? à jour).*(?:workflow|action|pipeline)"
         ],
         "contentPatterns": ["runs-on:", "uses:", "steps:"]
       }
     },
     "worktree-commit-merge": {
-      "description": "Commit worktree changes, merge into master/main, sync branch",
+      "description": "Commiter les changements du worktree, fusionner dans master/main, resynchroniser la branche",
       "priority": 8,
       "triggers": {
-        "keywords": ["worktree", "merge", "master", "main"],
-        "keywordPatterns": ["\\bworktree\\b", "\\bmerge.*(?:master|main)\\b"],
+        "keywords": ["worktree", "merge", "master", "main", "fusionne", "fusion"],
+        "keywordPatterns": ["\\bworktree\\b", "\\bmerge.*(?:master|main)\\b", "\\bfusionne.*(?:master|main)\\b"],
         "intentPatterns": [
           "commit.*(?:and|then).*merge",
           "merge.*(?:to|into).*(?:master|main)",
           "(?:done|finished).*worktree",
-          "we.re done"
+          "we.re done",
+          "commit.*(?:et|puis).*(?:fusionne|merge)",
+          "(?:fusionne|merge).*(?:dans|sur|vers).*(?:master|main)",
+          "(?:fini|terminé).*worktree"
         ]
       }
     },
     "documentation": {
-      "description": "Documentation and docstrings",
+      "description": "Documentation et docstrings",
       "priority": 3,
       "triggers": {
-        "keywords": ["documentation", "docstring", "readme", "docs"],
+        "keywords": ["documentation", "docstring", "readme", "docs", "documenter"],
         "keywordPatterns": ["\\bdoc(?:s|umentation)?\\b", "\\breadme\\b"],
         "pathPatterns": ["**/docs/**", "**/*.md", "**/README*"],
         "intentPatterns": [
           "(?:write|add|update).*(?:doc|documentation)",
-          "(?:document).*(?:function|class|api)"
+          "(?:document).*(?:function|class|api)",
+          "(?:écri[rst]|ajoute[rz]?|mets? à jour).*(?:doc|documentation)",
+          "(?:documente[rz]?).*(?:fonction|classe|api)"
         ]
       }
     }

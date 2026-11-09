@@ -1,13 +1,13 @@
-name: Scheduled - Code Quality Review
+name: Planifié - Revue de la qualité du code
 
 on:
   schedule:
-    # Run every Sunday at 8 AM UTC
+    # S'exécute chaque dimanche à 8 h UTC
     - cron: '0 8 * * 0'
   workflow_dispatch:
     inputs:
       num_dirs:
-        description: 'Number of random directories to review'
+        description: 'Nombre de répertoires choisis au hasard à passer en revue'
         required: false
         default: '3'
 
@@ -25,30 +25,30 @@ jobs:
     outputs:
       directories: ${{ steps.select.outputs.directories }}
     steps:
-      - name: Checkout repository
+      - name: Récupération du dépôt
         uses: actions/checkout@v4
 
-      - name: Select random directories
+      - name: Sélection de répertoires au hasard
         id: select
         run: |
           NUM_DIRS="${{ github.event.inputs.num_dirs || '3' }}"
 
-          # Find directories in src that have TypeScript files
+          # Trouver les répertoires de src qui contiennent des fichiers TypeScript
           DIRS=$(find src -type d -exec sh -c 'ls "$1"/*.ts "$1"/*.tsx 2>/dev/null | grep -v -E "\.(test|spec|stories)\." | head -1' _ {} \; 2>/dev/null | \
             xargs -I {} dirname {} | \
             sort -u | \
             shuf -n "$NUM_DIRS")
 
           if [ -z "$DIRS" ]; then
-            echo "No suitable directories found"
+            echo "Aucun répertoire approprié trouvé"
             echo "directories=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # Convert to JSON array
+          # Convertir en tableau JSON
           JSON_DIRS=$(echo "$DIRS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "directories=$JSON_DIRS" >> $GITHUB_OUTPUT
-          echo "Selected directories:"
+          echo "Répertoires sélectionnés :"
           echo "$DIRS"
 
   review-directory:
@@ -61,28 +61,28 @@ jobs:
       matrix:
         directory: ${{ fromJson(needs.select-directories.outputs.directories) }}
     steps:
-      - name: Checkout repository
+      - name: Récupération du dépôt
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Installation de Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Installation des dépendances
         run: npm ci
 
-      - name: Generate branch name
+      - name: Génération du nom de branche
         id: branch
         run: |
           DIR_SLUG=$(echo "${{ matrix.directory }}" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | cut -c1-30)
           BRANCH_NAME="claude/code-quality-${DIR_SLUG}-$(date +%Y%m%d)"
           echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Claude Code Quality Review
+      - name: Revue de la qualité du code par Claude
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -92,50 +92,50 @@ jobs:
           branch_prefix: claude/code-quality-
           track_progress: true
           prompt: |
-            # Weekly Code Quality Review
+            # Revue hebdomadaire de la qualité du code
 
-            You are performing a scheduled code quality review of a specific directory.
+            Vous effectuez une revue planifiée de la qualité du code d'un répertoire précis.
 
-            ## Target Directory
-            **Review: `${{ matrix.directory }}`**
+            ## Répertoire cible
+            **À examiner : `${{ matrix.directory }}`**
 
-            ## Your Tasks
+            ## Vos tâches
 
-            1. **Read the code review standards**: Read `.claude/agents/code-reviewer.md` for the full checklist
+            1. **Lisez les standards de revue de code** : lisez `.claude/agents/code-reviewer.md` pour obtenir la liste de contrôle complète
 
-            2. **Analyze all files in the directory**:
-               - List all .ts and .tsx files (excluding .test., .spec., .stories.)
-               - Read each file thoroughly
-               - Apply the review checklist
+            2. **Analysez tous les fichiers du répertoire** :
+               - Listez tous les fichiers .ts et .tsx (hors .test., .spec., .stories.)
+               - Lisez attentivement chaque fichier
+               - Appliquez la liste de contrôle de la revue
 
-            3. **Focus on finding and FIXING issues**:
-               - TypeScript strict mode violations (any types, missing types)
-               - React anti-patterns (bad useEffect, unnecessary memoization)
-               - Code style issues (mutations, deep nesting, poor naming)
-               - Missing error handling
-               - Security issues
-               - Performance problems
+            3. **Concentrez-vous sur la détection et la CORRECTION des problèmes** :
+               - Violations du mode strict de TypeScript (types any, types manquants)
+               - Anti-patterns React (useEffect mal employé, mémoïsation inutile)
+               - Problèmes de style de code (mutations, imbrication profonde, mauvais nommage)
+               - Gestion des erreurs manquante
+               - Problèmes de sécurité
+               - Problèmes de performance
 
-            4. **Make the fixes yourself**:
-               - Don't just report issues - FIX THEM
-               - Use Edit tool to update files
-               - Ensure fixes don't break anything
+            4. **Effectuez les corrections vous-même** :
+               - Ne vous contentez pas de signaler les problèmes - CORRIGEZ-LES
+               - Utilisez l'outil Edit pour modifier les fichiers
+               - Assurez-vous que les corrections ne cassent rien
 
-            5. **Run verification**:
-               - `npm run lint` - verify no lint errors introduced
-               - If errors occur, fix them or revert changes
+            5. **Lancez la vérification** :
+               - `npm run lint` - vérifiez qu'aucune erreur de lint n'a été introduite
+               - En cas d'erreurs, corrigez-les ou annulez les modifications
 
-            6. **Create PR if fixes were made**:
-               - Create a branch from main
-               - Commit all fixes with descriptive message
-               - PR title: "fix(${{ matrix.directory }}): code quality improvements"
-               - PR body should list fixes applied
+            6. **Créez une PR si des corrections ont été faites** :
+               - Créez une branche à partir de main
+               - Commitez toutes les corrections avec un message descriptif
+               - Titre de la PR : "fix(${{ matrix.directory }}): améliorations de la qualité du code"
+               - Le corps de la PR doit lister les corrections appliquées
 
-            ## Guidelines
-            - Be thorough but focused on this directory only
-            - Fix issues that are clear improvements
-            - Don't refactor working code just for style
-            - If no issues found, report that and skip PR creation
+            ## Consignes
+            - Soyez rigoureux, mais limitez-vous à ce répertoire
+            - Corrigez les problèmes dont la correction constitue une nette amélioration
+            - Ne refactorisez pas du code qui fonctionne uniquement pour des raisons de style
+            - Si aucun problème n'est trouvé, signalez-le et ne créez pas de PR
           claude_args: |
             --max-turns 35
             --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npm run lint*)"
@@ -145,13 +145,13 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Summary
+      - name: Résumé
         run: |
-          echo "## Code Quality Review Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Revue de la qualité du code terminée" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Reviewed directories:" >> $GITHUB_STEP_SUMMARY
+          echo "Répertoires examinés :" >> $GITHUB_STEP_SUMMARY
           echo '${{ needs.select-directories.outputs.directories }}' | jq -r '.[]' | while read dir; do
             echo "- \`$dir\`" >> $GITHUB_STEP_SUMMARY
           done
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check for any PRs created by this workflow." >> $GITHUB_STEP_SUMMARY
+          echo "Consultez les éventuelles PR créées par ce workflow." >> $GITHUB_STEP_SUMMARY

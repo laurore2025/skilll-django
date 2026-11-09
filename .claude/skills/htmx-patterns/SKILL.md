@@ -1,78 +1,78 @@
 ---
 name: htmx-patterns
-description: HTMX patterns for Django including partial templates, hx-* attributes, and dynamic UI without JavaScript. Use when building interactive UI, handling AJAX requests, or creating dynamic components.
+description: "Patrons HTMX pour Django : gabarits partiels, attributs hx-* et interface dynamique sans JavaScript. À utiliser pour construire une interface interactive, gérer des requêtes AJAX ou créer des composants dynamiques."
 ---
 
-# HTMX Patterns for Django
+# Patrons HTMX pour Django
 
-## Core Philosophy
+## Philosophie de base
 
-- Server renders HTML, not JSON - HTMX requests return HTML fragments, not data
-- Partial templates for dynamic updates - separate `_partial.html` files for HTMX responses
-- Progressive enhancement - pages work without JavaScript, HTMX enhances UX
-- Minimal client-side complexity - let the server do the heavy lifting
+- Le serveur produit du HTML, pas du JSON - les requêtes HTMX renvoient des fragments HTML, pas des données
+- Des gabarits partiels pour les mises à jour dynamiques - des fichiers `_partial.html` séparés pour les réponses HTMX
+- Amélioration progressive - les pages fonctionnent sans JavaScript, HTMX améliore l'expérience utilisateur
+- Complexité minimale côté client - laissez le serveur faire le gros du travail
 
-## Critical Hints & Reminders
+## Conseils et rappels essentiels
 
-### UX Best Practices
+### Bonnes pratiques UX
 
-**Always include loading indicators**
-- Use `hx-indicator` to show loading states during requests
-- Users should never wonder if their action worked
-- Example: `<button hx-get="/data/" hx-indicator="#spinner">Load</button>`
+**Incluez toujours des indicateurs de chargement**
+- Utilisez `hx-indicator` pour afficher les états de chargement pendant les requêtes
+- Les utilisateurs ne doivent jamais se demander si leur action a fonctionné
+- Exemple : `<button hx-get="/data/" hx-indicator="#spinner">Charger</button>`
 
-**Always provide user feedback**
-- Use Django messages framework for success/error feedback
-- Return error messages in HTMX responses, not silent failures
-- Show what happened after an action completes
+**Fournissez toujours un retour à l'utilisateur**
+- Utilisez le framework de messages de Django pour les retours de succès ou d'erreur
+- Renvoyez des messages d'erreur dans les réponses HTMX, pas des échecs silencieux
+- Montrez ce qui s'est passé une fois l'action terminée
 
-**Handle errors gracefully**
-- Return proper HTTP status codes (400 for validation errors, 500 for server errors)
-- Render form errors in partial templates
-- Don't swallow exceptions - log and show user-friendly messages
+**Gérez les erreurs proprement**
+- Renvoyez les codes de statut HTTP appropriés (400 pour les erreurs de validation, 500 pour les erreurs serveur)
+- Affichez les erreurs de formulaire dans les gabarits partiels
+- N'avalez pas les exceptions - journalisez-les et affichez des messages compréhensibles par l'utilisateur
 
-### Django-Specific Patterns
+### Patrons propres à Django
 
-**Always detect HTMX requests**
-- Check `request.headers.get("HX-Request")` to detect HTMX requests
-- Return partial templates for HTMX, full page templates otherwise
-- Pattern: `if request.headers.get("HX-Request"): return render(request, "_partial.html", context)`
+**Détectez toujours les requêtes HTMX**
+- Vérifiez `request.headers.get("HX-Request")` pour détecter les requêtes HTMX
+- Renvoyez des gabarits partiels pour HTMX, des gabarits de page complète sinon
+- Patron : `if request.headers.get("HX-Request"): return render(request, "_partial.html", context)`
 
-**Always return partials for HTMX**
-- HTMX requests should return `_partial.html` templates, not full pages with `base.html`
-- Full page responses to HTMX requests break the UX and send duplicate HTML
-- Partials should be self-contained HTML fragments
+**Renvoyez toujours des gabarits partiels pour HTMX**
+- Les requêtes HTMX doivent renvoyer des gabarits `_partial.html`, pas des pages complètes avec `base.html`
+- Des réponses en page complète à des requêtes HTMX dégradent l'expérience utilisateur et envoient du HTML en double
+- Les gabarits partiels doivent être des fragments HTML autonomes
 
-**Always validate request.method**
-- Check `request.method == "POST"` before processing form data
-- Return proper status codes (405 Method Not Allowed for wrong methods)
+**Validez toujours request.method**
+- Vérifiez `request.method == "POST"` avant de traiter les données du formulaire
+- Renvoyez les codes de statut appropriés (405 Method Not Allowed pour les mauvaises méthodes)
 
-**CSRF is already configured globally**
-- The base template has `hx-headers` on `<body>` - no need to add CSRF tokens to individual forms
-- All HTMX requests automatically include the CSRF token
+**Le CSRF est déjà configuré globalement**
+- Le gabarit de base place `hx-headers` sur `<body>` - inutile d'ajouter des jetons CSRF à chaque formulaire
+- Toutes les requêtes HTMX incluent automatiquement le jeton CSRF
 
-### Template Organization
+### Organisation des gabarits
 
-**Naming convention**
-- Partials: `_partial.html` (underscore prefix)
-- Full pages: `page.html` (no prefix)
-- Example: `posts/list.html` (full page) includes `posts/_list.html` (partial)
+**Convention de nommage**
+- Gabarits partiels : `_partial.html` (préfixe tiret bas)
+- Pages complètes : `page.html` (sans préfixe)
+- Exemple : `posts/list.html` (page complète) inclut `posts/_list.html` (gabarit partiel)
 
 **Structure**
-- Full page template extends `base.html` and includes partial
-- Partial contains only the dynamic HTML fragment
-- HTMX targets the partial's container div
+- Le gabarit de page complète étend `base.html` et inclut le gabarit partiel
+- Le gabarit partiel ne contient que le fragment HTML dynamique
+- HTMX cible la div conteneur du gabarit partiel
 
-**Keep partials focused**
-- Each partial should represent one logical UI component
-- Avoid partials that are too large or do too much
-- Compose larger UIs from multiple smaller partials
+**Gardez des gabarits partiels ciblés**
+- Chaque gabarit partiel doit représenter un seul composant d'interface logique
+- Évitez les gabarits partiels trop volumineux ou qui en font trop
+- Composez les interfaces plus vastes à partir de plusieurs gabarits partiels plus petits
 
-## Django View Patterns
+## Patrons de vues Django
 
-### HTMX Detection
+### Détection HTMX
 
-Check the `HX-Request` header to detect HTMX requests:
+Vérifiez l'en-tête `HX-Request` pour détecter les requêtes HTMX :
 
 ```python
 def my_view(request):
@@ -84,13 +84,13 @@ def my_view(request):
     return render(request, "app/full_page.html", context)
 ```
 
-### Form Handling Pattern
+### Patron de gestion des formulaires
 
-Key points:
-- Validate form normally
-- On success: return partial with new data OR trigger client-side event
-- On error: return partial with form errors
-- Always handle both HTMX and non-HTMX cases
+Points clés :
+- Validez le formulaire normalement
+- En cas de succès : renvoyez un gabarit partiel avec les nouvelles données OU déclenchez un événement côté client
+- En cas d'erreur : renvoyez un gabarit partiel avec les erreurs du formulaire
+- Gérez toujours les deux cas, HTMX et non-HTMX
 
 ```python
 def create_view(request):
@@ -102,7 +102,7 @@ def create_view(request):
                 return render(request, "app/_item.html", {"item": obj})
             return redirect("app:list")
 
-        # Return form with errors
+        # Renvoyer le formulaire avec ses erreurs
         if request.headers.get("HX-Request"):
             return render(request, "app/_form.html", {"form": form})
     else:
@@ -111,44 +111,44 @@ def create_view(request):
     return render(request, "app/create.html", {"form": form})
 ```
 
-## Response Headers Reference
+## Référence des en-têtes de réponse
 
-HTMX respects special response headers for client-side behavior:
+HTMX tient compte d'en-têtes de réponse spéciaux pour piloter le comportement côté client :
 
 ### HX-Trigger
-Trigger client-side events after response
-- Use case: Update other parts of page after action
-- Example: `response["HX-Trigger"] = "itemCreated"`
-- Template listens: `<div hx-get="/count/" hx-trigger="itemCreated from:body">`
+Déclenche des événements côté client après la réponse
+- Cas d'usage : mettre à jour d'autres parties de la page après une action
+- Exemple : `response["HX-Trigger"] = "itemCreated"`
+- Le gabarit écoute : `<div hx-get="/count/" hx-trigger="itemCreated from:body">`
 
 ### HX-Redirect
-Client-side redirect
-- Use case: Redirect after successful action
-- Example: `response["HX-Redirect"] = reverse("app:detail", args=[obj.pk])`
+Redirection côté client
+- Cas d'usage : rediriger après une action réussie
+- Exemple : `response["HX-Redirect"] = reverse("app:detail", args=[obj.pk])`
 
 ### HX-Retarget / HX-Reswap
-Override hx-target and hx-swap from server
-- Use case: Different targets for success vs error
-- Success: `response["HX-Retarget"] = "#main"`
-- Error: Return partial without changing target (targets the form)
+Surcharge hx-target et hx-swap depuis le serveur
+- Cas d'usage : des cibles différentes en cas de succès et d'erreur
+- Succès : `response["HX-Retarget"] = "#main"`
+- Erreur : renvoyez le gabarit partiel sans changer de cible (cible le formulaire)
 
 ### HX-Refresh
-Force full page refresh
-- Use case: Major state change that affects whole page
-- Example: `response["HX-Refresh"] = "true"`
+Force le rechargement complet de la page
+- Cas d'usage : changement d'état majeur qui affecte toute la page
+- Exemple : `response["HX-Refresh"] = "true"`
 
-## Common Pitfalls
+## Pièges courants
 
-- **Missing loading indicators**: Always use `hx-indicator` - users click multiple times without feedback
-- **Full pages in HTMX responses**: Return `_partial.html`, not full pages with `base.html` - check `HX-Request` header
-- **Not handling form errors**: Always return the form with errors on validation failure, not just the success case
-- **Not disabling buttons**: Use `hx-disabled-elt="this"` to prevent duplicate submissions
-- **N+1 queries**: HTMX views need `select_related()`/`prefetch_related()` just like regular views
+- **Indicateurs de chargement manquants** : utilisez toujours `hx-indicator` - sans retour visuel, les utilisateurs cliquent plusieurs fois
+- **Pages complètes dans les réponses HTMX** : renvoyez `_partial.html`, pas des pages complètes avec `base.html` - vérifiez l'en-tête `HX-Request`
+- **Erreurs de formulaire non gérées** : renvoyez toujours le formulaire avec ses erreurs en cas d'échec de validation, ne traitez pas seulement le cas de succès
+- **Boutons non désactivés** : utilisez `hx-disabled-elt="this"` pour éviter les soumissions en double
+- **Requêtes N+1** : les vues HTMX ont besoin de `select_related()`/`prefetch_related()` tout comme les vues classiques
 
-## Integration with Other Skills
+## Intégration avec les autres skills
 
-- **django-templates**: Partial template organization and inheritance patterns
-- **django-forms**: HTMX form submission and validation
-- **django-extensions**: Use `show_urls` to verify HTMX endpoints
-- **pytest-django-patterns**: Testing HTMX endpoints and headers
-- **systematic-debugging**: Debug HTMX request/response issues
+- **django-templates** : organisation des gabarits partiels et patrons d'héritage
+- **django-forms** : soumission et validation de formulaires avec HTMX
+- **django-extensions** : utilisez `show_urls` pour vérifier les points de terminaison HTMX
+- **pytest-django-patterns** : tests des points de terminaison et des en-têtes HTMX
+- **systematic-debugging** : débogage des problèmes de requête/réponse HTMX

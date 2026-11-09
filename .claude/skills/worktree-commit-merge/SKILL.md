@@ -1,17 +1,17 @@
 ---
 name: worktree-commit-merge
-description: Commit worktree changes, merge into master/main, then sync the worktree branch with master. Trigger when the user says things like "commit and merge to master", "we're done with this worktree, commit and merge", or any similar phrasing. Don't wait for the user to spell out "worktree" — if there are changes and they mention merging to master/main, use this skill.
+description: "Committe les modifications du worktree, les fusionne (merge) dans master/main, puis synchronise la branche du worktree avec master. À déclencher lorsque l'utilisateur dit par exemple « commit et merge sur master », « on a fini avec ce worktree, commit et merge », ou toute formulation similaire. N'attendez pas que l'utilisateur prononce explicitement le mot « worktree » — s'il y a des modifications et qu'il parle de fusionner dans master/main, utilisez ce skill."
 ---
 
-## Overview
+## Vue d'ensemble
 
-You're in a git worktree on a feature branch with uncommitted changes. This skill:
-1. Commits those changes to the current branch
-2. Merges the branch into master/main — fast-forward if possible, otherwise a regular merge commit
+Vous êtes dans un worktree git, sur une branche de fonctionnalité qui contient des modifications non commitées. Ce skill :
+1. Committe ces modifications sur la branche courante
+2. Fusionne la branche dans master/main — en fast-forward si possible, sinon par un commit de fusion classique
 
-## Step 1: Gather context
+## Étape 1 : rassemblez le contexte
 
-Run these in parallel:
+Exécutez ces commandes en parallèle :
 
 ```bash
 git status
@@ -21,21 +21,21 @@ git worktree list
 git log --oneline -10
 ```
 
-This gives you:
-- What files changed and what's staged vs unstaged
-- The current branch name (the worktree branch)
-- The main worktree path and which branch it has checked out
-- Recent commit style so your message fits the project
+Vous obtenez ainsi :
+- Les fichiers modifiés, et ce qui est indexé ou non indexé
+- Le nom de la branche courante (la branche du worktree)
+- Le chemin du worktree principal et la branche qui y est extraite
+- Le style des commits récents, pour que votre message s'accorde avec le projet
 
-## Step 2: Commit the changes
+## Étape 2 : commitez les modifications
 
-Stage specific files rather than `git add -A`, which can accidentally include unintended files like `.env` or build artifacts:
+Indexez des fichiers précis plutôt que d'utiliser `git add -A`, qui peut inclure accidentellement des fichiers non souhaités comme `.env` ou des artefacts de build :
 
 ```bash
 git add <specific relevant files>
 ```
 
-Write a commit message that follows the style from the recent log. Always pass via heredoc to preserve formatting:
+Rédigez un message de commit qui suit le style du journal récent. Passez-le toujours via un heredoc pour préserver la mise en forme :
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -46,38 +46,38 @@ EOF
 )"
 ```
 
-## Step 3: Identify the merge target
+## Étape 3 : identifiez la cible de la fusion
 
-From `git worktree list` output, the **first entry is always the main worktree**. Identify:
-- `MAIN_PATH` — filesystem path of the main worktree
-- `MAIN_BRANCH` — branch checked out there (typically `master` or `main`)
-- `CURRENT_BRANCH` — the branch you just committed to
+Dans la sortie de `git worktree list`, la **première entrée est toujours le worktree principal**. Identifiez :
+- `MAIN_PATH` — chemin du worktree principal dans le système de fichiers
+- `MAIN_BRANCH` — branche extraite à cet endroit (généralement `master` ou `main`)
+- `CURRENT_BRANCH` — la branche sur laquelle vous venez de commiter
 
-## Step 4: Merge into master/main
+## Étape 4 : fusionnez dans master/main
 
-Try fast-forward first. If the histories have diverged, fall back to a regular merge commit:
+Essayez d'abord le fast-forward. Si les historiques ont divergé, rabattez-vous sur un commit de fusion classique :
 
 ```bash
 git -C <MAIN_PATH> merge --ff-only <CURRENT_BRANCH> \
   || git -C <MAIN_PATH> merge <CURRENT_BRANCH> --no-edit
 ```
 
-Tell the user which path was taken — fast-forward or merge commit — so they know what happened to the history.
+Indiquez à l'utilisateur quelle voie a été suivie — fast-forward ou commit de fusion — pour qu'il sache ce qu'il est advenu de l'historique.
 
-## Step 5: Sync the worktree branch with master/main
+## Étape 5 : synchronisez la branche du worktree avec master/main
 
-After merging, bring the worktree branch up-to-date so it includes any commits that were already on master/main (e.g., from other merges):
+Après la fusion, mettez à jour la branche du worktree pour qu'elle inclue les commits qui se trouvaient déjà sur master/main (par ex. issus d'autres fusions) :
 
 ```bash
 git merge <MAIN_BRANCH>
 ```
 
-This runs in the worktree directory (current directory), pulling in the full state of master/main.
+Cette commande s'exécute dans le répertoire du worktree (le répertoire courant) et y récupère l'état complet de master/main.
 
-## Step 6: Confirm
+## Étape 6 : confirmez
 
 ```bash
 git -C <MAIN_PATH> log --oneline -5
 ```
 
-Report what was committed (files + message), how it was merged, and that the worktree branch is now in sync with master/main.
+Indiquez ce qui a été committé (fichiers + message), comment la fusion a été effectuée, et que la branche du worktree est désormais synchronisée avec master/main.

@@ -1,28 +1,28 @@
-# Workflow Patterns
+# Patrons de workflow
 
-## Sequential Workflows
+## Workflows séquentiels
 
-For complex tasks, break operations into clear, sequential steps. It is often helpful to give Claude an overview of the process towards the beginning of SKILL.md:
+Pour les tâches complexes, découpez les opérations en étapes claires et séquentielles. Il est souvent utile de donner à Claude une vue d'ensemble du processus vers le début de SKILL.md :
 
 ```markdown
-Filling a PDF form involves these steps:
+Remplir un formulaire PDF comporte les étapes suivantes :
 
-1. Analyze the form (run analyze_form.py)
-2. Create field mapping (edit fields.json)
-3. Validate mapping (run validate_fields.py)
-4. Fill the form (run fill_form.py)
-5. Verify output (run verify_output.py)
+1. Analyser le formulaire (lancer analyze_form.py)
+2. Créer la correspondance des champs (modifier fields.json)
+3. Valider la correspondance (lancer validate_fields.py)
+4. Remplir le formulaire (lancer fill_form.py)
+5. Vérifier le résultat (lancer verify_output.py)
 ```
 
-## Conditional Workflows
+## Workflows conditionnels
 
-For tasks with branching logic, guide Claude through decision points:
+Pour les tâches comportant des embranchements, guidez Claude à travers les points de décision :
 
 ```markdown
-1. Determine the modification type:
-   **Creating new content?** → Follow "Creation workflow" below
-   **Editing existing content?** → Follow "Editing workflow" below
+1. Déterminez le type de modification :
+   **Création de nouveau contenu ?** → Suivez le « Workflow de création » ci-dessous
+   **Modification de contenu existant ?** → Suivez le « Workflow de modification » ci-dessous
 
-2. Creation workflow: [steps]
-3. Editing workflow: [steps]
+2. Workflow de création : [étapes]
+3. Workflow de modification : [étapes]
 ```
