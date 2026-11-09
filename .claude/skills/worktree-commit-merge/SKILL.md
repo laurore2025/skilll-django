@@ -1,12 +1,12 @@
 ---
 name: worktree-commit-merge
-description: "Committe les modifications du worktree, les fusionne (merge) dans master/main, puis synchronise la branche du worktree avec master. À déclencher lorsque l'utilisateur dit par exemple « commit et merge sur master », « on a fini avec ce worktree, commit et merge », ou toute formulation similaire. N'attendez pas que l'utilisateur prononce explicitement le mot « worktree » — s'il y a des modifications et qu'il parle de fusionner dans master/main, utilisez ce skill."
+description: "Commite les modifications du worktree, les fusionne (merge) dans master/main, puis synchronise la branche du worktree avec master. À déclencher lorsque l'utilisateur dit par exemple « commit et merge sur master », « on a fini avec ce worktree, commit et merge », ou toute formulation similaire. N'attendez pas que l'utilisateur prononce explicitement le mot « worktree » — s'il y a des modifications et qu'il parle de fusionner dans master/main, utilisez ce skill."
 ---
 
 ## Vue d'ensemble
 
 Vous êtes dans un worktree git, sur une branche de fonctionnalité qui contient des modifications non commitées. Ce skill :
-1. Committe ces modifications sur la branche courante
+1. Commite ces modifications sur la branche courante
 2. Fusionne la branche dans master/main — en fast-forward si possible, sinon par un commit de fusion classique
 
 ## Étape 1 : rassemblez le contexte

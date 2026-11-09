@@ -24,7 +24,7 @@ Ce répertoire contient des skills propres au projet, qui apportent à Claude la
 | [pr-summary](./pr-summary/SKILL.md) | Générer un résumé de pull request pour la branche courante |
 | [code-quality](./code-quality/SKILL.md) | Exécuter les contrôles de qualité du code et présenter les constats par gravité |
 | [docs-sync](./docs-sync/SKILL.md) | Vérifier que la documentation est synchronisée avec le code |
-| [worktree-commit-merge](./worktree-commit-merge/SKILL.md) | Committer les modifications du worktree, fusionner (merge) dans master/main, synchroniser la branche |
+| [worktree-commit-merge](./worktree-commit-merge/SKILL.md) | Commiter les modifications du worktree, fusionner (merge) dans master/main, synchroniser la branche |
 
 ### Tests et débogage
 | Skill | Description |
